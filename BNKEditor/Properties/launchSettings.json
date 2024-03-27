@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BNKEditor": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders.bnk"
+    }
+  }
+}

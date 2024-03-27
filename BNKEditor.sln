@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BNKEditor", "BNKEditor\BNKEditor.csproj", "{5F681DE2-E9FF-44E2-8356-52735D87CC1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BNKEditorTests", "BNKEditorTests\BNKEditorTests.csproj", "{F21834D4-C487-4C87-88D0-B562C81EE669}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F681DE2-E9FF-44E2-8356-52735D87CC1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F681DE2-E9FF-44E2-8356-52735D87CC1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F681DE2-E9FF-44E2-8356-52735D87CC1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F681DE2-E9FF-44E2-8356-52735D87CC1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F21834D4-C487-4C87-88D0-B562C81EE669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F21834D4-C487-4C87-88D0-B562C81EE669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F21834D4-C487-4C87-88D0-B562C81EE669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F21834D4-C487-4C87-88D0-B562C81EE669}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9BA1E176-DA12-4275-B9FD-6DD9B61152ED}
+	EndGlobalSection
+EndGlobal
