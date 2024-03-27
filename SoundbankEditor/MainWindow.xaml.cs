@@ -370,28 +370,6 @@ namespace SoundbankEditor
 			UpdateTitle();
 		}
 
-		private void BtnEditHircItemId_Click(object sender, RoutedEventArgs e)
-		{
-			if (dgHircItems.SelectedItem == null)
-			{
-				return;
-			}
-
-			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set HIRC Item ID", selectedItem.UlID);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			selectedItem.UlID = hircItemIdConverterWindow.Id.Value;
-			UpdateSelectedHircItemJson();
-			dgHircItems.Items.Refresh();
-			_areChangesPending = true;
-			UpdateTitle();
-		}
-
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
 		{
 			if (SelectedHircItemJsonErrorMessage == null)
@@ -444,7 +422,11 @@ namespace SoundbankEditor
 				btnDuplicateHircItem.IsEnabled = false;
 				btnMoveHircItemDown.IsEnabled = false;
 				btnMoveHircItemUp.IsEnabled = false;
+				dpHircItemEditor.Visibility = Visibility.Hidden;
 				tbHircItemJson.IsEnabled = false;
+
+				ifevItemId.Value = null;
+				shiev.HircItem = null;
 				return;
 			}
 
@@ -468,8 +450,10 @@ namespace SoundbankEditor
 			btnDuplicateHircItem.IsEnabled = true;
 			btnMoveHircItemDown.IsEnabled = dgHircItems.SelectedIndex < HircItems.Count - 1;
 			btnMoveHircItemUp.IsEnabled = dgHircItems.SelectedIndex > 0;
+			dpHircItemEditor.Visibility = Visibility.Visible;
 			tbHircItemJson.IsEnabled = true;
 
+			ifevItemId.Value = selectedItem.UlID.ToString();
 			shiev.HircItem = selectedItem;
 		}
 
@@ -561,6 +545,30 @@ namespace SoundbankEditor
 
 			_rightClickedHircItem = clickedHircItem;
 			dgHircItems.ContextMenu.IsOpen = true;
+		}
+
+		private void IfevItemId_EditClicked(object sender, EventArgs e)
+		{
+			if (dgHircItems.SelectedItem == null)
+			{
+				return;
+			}
+
+			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set HIRC Item ID", selectedItem.UlID);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			selectedItem.UlID = hircItemIdConverterWindow.Id.Value;
+			
+			UpdateSelectedHircItemJson();
+			dgHircItems.Items.Refresh();
+			ifevItemId.Value = selectedItem.UlID.ToString();
+			_areChangesPending = true;
+			UpdateTitle();
 		}
 
 		private void MenuItem_Click(object sender, RoutedEventArgs e)

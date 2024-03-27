@@ -91,9 +91,9 @@
 			</Grid.ColumnDefinitions>
 
 			<Border BorderBrush="Black" BorderThickness="1">
-				<DockPanel LastChildFill="True">
+				<DockPanel x:Name="dpHircItemEditor" Visibility="Hidden" LastChildFill="True">
 					<Label DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16">HIRC Item Edit Options</Label>
-					<Button x:Name="btnEditHircItemId" DockPanel.Dock="Top" Content="Edit ID" Width="100" Height="20" Click="BtnEditHircItemId_Click"></Button>
+					<local:IndividualFieldEditorView x:Name="ifevItemId" DockPanel.Dock="Top" Margin="0,5,0,0" Title="Item ID" IsValueAShortId="True" OnEditClicked="IfevItemId_EditClicked" />
 					<shiev:SpecificHircItemEditorView x:Name="shiev" HircItemUpdated="Shiev_HircItemUpdated" />
 				</DockPanel>
 			</Border>
