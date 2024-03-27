@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -195,6 +196,24 @@ namespace SoundbankEditor
 			UpdateTitle();
 		}
 
+		private void BtnEditHircItemId_Click(object sender, RoutedEventArgs e)
+		{
+			if (dgHircItems.SelectedItem == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow();
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			((HircItem)dgHircItems.SelectedItem).UlID = hircItemIdConverterWindow.Id.Value;
+			UpdateSelectedHircItemJson();
+			dgHircItems.Items.Refresh();
+		}
+
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
 		{
 			if (SelectedHircItemJsonErrorMessage == null)
@@ -209,9 +228,7 @@ namespace SoundbankEditor
 		{
 			if (dgHircItems.SelectedIndex < 0)
 			{
-				_isProgrammaticallyChangingSelectedHircItemJson = true;
-				SelectedHircItemJson = "";
-				_isProgrammaticallyChangingSelectedHircItemJson = false;
+				UpdateSelectedHircItemJson();
 
 				btnDeleteHircItem.IsEnabled = false;
 				tbHircItemJson.IsEnabled = false;
@@ -232,12 +249,7 @@ namespace SoundbankEditor
 
 			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
 
-			_isProgrammaticallyChangingSelectedHircItemJson = true;
-			SelectedHircItemJson = JsonSerializer.Serialize(
-				selectedItem,
-				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
-			);
-			_isProgrammaticallyChangingSelectedHircItemJson = false;
+			UpdateSelectedHircItemJson();
 
 			btnDeleteHircItem.IsEnabled = true;
 			tbHircItemJson.IsEnabled = true;
@@ -291,14 +303,12 @@ namespace SoundbankEditor
 					using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 					newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
 
-					bool hasIdChanged = newHircItem.UlID != existingHircItem.UlID;
+					if (!_isProgrammaticallyChangingSelectedHircItemJson && newHircItem.UlID != existingHircItem.UlID)
+					{
+						throw new JsonException($"You cannot change the item's ID in the JSON editor.");
+					}
 
 					newHircItem.CopyTo(existingHircItem);
-
-					if (!_isProgrammaticallyChangingSelectedHircItemJson && hasIdChanged)
-					{
-						dgHircItems.Items.Refresh();
-					}
 
 					SelectedHircItemJsonErrorMessage = null;
 				}
@@ -307,6 +317,41 @@ namespace SoundbankEditor
 					SelectedHircItemJsonErrorMessage = ex.Message;
 				}
 			}, System.Windows.Threading.DispatcherPriority.Normal , cancellationToken);
+		}
+
+		HircItem? _rightClickedHircItem;
+		private void DgHircItems_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			e.Handled = true;
+
+			var hit = VisualTreeHelper.HitTest((Visual)sender, e.GetPosition((IInputElement)sender));
+			DependencyObject cell = VisualTreeHelper.GetParent(hit.VisualHit);
+			while (cell != null && !(cell is DataGridCell)) cell = VisualTreeHelper.GetParent(cell);
+
+			DataGridCell? clickedCell = cell as DataGridCell;
+			if (clickedCell == null)
+			{
+				return;
+			}
+
+			HircItem? clickedHircItem = clickedCell.DataContext as HircItem;
+			if (clickedHircItem == null)
+			{
+				return;
+			}
+
+			_rightClickedHircItem = clickedHircItem;
+			dgHircItems.ContextMenu.IsOpen = true;
+		}
+
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_rightClickedHircItem == null)
+			{
+				return;
+			}
+
+			Clipboard.SetText(_rightClickedHircItem.UlID.ToString());
 		}
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -344,44 +389,20 @@ namespace SoundbankEditor
 			UpdateTitle();
 		}
 
+		private void UpdateSelectedHircItemJson()
+		{
+			string text = dgHircItems.SelectedItem != null
+				? JsonSerializer.Serialize((HircItem)dgHircItems.SelectedItem, new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })
+				: string.Empty;
+
+			_isProgrammaticallyChangingSelectedHircItemJson = true;
+			SelectedHircItemJson = text;
+			_isProgrammaticallyChangingSelectedHircItemJson = false;
+		}
+
 		private void UpdateTitle()
 		{
 			Title = $"{(_areChangesPending ? "*" : string.Empty)}{System.IO.Path.GetFileName(_openSoundbankFilePath)} - Soundbank Editor";
-		}
-
-		HircItem? _rightClickedHircItem;
-		private void DgHircItems_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-		{
-			e.Handled = true;
-
-			var hit = VisualTreeHelper.HitTest((Visual)sender, e.GetPosition((IInputElement)sender));
-			DependencyObject cell = VisualTreeHelper.GetParent(hit.VisualHit);
-			while (cell != null && !(cell is DataGridCell)) cell = VisualTreeHelper.GetParent(cell);
-			
-			DataGridCell? clickedCell = cell as DataGridCell;
-			if (clickedCell == null)
-			{
-				return;
-			}
-
-			HircItem? clickedHircItem = clickedCell.DataContext as HircItem;
-			if (clickedHircItem == null)
-			{
-				return;
-			}
-
-			_rightClickedHircItem = clickedHircItem;
-			dgHircItems.ContextMenu.IsOpen = true;
-		}
-
-		private void MenuItem_Click(object sender, RoutedEventArgs e)
-		{
-			if (_rightClickedHircItem == null)
-			{
-				return;
-			}
-
-			Clipboard.SetText(_rightClickedHircItem.UlID.ToString());
 		}
 	}
 }

@@ -29,6 +29,7 @@
 			</MenuItem>
 		</Menu>
 
+		<!-- Left Side HIRC Item Overview Section -->
 		<Grid  Grid.Row="1" Grid.Column="0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="30" />
@@ -36,7 +37,7 @@
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
-			<TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">HIRC Items</TextBlock>
+			<Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">HIRC Items</Label>
 
 			<ComboBox
 				x:Name="cbAddHircItemType"
@@ -49,7 +50,7 @@
 				x:Name="btnDeleteHircItem"
 				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
 				Click="BtnDeleteHircItem_Click">Delete HIRC Item</Button>
-			
+
 			<DataGrid
 				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
 				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
@@ -66,33 +67,58 @@
 			</DataGrid>
 		</Grid>
 		
-		<ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1">
-			<TextBox
-				x:Name="tbHircItemJson"
-				Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				TextChanged="TbHircItemJson_TextChanged" IsEnabled="False" AcceptsReturn="True" />
-		</ScrollViewer>
-		
-		<Button
-			Grid.Row="1" Grid.Column="1" Width="170" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0"
-			Foreground="Red"
-			Content="Invalid - Changes not persisted!"
-			Click="BtnInvalidHircItemJson_Click">
-			<Button.Style>
-				<Style TargetType="Button">
-					<Setter Property="Visibility" Value="Visible" />
-					<Style.Triggers>
-						<DataTrigger Binding="{Binding SelectedHircItemJsonErrorMessage, Converter={StaticResource isNullConverter}}" Value="True">
-							<Setter Property="Visibility" Value="Hidden" />
-						</DataTrigger>
-					</Style.Triggers>
-				</Style>
-			</Button.Style>
-			<Button.Template>
-				<ControlTemplate TargetType="Button">
-					<ContentPresenter />
-				</ControlTemplate>
-			</Button.Template>
-		</Button>
+		<!-- Right Side HIRC Item Edit Section -->
+		<Grid Grid.Row="1" Grid.Column="1">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="300" />
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+
+			<Border BorderBrush="Black" BorderThickness="1">
+				<DockPanel LastChildFill="False">
+					<Label DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16">HIRC Item Edit Options</Label>
+					<Button x:Name="btnEditHircItemId" DockPanel.Dock="Top" Content="Change ID" Width="100" Height="20" Click="BtnEditHircItemId_Click"></Button>
+
+				</DockPanel>
+			</Border>
+			
+			<ScrollViewer Grid.Column="1" >
+				<TextBox x:Name="tbHircItemJson"
+								 Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								 TextChanged="TbHircItemJson_TextChanged" IsEnabled="False" AcceptsReturn="True">
+					<TextBox.Style>
+						<Style TargetType="TextBox">
+							<Setter Property="BorderBrush" Value="Red" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding SelectedHircItemJsonErrorMessage, Converter={StaticResource isNullConverter}}" Value="True">
+									<Setter Property="BorderBrush" Value="Black" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</TextBox.Style>
+				</TextBox>
+			</ScrollViewer>
+
+			<Button Grid.Column="1" Width="170" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0"
+							Foreground="Red"
+							Content="Invalid - Changes not persisted!"
+							Click="BtnInvalidHircItemJson_Click">
+				<Button.Style>
+					<Style TargetType="Button">
+						<Setter Property="Visibility" Value="Visible" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding SelectedHircItemJsonErrorMessage, Converter={StaticResource isNullConverter}}" Value="True">
+								<Setter Property="Visibility" Value="Hidden" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Button.Style>
+				<Button.Template>
+					<ControlTemplate TargetType="Button">
+						<ContentPresenter />
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+		</Grid>
 	</Grid>
 </Window>
