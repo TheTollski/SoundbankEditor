@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SoundbankEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200">
+        Title="Soundbank Editor" Height="800" Width="1200"
+				KeyDown="Window_KeyDown">
 	<Window.Resources>
 		<local:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
 	</Window.Resources>
@@ -19,20 +20,17 @@
 			<RowDefinition />
 		</Grid.RowDefinitions>
 		
-		<!--<ToolBarTray Background="White" Height="30" VerticalAlignment="Top" Grid.ColumnSpan="2">
-			<ToolBar>
-				<Button Click="btnOpen_Click" Content="Open"></Button>
-			</ToolBar>
-		</ToolBarTray>-->
 		<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 			<MenuItem Header="File">
-				<MenuItem Header="Open" Click="OpenFile"></MenuItem>
+				<MenuItem Header="Open" Click="BtnOpen_Click"></MenuItem>
+				<MenuItem Header="Save" Click="BtnSave_Click"></MenuItem>
+				<MenuItem Header="Save As" Click="BtnSaveAs_Click"></MenuItem>
 			</MenuItem>
 		</Menu>
 
 		<DataGrid
 			x:Name="dgHircItems" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" 
-			AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="dgHircItems_SelectionChanged"
+			AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
 			ItemsSource="{Binding HircItems}">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
@@ -44,10 +42,10 @@
 			<TextBox
 				x:Name="tbHircItemJson"
 				Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				TextChanged="tbHircItemJson_TextChanged" />
+				TextChanged="TbHircItemJson_TextChanged" />
 		</ScrollViewer>
 		
-		<TextBlock Grid.Row="1" Grid.Column="1" Width="140" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0" Foreground="Red">
+		<TextBlock Grid.Row="1" Grid.Column="1" Width="170" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0" Foreground="Red">
 			<TextBlock.Style>
 				<Style TargetType="TextBlock">
 					<Setter Property="Visibility" Value="Visible" />
@@ -58,7 +56,7 @@
 					</Style.Triggers>
 				</Style>
 			</TextBlock.Style>
-			Invalid JSON, cannot save!
+			Invalid - Changes not persisted!
 		</TextBlock>
 	</Grid>
 </Window>

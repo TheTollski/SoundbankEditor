@@ -51,7 +51,7 @@ namespace SoundbankEditor
 			}
 		}
 
-		private bool _isSelectedHircItemJsonValid;
+		private bool _isSelectedHircItemJsonValid = true;
 		public bool IsSelectedHircItemJsonValid
 		{
 			get
@@ -79,7 +79,9 @@ namespace SoundbankEditor
 			}
 		}
 
+		private bool _areChangesPending;
 		private bool _isProgrammaticallyChangingSelectedHircItemJson;
+		private string? _openFilePath;
 		private SoundBank? _openSoundBank;
 
 		public MainWindow()
@@ -88,25 +90,61 @@ namespace SoundbankEditor
 			DataContext = this;
 		}
 
-		private void OpenFile(object sender, RoutedEventArgs e)
-		{
-			System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-			openFileDialog1.Filter = $"SoundBank|*.bnk";
-			openFileDialog1.Title = "Select SoundBank";
-			openFileDialog1.Multiselect = false;
+		//
+		// Event Handlers
+		//
 
-			if (openFileDialog1.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+		private void BtnOpen_Click(object sender, RoutedEventArgs e)
+		{
+			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			openFileDialog.Filter = $"SoundBank|*.bnk";
+			openFileDialog.Title = "Select SoundBank";
+			openFileDialog.Multiselect = false;
+
+			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
 			{
 				return;
 			}
 
-			_openSoundBank = SoundBank.CreateFromBnkFile(openFileDialog1.FileName);
+			_openSoundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
 			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
 
 			HircItems = _openSoundBank.HircItems;
+			_openFilePath = openFileDialog.FileName;
+			UpdateTitle();
 		}
 
-		private void dgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void BtnSave_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundBank == null || _openFilePath == null)
+			{
+				return;
+			}
+
+			SaveFile();
+		}
+
+		private void BtnSaveAs_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundBank == null)
+			{
+				return;
+			}
+
+			var saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+			saveFileDialog.Filter = $"SoundBank|*.bnk";
+			saveFileDialog.Title = "Save SoundBank";
+
+			if (saveFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+
+			_openFilePath = saveFileDialog.FileName;
+			SaveFile();
+		}
+
+		private void DgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
 
@@ -118,11 +156,20 @@ namespace SoundbankEditor
 			_isProgrammaticallyChangingSelectedHircItemJson = false;
 		}
 
-		private void tbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
+		private void TbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (SelectedHircItemJson == null)
+			if (HircItems == null || SelectedHircItemJson == null)
 			{
 				return;
+			}
+
+			if (!_isProgrammaticallyChangingSelectedHircItemJson)
+			{
+				if (!_areChangesPending)
+				{
+					_areChangesPending = true;
+					UpdateTitle();
+				}
 			}
 
 			try
@@ -159,6 +206,35 @@ namespace SoundbankEditor
 
 				throw;
 			}
+		}
+
+		private void Window_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+			{
+				SaveFile();
+			}
+		}
+
+		//
+		// Helper Functions
+		//
+
+		private void SaveFile()
+		{
+			if (_openSoundBank == null || _openFilePath == null)
+			{
+				return;
+			}
+
+			_openSoundBank.WriteToBnkFile(_openFilePath);
+			_areChangesPending = false;
+			UpdateTitle();
+		}
+
+		private void UpdateTitle()
+		{
+			Title = $"{(_areChangesPending ? "*" : string.Empty)}{System.IO.Path.GetFileName(_openFilePath)} - Soundbank Editor";
 		}
 	}
 }
