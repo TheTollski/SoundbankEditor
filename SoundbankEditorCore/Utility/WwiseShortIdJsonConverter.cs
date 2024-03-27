@@ -25,9 +25,7 @@ namespace SoundbankEditor.Core.Utility
 
 		public override void Write(Utf8JsonWriter writer, uint value, JsonSerializerOptions options)
 		{
-			string? name = WwiseShortIdUtility.GetNameFromShortId(value);
-
-			writer.WriteStringValue($"{value} [{name ?? "?"}]");
+			writer.WriteStringValue(WwiseShortIdUtility.ConvertShortIdToReadableString(value));
 		}
 	}
 }

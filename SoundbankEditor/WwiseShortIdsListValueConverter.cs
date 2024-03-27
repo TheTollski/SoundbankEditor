@@ -10,13 +10,13 @@ using SoundbankEditor.Core;
 
 namespace SoundbankEditor
 {
-	[ValueConversion(typeof(uint), typeof(string))]
-	public class WwiseShortIdValueConverter : IValueConverter
+	[ValueConversion(typeof(List<uint>), typeof(string))]
+	public class WwiseShortIdsListValueConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			uint shortId = (uint)value;
-			return WwiseShortIdUtility.ConvertShortIdToReadableString(shortId);
+			List<uint> shortIds = (List<uint>)value;
+			return string.Join(',', shortIds.Select(id => WwiseShortIdUtility.ConvertShortIdToReadableString(id)));
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

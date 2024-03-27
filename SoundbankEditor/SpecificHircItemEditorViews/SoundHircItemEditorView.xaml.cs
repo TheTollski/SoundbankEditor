@@ -1,18 +1,8 @@
-﻿using SoundbankEditor.Core.WwiseObjects.HircItems;
+﻿using SoundbankEditor.Core;
+using SoundbankEditor.Core.WwiseObjects.HircItems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SoundbankEditor.SpecificHircItemEditorViews
 {
@@ -38,8 +28,8 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		{
 			_cakSound = (CAkSound)DataContext;
 
-			UpdateDirectParentIdLabel();
-			UpdateFileIdLabel();
+			UpdateDirectParentIdTextBlock();
+			UpdateFileIdTextBlock();
 		}
 
 		private void BtnEditDirectParentId_Click(object sender, RoutedEventArgs e)
@@ -56,7 +46,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			_cakSound.NodeBaseParams.DirectParentID = hircItemIdConverterWindow.Id.Value;
-			UpdateDirectParentIdLabel();
+			UpdateDirectParentIdTextBlock();
 
 			if (HircItemUpdated != null)
 			{
@@ -79,7 +69,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 			_cakSound.AkBankSourceData.AkMediaInformation.FileId = hircItemIdConverterWindow.Id.Value;
 			_cakSound.AkBankSourceData.AkMediaInformation.SourceId = hircItemIdConverterWindow.Id.Value;
-			UpdateFileIdLabel();
+			UpdateFileIdTextBlock();
 
 			if (HircItemUpdated != null)
 			{
@@ -91,14 +81,24 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		// Helpers
 		//
 
-		private void UpdateDirectParentIdLabel()
+		private void UpdateDirectParentIdTextBlock()
 		{
-			lDirectParentId.Content = $"Direct Parent ID: {_cakSound?.NodeBaseParams.DirectParentID}";
+			if (_cakSound == null)
+			{
+				return;
+			}
+
+			tbDirectParentId.Text = $"Parent ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSound.NodeBaseParams.DirectParentID)}";
 		}
 
-		private void UpdateFileIdLabel()
+		private void UpdateFileIdTextBlock()
 		{
-			lFileId.Content = $"File ID: {_cakSound?.AkBankSourceData.AkMediaInformation.FileId}";
+			if (_cakSound == null)
+			{
+				return;
+			}
+
+			tbFileId.Text = $"File ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSound.AkBankSourceData.AkMediaInformation.FileId)}";
 		}
 	}
 }

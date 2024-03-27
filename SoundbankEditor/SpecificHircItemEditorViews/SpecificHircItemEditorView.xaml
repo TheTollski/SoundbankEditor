@@ -47,6 +47,9 @@
 			<DataTemplate DataType="{x:Type hircItems:CAkSound}">
 				<local:SoundHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
 			</DataTemplate>
+			<DataTemplate DataType="{x:Type hircItems:CAkSwitchCntr}">
+				<local:SwitchContainerHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
+			</DataTemplate>
 		</ContentPresenter.Resources>
 	</ContentPresenter>
 </UserControl>

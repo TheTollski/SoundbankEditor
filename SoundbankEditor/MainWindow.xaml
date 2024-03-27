@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SoundbankEditor"
 				xmlns:shiev="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
         mc:Ignorable="d"
-        Title="Soundbank Editor" Height="800" Width="1200"
+        Title="Soundbank Editor" Height="800" Width="1400"
 				KeyDown="Window_KeyDown">
 	<Window.Resources>
 		<local:IsNullConverter x:Key="isNullConverter"/>
@@ -71,12 +71,12 @@
 		<!-- Right Side HIRC Item Edit Section -->
 		<Grid Grid.Row="1" Grid.Column="1">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="300" />
+				<ColumnDefinition Width="600" />
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
 
 			<Border BorderBrush="Black" BorderThickness="1">
-				<DockPanel LastChildFill="False">
+				<DockPanel LastChildFill="True">
 					<Label DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16">HIRC Item Edit Options</Label>
 					<Button x:Name="btnEditHircItemId" DockPanel.Dock="Top" Content="Edit ID" Width="100" Height="20" Click="BtnEditHircItemId_Click"></Button>
 					<shiev:SpecificHircItemEditorView x:Name="shiev" HircItemUpdated="Shiev_HircItemUpdated" />

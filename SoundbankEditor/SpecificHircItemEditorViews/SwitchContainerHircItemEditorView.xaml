@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="SoundbankEditor.SpecificHircItemEditorViews.SwitchContainerHircItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
+						 xmlns:main="clr-namespace:SoundbankEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600"
+						 DataContextChanged="OnDataContextChanged">
+	<UserControl.Resources>
+		<main:WwiseShortIdsListValueConverter x:Key="wwiseShortIdsListValueConverter"/>
+		<main:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
+	</UserControl.Resources>
+
+	<Grid Width="600">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="80" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="1*" />
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Switch Container Item Edit Options</Label>
+		
+		<StackPanel Grid.Row="1">
+			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
+				<TextBlock x:Name="tbDirectParentId" DockPanel.Dock="Left" MaxWidth="480" Text="Parent ID: " />
+				<Button x:Name="btnEditDirectParentId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Parent ID" Click="BtnEditDirectParentId_Click"></Button>
+			</DockPanel>
+			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
+				<TextBlock x:Name="tbGroupId" DockPanel.Dock="Left" MaxWidth="480" Text="Group ID: " />
+				<Button x:Name="btnEditGroupId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Group ID" Click="BtnEditGroupId_Click"></Button>
+			</DockPanel>
+			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
+				<TextBlock x:Name="tbDefaultSwitchId" DockPanel.Dock="Left" MaxWidth="480" Text="Default Switch ID: " />
+				<Button x:Name="btnEditDefaultSwitchId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Def. Sw. ID" Click="BtnEditDefaultSwitchId_Click"></Button>
+			</DockPanel>
+		</StackPanel>
+		
+		<TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" Text="Switch Packages" />
+
+		<StackPanel Grid.Row = "3" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button x:Name="btnAddSwitch" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Add Switch" Click="BtnAddSwitch_Click"/>
+			<Button x:Name="btnDeleteSwitch" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Delete Switch" Click="BtnDeleteSwitch_Click" IsEnabled="False" />
+			<Button x:Name="btnSortSwitches" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Sort Switches" Click="BtnSortSwitches_Click" />
+			<Button x:Name="btnMoveSwitchUp" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Up" Click="BtnMoveSwitchUp_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveSwitchDown" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Down" Click="BtnMoveSwitchDown_Click" IsEnabled="False" />
+		</StackPanel>
+		
+		<DataGrid x:Name="dgSwitches" Grid.Row="4"
+								AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Switch ID" Binding="{Binding Path=SwitchId, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="200" />
+				<DataGridTextColumn Header="#Node" Binding="{Binding Path=NodeIds.Count}" IsReadOnly="True" Width="50" />
+				<DataGridTextColumn Header="Node IDs" Binding="{Binding Path=NodeIds, Converter={StaticResource wwiseShortIdsListValueConverter}}" IsReadOnly="True" Width="1*" />
+			</DataGrid.Columns>
+			<!--<DataGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Copy ID" Click="MenuItem_Click" />
+					</ContextMenu>
+				</DataGrid.ContextMenu>-->
+		</DataGrid>
+	</Grid>
+</UserControl>

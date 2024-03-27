@@ -317,7 +317,7 @@ namespace SoundbankEditor
 					newHircItem.CopyTo(existingHircItem);
 
 					SelectedHircItemJsonErrorMessage = null;
-					shiev.HircItem = newHircItem;
+					shiev.HircItem = newHircItem; // This shouldn't be.
 				}
 				catch (Exception ex)
 				{

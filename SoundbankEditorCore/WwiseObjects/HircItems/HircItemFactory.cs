@@ -30,7 +30,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			}
 			if (hircType == HircType.SwitchContainer) // 6
 			{
-				return binaryReader != null ? new CAkSwitchCntr(binaryReader) : new CAkSwitchCntr();
+				return binaryReader != null ? new CAkSwitchCntr(binaryReader) : CreateCAkSwitchCntrForBattleVoOrders();
 			}
 			if (hircType == HircType.ActorMixer) // 7
 			{
@@ -108,13 +108,68 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					},
 					StateChunk = new StateChunk
 					{
-						StateGroups = new List<object>(),
+						StateGroups = new List<object>(), 
 					},
 					InitialRtpc = new InitialRtpc
 					{
 						RtpcList = new List<Rtpc>(),
 					}
 				}
+			};
+		}
+
+		public static CAkSwitchCntr CreateCAkSwitchCntrForBattleVoOrders()
+		{
+			return new CAkSwitchCntr
+			{
+				NodeBaseParams = new NodeBaseParams
+				{
+					NodeInitialFxParams = new NodeInitialFxParams
+					{
+						IsOverrideParentFX = 0,
+						FxChunks = new List<FxChunk> { },
+					},
+					OverrideAttachmentParams = 0,
+					OverrideBusId = 0,
+					DirectParentID = 0,
+					ByBitVector = 0,
+					NodeInitialParams = new NodeInitialParams
+					{
+						AkPropBundle1 = new AkPropBundle(),
+						AkPropBundle2 = new AkPropBundle(),
+					},
+					PositioningParams = new PositioningParams
+					{
+						ByVector = 192,
+					},
+					AuxParams = new AuxParams
+					{
+						ByBitVector = 0,
+					},
+					AdvSettingsParams = new AdvSettingsParams
+					{
+						ByBitVector1 = 0,
+						VirtualQueueBehavior = 1,
+						MaxNumInstance = 0,
+						BelowThresholdBehavior = 0,
+						ByBitVector2 = 0,
+					},
+					StateChunk = new StateChunk
+					{
+						StateGroups = new List<object>(),
+					},
+					InitialRtpc = new InitialRtpc
+					{
+						RtpcList = new List<Rtpc>(),
+					}
+				},
+				GroupType = 0,
+				GroupId = 0,
+				DefaultSwitch = 0,
+				IsContinuousValidation = 0,
+				ChildIds = new List<uint>(),
+				SwitchPackages = new List<CAkSwitchPackage>(),
+				SwitchParams = new List<AkSwitchNodeParams>(),
 			};
 		}
 	}

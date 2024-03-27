@@ -41,10 +41,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 		private void OnHircItemUpdated(object sender, EventArgs e)
 		{
-			if (HircItemUpdated != null)
-			{
-				HircItemUpdated(sender, e);
-			}
+			HircItemUpdated?.Invoke(sender, e);
 		}
 	}
 }

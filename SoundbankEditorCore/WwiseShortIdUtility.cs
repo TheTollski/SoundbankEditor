@@ -14,6 +14,10 @@ namespace SoundbankEditor.Core
 		const uint FNV1_32_BIT_OFFSET_BASIS = 2166136261;
 		const uint FNV1_32_BIT_PRIME = 16777619;
 
+		//
+		// Name Lookup Methods
+		//
+
 		public static void AddNames(List<string> names, bool areCustom = false)
 		{
 			var dict = areCustom ? KnownCustomShortIdsMap : KnownBaseShortIdsMap;
@@ -56,6 +60,10 @@ namespace SoundbankEditor.Core
 			return null;
 		}
 
+		//
+		// Direct Conversion Methods
+		//
+
 		public static uint ConvertToShortId(string name)
 		{
 			// See https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function#FNV-1_hash
@@ -83,6 +91,44 @@ namespace SoundbankEditor.Core
 			var final = ((hash >> numBits)) ^ (hash & mask);
 			
 			return (uint)final;
+		}
+
+		public static string ConvertShortIdToReadableString(uint shortId)
+		{
+			string? name = GetNameFromShortId(shortId);
+			return $"{shortId} [{name ?? "?"}]";
+		}
+
+		//
+		// Misc
+		//
+
+		public static int CompareShortIds(uint shortId1, uint shortId2)
+		{
+			if (shortId1 == shortId2)
+			{
+				return 0;
+			}
+
+			string? name1 = GetNameFromShortId(shortId1);
+			string? name2 = GetNameFromShortId(shortId2);
+
+			if (name1 == null && name2 == null)
+			{
+				return (int)(shortId1 - shortId2);
+			}
+			else if (name1 == null)
+			{
+				return 1;
+			}
+			else if (name2 == null)
+			{
+				return -1;
+			}
+			else
+			{
+				return name1.CompareTo(name2);
+			}
 		}
 	}
 }
