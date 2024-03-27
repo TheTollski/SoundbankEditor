@@ -102,8 +102,8 @@ namespace SoundbankEditor
 		private void BtnOpen_Click(object sender, RoutedEventArgs e)
 		{
 			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
-			openFileDialog.Filter = $"SoundBank|*.bnk";
-			openFileDialog.Title = "Select SoundBank";
+			openFileDialog.Filter = $"Soundbank|*.bnk";
+			openFileDialog.Title = "Select Soundbank";
 			openFileDialog.Multiselect = false;
 
 			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -111,8 +111,29 @@ namespace SoundbankEditor
 				return;
 			}
 
+			SoundBank soundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
+
+			// Verify that the program can fully parse and save the soundbank.
+			string soundBankJson = soundBank.ToJson();
+			SoundBank copiedSoundBank = SoundBank.CreateFromJson(soundBankJson);
+
+			using var memoryStream1 = new MemoryStream();
+			using var memoryStream2 = new MemoryStream();
+			using var binaryWriter1 = new BinaryWriter(memoryStream1);
+			using var binaryWriter2 = new BinaryWriter(memoryStream2);
+			soundBank.WriteToBinary(binaryWriter1);
+			copiedSoundBank.WriteToBinary(binaryWriter2);
+			memoryStream1.Position = 0;
+			memoryStream2.Position = 0;
+			if (!memoryStream1.ToArray().SequenceEqual(memoryStream2.ToArray()))
+			{
+				MessageBox.Show("Failed to open Soundbank. Unable to fully parse the soundbank.");
+				return;
+			}
+
+			// Continue with opening the Soundbank
 			_openSoundbankFilePath = openFileDialog.FileName;
-			_openSoundbank = SoundBank.CreateFromBnkFile(_openSoundbankFilePath);
+			_openSoundbank = soundBank;
 			HircItems = _openSoundbank.HircItems;
 
 			WwiseShortIdUtility.ClearNames();
@@ -124,6 +145,9 @@ namespace SoundbankEditor
 			}
 
 			btnAddHircItem.IsEnabled = true;
+			btnClose.IsEnabled = true;
+			btnConvertBnkToJson.IsEnabled = false;
+			btnConvertJsonToBnk.IsEnabled = false;
 			btnSave.IsEnabled = true;
 			btnSaveAs.IsEnabled = true;
 			cbAddHircItemType.IsEnabled = true;
@@ -150,8 +174,8 @@ namespace SoundbankEditor
 			}
 
 			var saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-			saveFileDialog.Filter = $"SoundBank|*.bnk";
-			saveFileDialog.Title = "Save SoundBank";
+			saveFileDialog.Filter = $"Soundbank|*.bnk";
+			saveFileDialog.Title = "Save Soundbank";
 
 			if (saveFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
 			{
@@ -160,6 +184,99 @@ namespace SoundbankEditor
 
 			_openSoundbankFilePath = saveFileDialog.FileName;
 			SaveFile();
+		}
+		private void BtnClose_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null || _openSoundbankFilePath == null)
+			{
+				return;
+			}
+
+			_openSoundbankFilePath = null;
+			_openSoundbank = null;
+			HircItems = null;
+
+			WwiseShortIdUtility.ClearNames();
+
+			btnAddHircItem.IsEnabled = false;
+			btnClose.IsEnabled = false;
+			btnConvertBnkToJson.IsEnabled = true;
+			btnConvertJsonToBnk.IsEnabled = true;
+			btnSave.IsEnabled = false;
+			btnSaveAs.IsEnabled = false;
+			cbAddHircItemType.IsEnabled = false;
+
+			_areChangesPending = false;
+			UpdateTitle();
+		}
+
+		private void BtnConvertBnkToJson_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank != null || _openSoundbankFilePath != null)
+			{
+				return;
+			}
+
+			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			openFileDialog.Filter = $"Soundbank|*.bnk";
+			openFileDialog.Title = "Select Soundbank";
+			openFileDialog.Multiselect = false;
+
+			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+
+			SoundBank soundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
+
+			WwiseShortIdUtility.ClearNames();
+			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList(), false);
+			string customNamesPath = GetCustomNamesFilePath(openFileDialog.FileName);
+			if (File.Exists(customNamesPath))
+			{
+				WwiseShortIdUtility.AddNames(File.ReadAllLines(customNamesPath).ToList(), true);
+			}
+
+			string outputJsonFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.json";
+			if (File.Exists(outputJsonFilePath) &&
+					MessageBox.Show($"A file exists at '{outputJsonFilePath}'. If you proceed, you will overwrite this file.", "Confirm File Overwite", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+			{
+				return;
+			}
+
+			soundBank.WriteToJsonFile(outputJsonFilePath);
+			MessageBox.Show($"File successfully saved: '{outputJsonFilePath}'");
+		}
+
+		private void BtnConvertJsonToBnk_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank != null || _openSoundbankFilePath != null)
+			{
+				return;
+			}
+
+			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			openFileDialog.Filter = $"JSON|*.json";
+			openFileDialog.Title = "Select JSON File";
+			openFileDialog.Multiselect = false;
+
+			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+
+			SoundBank soundBank = SoundBank.CreateFromJsonFile(openFileDialog.FileName);
+
+			string outputBnkFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.json";
+			if (File.Exists(outputBnkFilePath) &&
+					MessageBox.Show($"A file exists at '{outputBnkFilePath}'. If you proceed, you will overwrite this file.", "Confirm File Overwite", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+			{
+				return;
+			}
+
+			soundBank.WriteToBnkFile(outputBnkFilePath);
+			MessageBox.Show($"File successfully saved: '{outputBnkFilePath}'");
+			// TODO: Write custom names file
 		}
 
 		private void BtnAddHircItem_Click(object sender, RoutedEventArgs e)
@@ -460,14 +577,19 @@ namespace SoundbankEditor
 		// Helper Functions
 		//
 
-		private string GetCustomNamesFilePath()
+		private string GetCustomNamesFilePath(string? soundbankFilePath = null)
 		{
-			if (_openSoundbankFilePath == null)
+			if (soundbankFilePath == null)
 			{
-				throw new Exception($"No soundbank is open.");
+				soundbankFilePath = _openSoundbankFilePath;
 			}
 
-			return $"{Path.GetDirectoryName(_openSoundbankFilePath)}\\{Path.GetFileNameWithoutExtension(_openSoundbankFilePath)}_custom_names.txt";
+			if (soundbankFilePath == null)
+			{
+				throw new Exception($"Unable to identify soundbank file path.");
+			}
+
+			return $"{Path.GetDirectoryName(soundbankFilePath)}\\{Path.GetFileNameWithoutExtension(soundbankFilePath)}_custom_names.txt";
 		}
 
 		private void SaveFile()

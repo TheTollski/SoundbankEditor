@@ -27,6 +27,9 @@
 				<MenuItem x:Name="btnOpen" Header="Open" Click="BtnOpen_Click"></MenuItem>
 				<MenuItem x:Name="btnSave" Header="Save" Click="BtnSave_Click" IsEnabled="False"></MenuItem>
 				<MenuItem x:Name="btnSaveAs" Header="Save As" Click="BtnSaveAs_Click" IsEnabled="False"></MenuItem>
+				<MenuItem x:Name="btnClose" Header="Close" Click="BtnClose_Click" IsEnabled="False"></MenuItem>
+				<MenuItem x:Name="btnConvertBnkToJson" Header="Convert BNK to JSON" Click="BtnConvertBnkToJson_Click"></MenuItem>
+				<MenuItem x:Name="btnConvertJsonToBnk" Header="Convert JSON to BNK" Click="BtnConvertJsonToBnk_Click"></MenuItem>
 			</MenuItem>
 		</Menu>
 
@@ -62,7 +65,7 @@
 
 			<DataGrid
 				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
-				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
+				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged" CanUserSortColumns="False"
 				ItemsSource="{Binding HircItems}" MouseRightButtonUp="DgHircItems_MouseRightButtonUp">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />

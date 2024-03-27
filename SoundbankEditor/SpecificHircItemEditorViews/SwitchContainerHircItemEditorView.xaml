@@ -51,7 +51,7 @@
 		</StackPanel>
 
 		<DataGrid x:Name="dgSwitches" Grid.Row="4"
-								AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged">
+								AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged" CanUserSortColumns="False">
 			<DataGrid.Columns>
 				<DataGridTextColumn Width="250" Header="Switch ID" Binding="{Binding Path=SwitchId, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" />
 				<DataGridTextColumn Width="50" Header="#Node" Binding="{Binding Path=NodeIds.Count}" IsReadOnly="True" />

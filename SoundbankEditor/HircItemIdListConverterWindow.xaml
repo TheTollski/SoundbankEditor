@@ -30,7 +30,7 @@
 		</StackPanel>
 
 		<DataGrid x:Name="dgIds" Grid.Row="2"
-							AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged">
+							AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged" CanUserSortColumns="False">
 			<DataGrid.Columns>
 				<DataGridTextColumn Width="100*" Header="ID" Binding="{Binding Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" />
 			</DataGrid.Columns>

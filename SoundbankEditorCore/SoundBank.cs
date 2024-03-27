@@ -29,11 +29,8 @@ namespace SoundbankEditor.Core
 			this.wwiseRootObjects = wwiseRootObjects;
 		}
 
-		public static SoundBank CreateFromBnkFile(string inputBnkFilePath)
+		public static SoundBank CreateFromBinary(BinaryReader binaryReader)
 		{
-			using FileStream fileStream = File.OpenRead(inputBnkFilePath);
-			using BinaryReader binaryReader = new BinaryReader(fileStream);
-
 			var wwiseRootObjects = new List<WwiseRootObject>();
 			while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length)
 			{
@@ -62,11 +59,17 @@ namespace SoundbankEditor.Core
 			return new SoundBank(wwiseRootObjects);
 		}
 
-		public static SoundBank CreateFromJsonFile(string inputJsonFilePath)
+		public static SoundBank CreateFromBnkFile(string inputBnkFilePath)
 		{
-			string fileText = File.ReadAllText(inputJsonFilePath);
+			using FileStream fileStream = File.OpenRead(inputBnkFilePath);
+			using BinaryReader binaryReader = new BinaryReader(fileStream);
 
-			List<WwiseRootObject>? wwiseRootObjects = JsonSerializer.Deserialize<List<WwiseRootObject>>(fileText);
+			return CreateFromBinary(binaryReader);
+		}
+
+		public static SoundBank CreateFromJson(string json)
+		{
+			List<WwiseRootObject>? wwiseRootObjects = JsonSerializer.Deserialize<List<WwiseRootObject>>(json);
 			if (wwiseRootObjects == null)
 			{
 				throw new Exception("Unable to parse Wwise objects from JSON file.");
@@ -74,15 +77,35 @@ namespace SoundbankEditor.Core
 
 			return new SoundBank(wwiseRootObjects);
 		}
-		public void WriteToBnkFile(string outputBnkFilePath)
-		{
-			using MemoryStream memoryStream = new MemoryStream();
-			using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
+		public static SoundBank CreateFromJsonFile(string inputJsonFilePath)
+		{
+			string fileText = File.ReadAllText(inputJsonFilePath);
+			return CreateFromJson(fileText);
+		}
+
+		public string ToJson()
+		{
+			return JsonSerializer.Serialize(
+				wwiseRootObjects,
+				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
+			);
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
 			for (int i = 0; i < wwiseRootObjects.Count; i++)
 			{
 				wwiseRootObjects[i].WriteToBinary(binaryWriter);
 			}
+		}
+
+		public void WriteToBnkFile(string outputBnkFilePath)
+		{
+			using MemoryStream memoryStream = new MemoryStream();
+			using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+			
+			WriteToBinary(binaryWriter);
 
 			byte[] serializedBytes = memoryStream.ToArray();
 			File.WriteAllBytes(outputBnkFilePath, serializedBytes);
@@ -90,12 +113,7 @@ namespace SoundbankEditor.Core
 
 		public void WriteToJsonFile(string outputJsonFilePath)
 		{
-			string bnkJson = JsonSerializer.Serialize(
-				wwiseRootObjects,
-				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
-			);
-
-			File.WriteAllText(outputJsonFilePath, bnkJson);
+			File.WriteAllText(outputJsonFilePath, ToJson());
 		}
 	}
 }
