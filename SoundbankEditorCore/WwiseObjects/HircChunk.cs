@@ -12,8 +12,7 @@ namespace SoundbankEditor.Core.WwiseObjects
 {
 	public class HircChunk : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
-		public uint NumReleasableHircItem { get; set; }
+		public string? Tag { get; set; }
 		public List<HircItem> HircItems { get; set; } = new List<HircItem>();
 
 		public HircChunk()
@@ -22,17 +21,12 @@ namespace SoundbankEditor.Core.WwiseObjects
 
 		public HircChunk(BinaryReader binaryReader)
 		{
-			Header = new WwiseRootObjectHeader
-			{
-				DwTag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4)),
-				DwChunkSize = binaryReader.ReadUInt32(),
-			};
-
+			Tag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4));
+			uint chunkSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
 
-			NumReleasableHircItem = binaryReader.ReadUInt32();
-
-			for (int i = 0; i < NumReleasableHircItem; i++)
+			uint numReleasableHircItem = binaryReader.ReadUInt32();
+			for (int i = 0; i < numReleasableHircItem; i++)
 			{
 				HircType hircType = (HircType)binaryReader.ReadByte();
 				binaryReader.BaseStream.Position -= 1;
@@ -76,38 +70,37 @@ namespace SoundbankEditor.Core.WwiseObjects
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < Header.DwChunkSize)
+			if (bytesReadFromThisObject != chunkSize)
 			{
-				throw new Exception($"{Header.DwChunkSize - bytesReadFromThisObject} extra bytes found at the end of HIRC chunk.");
+				throw new Exception($"Expected to read {chunkSize} bytes from HIRC chunk but {bytesReadFromThisObject} bytes were read.");
 			}
 		}
 
 		public uint ComputeTotalSize()
 		{
-			throw new NotImplementedException();
+			return 12 + (uint)HircItems.Sum(hi => hi.ComputeTotalSize());
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (NumReleasableHircItem != HircItems.Count)
-			{
-				throw new Exception($"Expected HIRC chunk to have {NumReleasableHircItem} items but it has {HircItems.Count}.");
-			}
-
-			Header.WriteToBinary(binaryWriter);
-
+			binaryWriter.Write(Tag[0]);
+			binaryWriter.Write(Tag[1]);
+			binaryWriter.Write(Tag[2]);
+			binaryWriter.Write(Tag[3]);
+			uint expectedSize = ComputeTotalSize() - 8;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
 
-			binaryWriter.Write(NumReleasableHircItem);
+			binaryWriter.Write((uint)HircItems.Count);
 			for (int i = 0; i < HircItems.Count; i++)
 			{
 				HircItems[i].WriteToBinary(binaryWriter);
 			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected HIRC chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
+				throw new Exception($"Expected HIRC chunk size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

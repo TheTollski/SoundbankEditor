@@ -11,7 +11,7 @@ namespace SoundbankEditor.Core.WwiseObjects
 {
 	public class StringMappingChunk : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
+		public string? Tag { get; set; }
 		public uint UiType { get; set; }
 		public uint UiSize { get; set; }
 		public List<AKBKHashHeader> BankIDToFileName { get; set; } = new List<AKBKHashHeader>();
@@ -20,18 +20,14 @@ namespace SoundbankEditor.Core.WwiseObjects
 
 		public StringMappingChunk(BinaryReader binaryReader)
 		{
-			Header = new WwiseRootObjectHeader
-			{
-				DwTag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4)),
-				DwChunkSize = binaryReader.ReadUInt32(),
-			};
-
+			Tag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4));
+			uint chunkSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
 
 			UiType = binaryReader.ReadUInt32();
 			UiSize = binaryReader.ReadUInt32();
 
-			while (binaryReader.BaseStream.Position < position + Header.DwChunkSize)
+			while (binaryReader.BaseStream.Position < position + chunkSize)
 			{
 				BankIDToFileName.Add(new AKBKHashHeader(binaryReader));
 			}
@@ -39,13 +35,17 @@ namespace SoundbankEditor.Core.WwiseObjects
 
 		public uint ComputeTotalSize()
 		{
-			throw new NotImplementedException();
+			return 16 + (uint)BankIDToFileName.Sum(b => b.ComputeTotalSize());
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			Header.WriteToBinary(binaryWriter);
-
+			binaryWriter.Write(Tag[0]);
+			binaryWriter.Write(Tag[1]);
+			binaryWriter.Write(Tag[2]);
+			binaryWriter.Write(Tag[3]);
+			uint expectedSize = ComputeTotalSize() - 8;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
 
 			binaryWriter.Write(UiType);
@@ -56,9 +56,9 @@ namespace SoundbankEditor.Core.WwiseObjects
 			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected STID chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
+				throw new Exception($"Expected STID chunk size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -67,7 +67,6 @@ namespace SoundbankEditor.Core.WwiseObjects
 	{
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint BankId { get; set; }
-		public byte StringSize { get; set; }
 		public string FileName { get; set; } = string.Empty;
 
 		public AKBKHashHeader() { }
@@ -75,25 +74,20 @@ namespace SoundbankEditor.Core.WwiseObjects
 		public AKBKHashHeader(BinaryReader binaryReader)
 		{
 			BankId = binaryReader.ReadUInt32();
-			StringSize = binaryReader.ReadByte();
-			FileName = Encoding.UTF8.GetString(binaryReader.ReadBytes(StringSize));
+			byte stringSize = binaryReader.ReadByte();
+			FileName = Encoding.UTF8.GetString(binaryReader.ReadBytes(stringSize));
 		}
 
 		public uint ComputeTotalSize()
 		{
-			throw new NotImplementedException();
+			return 5 + (uint)FileName.Length;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (StringSize != FileName.Length)
-			{
-				throw new Exception($"Expected AKBKHashHeader to have a FileName of length {StringSize} children but it's FileName's length is {FileName.Length}.");
-			}
-
 			binaryWriter.Write(BankId);
-			binaryWriter.Write(StringSize);
-			for (int i = 0; i < StringSize; i++)
+			binaryWriter.Write((byte)FileName.Length);
+			for (int i = 0; i < FileName.Length; i++)
 			{
 				binaryWriter.Write(FileName[i]);
 			}

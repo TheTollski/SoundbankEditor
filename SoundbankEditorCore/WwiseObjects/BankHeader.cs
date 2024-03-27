@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -10,15 +11,14 @@ namespace SoundbankEditor.Core.WwiseObjects
 {
 	public class BankHeader : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
-		public uint DwBankGeneratorVersion { get; set; }
+		public string? Tag { get; set; }
+		public uint BankGeneratorVersion { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
-		public uint DwSoundBankID { get; set; }
-		public uint DwLanguageID { get; set; }
-		public uint BFeedbackInBank { get; set; }
+		public uint SoundBankID { get; set; }
+		public uint LanguageID { get; set; }
+		public uint FeedbackInBank { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
-		public uint DwProjectID { get; set; }
-
+		public uint ProjectID { get; set; }
 		public byte[]? Padding { get; set; }
 
 		public BankHeader()
@@ -27,52 +27,54 @@ namespace SoundbankEditor.Core.WwiseObjects
 
 		public BankHeader(BinaryReader binaryReader)
 		{
-			Header = new WwiseRootObjectHeader
-			{
-				DwTag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4)),
-				DwChunkSize = binaryReader.ReadUInt32(),
-			};
-
+			Tag = Encoding.UTF8.GetString(binaryReader.ReadBytes(4));
+			uint chunkSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
 
-			DwBankGeneratorVersion = binaryReader.ReadUInt32();
-			DwSoundBankID = binaryReader.ReadUInt32();
-			DwLanguageID = binaryReader.ReadUInt32();
-			BFeedbackInBank = binaryReader.ReadUInt32();
-			DwProjectID = binaryReader.ReadUInt32();
+			BankGeneratorVersion = binaryReader.ReadUInt32();
+			SoundBankID = binaryReader.ReadUInt32();
+			LanguageID = binaryReader.ReadUInt32();
+			FeedbackInBank = binaryReader.ReadUInt32();
+			ProjectID = binaryReader.ReadUInt32();
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < Header.DwChunkSize)
+			if (bytesReadFromThisObject < chunkSize)
 			{
-				Padding = binaryReader.ReadBytes((int)Header.DwChunkSize - bytesReadFromThisObject);
+				Padding = binaryReader.ReadBytes((int)chunkSize - bytesReadFromThisObject);
 			}
 		}
 
 		public uint ComputeTotalSize()
 		{
-			throw new NotImplementedException();
+			uint size = 28;
+			if (Padding != null) size += (uint)Padding.Length;
+			return size;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			Header.WriteToBinary(binaryWriter);
-
+			binaryWriter.Write(Tag[0]);
+			binaryWriter.Write(Tag[1]);
+			binaryWriter.Write(Tag[2]);
+			binaryWriter.Write(Tag[3]);
+			uint expectedSize = ComputeTotalSize() - 8;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
 
-			binaryWriter.Write(DwBankGeneratorVersion);
-			binaryWriter.Write(DwSoundBankID);
-			binaryWriter.Write(DwLanguageID);
-			binaryWriter.Write(BFeedbackInBank);
-			binaryWriter.Write(DwProjectID);
+			binaryWriter.Write(BankGeneratorVersion);
+			binaryWriter.Write(SoundBankID);
+			binaryWriter.Write(LanguageID);
+			binaryWriter.Write(FeedbackInBank);
+			binaryWriter.Write(ProjectID);
 			if (Padding != null)
 			{
 				binaryWriter.Write(Padding);
 			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected BKHD chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected BKHD chunk size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
