@@ -93,6 +93,53 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return 37 + NodeBaseParams.ComputeTotalSize() + (uint)(ChildIds.Count * 4) + CAkPlayList.ComputeTotalSize();
 		}
 
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			var knownValidationErrors = new List<string>();
+
+			// Validate UlID
+			int hircItemsWithMatchingIdCount = soundbank.HircItems.Count(hi => hi.UlID == UlID);
+			if (hircItemsWithMatchingIdCount != 1)
+			{
+				knownValidationErrors.Add($"CAkRanSeqCntr '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
+			}
+
+			// Validate NodeBaseParams
+			knownValidationErrors.AddRange(NodeBaseParams.GetKnownValidationErrors(soundbank).Select(s => $"CAkRanSeqCntr's '{UlID}' NodeBaseParams.{s}"));
+
+			// Validate ChildIds
+			ChildIds.ForEach(id =>
+			{
+				if (!soundbank.HircItems.Any(hi => hi.UlID == id))
+				{
+					knownValidationErrors.Add($"CAkRanSeqCntr '{UlID}' has a ChildId that is '{id}', but no HIRC item in the soundbank has that ID.");
+				}
+				if (!CAkPlayList.PlaylistItems.Any(pi => pi.PlayId == id))
+				{
+					knownValidationErrors.Add($"CAkRanSeqCntr '{UlID}' has a ChildId that is '{id}', but no playlist item in the CAkRanSeqCntr's CAkPlayList has that ID.");
+				}
+			});
+
+			// Validate CAkPlayList
+			if (CAkPlayList.PlaylistItems.Count == 0)
+			{
+				knownValidationErrors.Add($"CAkRanSeqCntr's '{UlID}' CAkPlayList has no playlist items.");
+			}
+			CAkPlayList.PlaylistItems.ForEach(pi =>
+			{
+				if (!soundbank.HircItems.Any(hi => hi.UlID == pi.PlayId))
+				{
+					knownValidationErrors.Add($"CAkRanSeqCntr's '{UlID}' CAkPlayList has a playlist item with ID '{pi.PlayId}', but no HIRC item in the soundbank has that ID.");
+				}
+				if (!ChildIds.Any(id => id == pi.PlayId))
+				{
+					knownValidationErrors.Add($"CAkRanSeqCntr's '{UlID}' CAkPlayList has a playlist item with ID '{pi.PlayId}', but no child in the CAkRanSeqCntr has that ID.");
+				}
+			});
+
+			return knownValidationErrors;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);

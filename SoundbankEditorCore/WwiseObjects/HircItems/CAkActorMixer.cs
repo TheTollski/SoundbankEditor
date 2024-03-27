@@ -69,6 +69,23 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return 13 + NodeBaseParams.ComputeTotalSize() + (uint)(ChildIds.Count * 4);
 		}
 
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			var knownValidationErrors = new List<string>();
+
+			// Validate UlID
+			int hircItemsWithMatchingIdCount = soundbank.HircItems.Count(hi => hi.UlID == UlID);
+			if (hircItemsWithMatchingIdCount != 1)
+			{
+				knownValidationErrors.Add($"CAkActorMixer '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
+			}
+
+			// Validate NodeBaseParams
+			knownValidationErrors.AddRange(NodeBaseParams.GetKnownValidationErrors(soundbank).Select(s => $"CAkActorMixer's '{UlID}' NodeBaseParams.{s}"));
+
+			return knownValidationErrors;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);

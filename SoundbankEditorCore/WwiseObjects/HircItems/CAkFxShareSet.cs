@@ -80,6 +80,20 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return 20 + AkParameterEQFXParams.ComputeTotalSize() + InitialRtpc.ComputeTotalSize();
 		}
 
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			var knownValidationErrors = new List<string>();
+
+			// Validate UlID
+			int hircItemsWithMatchingIdCount = soundbank.HircItems.Count(hi => hi.UlID == UlID);
+			if (hircItemsWithMatchingIdCount != 1)
+			{
+				knownValidationErrors.Add($"CAkFxShareSet '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
+			}
+
+			return knownValidationErrors;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);

@@ -20,6 +20,8 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	{
 		public HircType EHircType { get; set; }
 		public uint UlID { get; set; }
+
+		public List<string> GetKnownValidationErrors(SoundBank soundbank);
 	}
 
 	public enum HircType : byte

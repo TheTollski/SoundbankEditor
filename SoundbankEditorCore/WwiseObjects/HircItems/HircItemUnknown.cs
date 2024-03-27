@@ -41,6 +41,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return size;
 		}
 
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			return new List<string>();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);

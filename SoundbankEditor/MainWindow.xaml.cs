@@ -363,11 +363,13 @@ namespace SoundbankEditor
 			}
 
 			HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(JsonSerializer.Serialize(selectedHircItem));
-			HircItems.Insert(0, newHircItem);
+			HircItems.Insert(dgHircItems.SelectedIndex, newHircItem);
 
 			dgHircItems.Items.Refresh();
 			_areChangesPending = true;
 			UpdateTitle();
+
+			dgHircItems.SelectedIndex = dgHircItems.SelectedIndex - 1;
 		}
 
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
@@ -412,10 +414,22 @@ namespace SoundbankEditor
 			UpdateTitle();
 		}
 
+		private void BtnViewKnownValidationErrorCount_Click(object sender, RoutedEventArgs e)
+		{
+			if (dgHircItems.SelectedItem == null || _openSoundbank == null)
+			{
+				return;
+			}
+
+			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
+			MessageBox.Show(string.Join("\n", selectedItem.GetKnownValidationErrors(_openSoundbank)), "Known Validation Errors");
+		}
+
 		private void DgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (dgHircItems.SelectedIndex < 0)
 			{
+				UpdateKnownValidationErrorsCount();
 				UpdateSelectedHircItemJson();
 
 				btnDeleteHircItem.IsEnabled = false;
@@ -444,6 +458,7 @@ namespace SoundbankEditor
 
 			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
 
+			UpdateKnownValidationErrorsCount();
 			UpdateSelectedHircItemJson();
 
 			btnDeleteHircItem.IsEnabled = true;
@@ -513,7 +528,12 @@ namespace SoundbankEditor
 					newHircItem.CopyTo(existingHircItem);
 
 					SelectedHircItemJsonErrorMessage = null;
-					OnHircItemUpdated?.Invoke();
+
+					if (!_isProgrammaticallyChangingSelectedHircItemJson)
+					{
+						OnHircItemUpdated?.Invoke();
+						UpdateKnownValidationErrorsCount();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -563,7 +583,8 @@ namespace SoundbankEditor
 			}
 
 			selectedItem.UlID = hircItemIdConverterWindow.Id.Value;
-			
+
+			UpdateKnownValidationErrorsCount();
 			UpdateSelectedHircItemJson();
 			dgHircItems.Items.Refresh();
 			ifevItemId.Value = selectedItem.UlID.ToString();
@@ -585,6 +606,8 @@ namespace SoundbankEditor
 		{
 			UpdateSelectedHircItemJson();
 			// dgHircItems.Items.Refresh();
+			UpdateKnownValidationErrorsCount();
+
 			_areChangesPending = true;
 			UpdateTitle();
 		}
@@ -634,6 +657,22 @@ namespace SoundbankEditor
 
 			_areChangesPending = false;
 			UpdateTitle();
+		}
+
+		private void UpdateKnownValidationErrorsCount()
+		{
+			if (dgHircItems.SelectedItem == null || _openSoundbank == null)
+			{
+				tbKnownValidationErrorCount.Foreground = new SolidColorBrush(Colors.Black);
+				tbKnownValidationErrorCount.Text = $"Known Validation Error Count:";
+				return;
+			}
+
+			int knownValidationErrorsCount = ((HircItem)dgHircItems.SelectedItem).GetKnownValidationErrors(_openSoundbank).Count;
+
+			Color color = knownValidationErrorsCount == 0 ? Colors.Black : Colors.Red;
+			tbKnownValidationErrorCount.Foreground = new SolidColorBrush(color);
+			tbKnownValidationErrorCount.Text = $"Known Validation Error Count: {knownValidationErrorsCount}";
 		}
 
 		private void UpdateSelectedHircItemJson()

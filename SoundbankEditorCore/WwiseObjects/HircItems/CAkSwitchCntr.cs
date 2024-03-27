@@ -95,6 +95,83 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 				+ (uint)SwitchParams.Sum(s=> s.ComputeTotalSize());
 		}
 
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			var knownValidationErrors = new List<string>();
+
+			// Validate UlID
+			int hircItemsWithMatchingIdCount = soundbank.HircItems.Count(hi => hi.UlID == UlID);
+			if (hircItemsWithMatchingIdCount != 1)
+			{
+				knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
+			}
+
+			// Validate NodeBaseParams
+			knownValidationErrors.AddRange(NodeBaseParams.GetKnownValidationErrors(soundbank).Select(s => $"CAkSwitchCntr's '{UlID}' NodeBaseParams.{s}"));
+
+			// Validate DefaultSwitch
+			if (!SwitchPackages.Any(sp => sp.SwitchId == DefaultSwitch))
+			{
+				knownValidationErrors.Add($"CAkSwitchCntr's '{UlID}' DefaultSwitch is '{NodeBaseParams.DirectParentID}', but no switch package in the CAkSwitchCntr has that ID.");
+			}
+
+			// Validate ChildIds
+			ChildIds.ForEach(id =>
+			{
+				if (!soundbank.HircItems.Any(hi => hi.UlID == id))
+				{
+					knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a ChildId that is '{id}', but no HIRC item in the soundbank has that ID.");
+				}
+				if (!SwitchPackages.Any(sp => sp.NodeIds.Contains(id)))
+				{
+					knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a ChildId that is '{id}', but no switch package in the CAkSwitchCntr has a node with that ID.");
+				}
+			});
+
+			// Validate SwitchPackages
+			if (SwitchPackages.Count == 0)
+			{
+				knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has no switch packages.");
+			}
+			SwitchPackages.ForEach(spackage =>
+			{
+				if (spackage.NodeIds.Count == 0)
+				{
+					knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch package '{spackage.SwitchId}' that has no node IDs.");
+				}
+				spackage.NodeIds.ForEach(nodeId =>
+				{
+					if (!soundbank.HircItems.Any(hi => hi.UlID == nodeId))
+					{
+						knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch package '{spackage.SwitchId}' that has a NodeId that is '{nodeId}', but no HIRC item in the soundbank has that ID.");
+					}
+					if (!ChildIds.Any(id => id == nodeId))
+					{
+						knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch package '{spackage.SwitchId}' that has a NodeId that is '{nodeId}', but no child in the CAkSwitchCntr has that ID.");
+					}
+					if (!SwitchParams.Any(sparam => sparam.NodeId == nodeId))
+					{
+						knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch package '{spackage.SwitchId}' that has a NodeId that is '{nodeId}', but no switch param in the CAkSwitchCntr has that node ID.");
+					}
+				});
+			});
+
+			// Validate SwitchParams
+			SwitchParams.ForEach(sparam =>
+			{
+				if (!soundbank.HircItems.Any(hi => hi.UlID == sparam.NodeId))
+				{
+					knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch param that has NodeId '{sparam.NodeId}', but no HIRC item in the soundbank has that ID.");
+				}
+				if (!SwitchPackages.Any(sp => sp.NodeIds.Contains(sparam.NodeId)))
+				{
+					knownValidationErrors.Add($"CAkSwitchCntr '{UlID}' has a switch param that has NodeId '{sparam.NodeId}', but no switch package in the CAkSwitchCntr has a node with that ID.");
+				}
+			});
+
+			return knownValidationErrors;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);

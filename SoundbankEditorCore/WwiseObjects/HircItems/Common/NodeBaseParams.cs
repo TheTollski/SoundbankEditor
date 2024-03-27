@@ -54,7 +54,20 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 				+ InitialRtpc.ComputeTotalSize();
 		}
 
-		public void WriteToBinary(BinaryWriter binaryWriter)
+		public List<string> GetKnownValidationErrors(SoundBank soundbank)
+		{
+			var knownValidationErrors = new List<string>();
+
+			// Validate DirectParentID (Does DirectParentID even do anything?)
+			//if (!soundbank.HircItems.Any(hi => hi.UlID == DirectParentID))
+			//{
+			//	knownValidationErrors.Add($"DirectParentID is '{DirectParentID}', but no HIRC item in the soundbank has that ID.");
+			//}
+
+			return knownValidationErrors;
+		}
+
+			public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			NodeInitialFxParams.WriteToBinary(binaryWriter);
 			binaryWriter.Write(OverrideAttachmentParams);
