@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SoundbankEditor"
+				xmlns:shiev="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
         mc:Ignorable="d"
         Title="Soundbank Editor" Height="800" Width="1200"
 				KeyDown="Window_KeyDown">
@@ -77,8 +78,8 @@
 			<Border BorderBrush="Black" BorderThickness="1">
 				<DockPanel LastChildFill="False">
 					<Label DockPanel.Dock="Top" HorizontalAlignment="Center" FontSize="16">HIRC Item Edit Options</Label>
-					<Button x:Name="btnEditHircItemId" DockPanel.Dock="Top" Content="Change ID" Width="100" Height="20" Click="BtnEditHircItemId_Click"></Button>
-
+					<Button x:Name="btnEditHircItemId" DockPanel.Dock="Top" Content="Edit ID" Width="100" Height="20" Click="BtnEditHircItemId_Click"></Button>
+					<shiev:SpecificHircItemEditorView x:Name="shiev" HircItemUpdated="Shiev_HircItemUpdated" />
 				</DockPanel>
 			</Border>
 			

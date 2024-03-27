@@ -23,9 +23,10 @@ namespace SoundbankEditor
 	/// </summary>
 	public partial class HircItemIdConverterWindow : Window
 	{
-		public HircItemIdConverterWindow()
+		public HircItemIdConverterWindow(uint? originalId = null)
 		{
 			InitializeComponent();
+			Id = originalId;
 		}
 
 		public uint? Id

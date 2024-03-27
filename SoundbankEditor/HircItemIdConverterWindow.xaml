@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SoundbankEditor"
         mc:Ignorable="d"
-        Title="Change HIRC Item ID" Height="135" Width="400">
+        Title="Set Short ID" Height="135" Width="400">
     <Grid>
 		<StackPanel>
-			<Label HorizontalAlignment="Center" >New ID or Name</Label>
+			<Label HorizontalAlignment="Center" >New Short ID or Name</Label>
 			<TextBox x:Name="tbIdOrName" Width="300" />
 			<DockPanel Width="300" LastChildFill="false">
 				<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 10, 0, 10" Content="Save" Click="BtnSave_Click" />

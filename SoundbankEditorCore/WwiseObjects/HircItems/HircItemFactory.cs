@@ -1,4 +1,5 @@
 ﻿using SoundbankEditor.Core.WwiseObjects.HircItems;
+using SoundbankEditor.Core.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 		{
 			if (hircType == HircType.Sound) // 2
 			{
-				return binaryReader != null ? new CAkSound(binaryReader) : new CAkSound();
+				return binaryReader != null ? new CAkSound(binaryReader) : CreateCAkSoundForBattleVoOrders();
 			}
 			if (hircType == HircType.Action) // 3
 			{
@@ -45,6 +46,76 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			}
 
 			return binaryReader != null ? new HircItemUnknown(binaryReader) : new HircItemUnknown();
+		}
+
+		public static CAkSound CreateCAkSoundForBattleVoOrders()
+		{
+			return new CAkSound
+			{
+				AkBankSourceData = new AkBankSourceData
+				{
+					UlPluginId = 262145,
+					StreamType = 2,
+					AkMediaInformation = new AkMediaInformation
+					{
+						SourceId = 0,
+						FileId = 0,
+						InMemoryMediaSize = 0,
+						SourceBits = 1,
+					},
+				},
+				NodeBaseParams = new NodeBaseParams
+				{
+					NodeInitialFxParams = new NodeInitialFxParams
+					{
+						IsOverrideParentFX = 0,
+						FxChunks = new List<FxChunk> { },
+					},
+					OverrideAttachmentParams = 0,
+					OverrideBusId = 0,
+					DirectParentID = 0,
+					ByBitVector = 0,
+					NodeInitialParams = new NodeInitialParams
+					{
+						AkPropBundle1 = new AkPropBundle
+						{
+							Props = new List<AkProp>
+							{
+								new AkProp
+								{
+									Id = 6,
+									Value = 100
+								}
+							}
+						},
+						AkPropBundle2 = new AkPropBundle(),
+					},
+					PositioningParams = new PositioningParams
+					{
+						ByVector = 192,
+					},
+					AuxParams = new AuxParams
+					{
+						ByBitVector = 0,
+					},
+					AdvSettingsParams = new AdvSettingsParams
+					{
+						ByBitVector1 = 0,
+						VirtualQueueBehavior = 1,
+						MaxNumInstance = 0,
+						BelowThresholdBehavior = 0,
+						ByBitVector2 = 0,
+					},
+					StateChunk = new StateChunk
+					{
+						StateGroups = new List<object>(),
+					},
+					InitialRtpc = new InitialRtpc
+					{
+						RtpcList = new List<Rtpc>(),
+					}
+				}
+			};
 		}
 	}
 }

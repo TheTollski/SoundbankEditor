@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="SoundbankEditor.SpecificHircItemEditorViews.SpecificHircItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
+						 xmlns:hircItems="clr-namespace:SoundbankEditor.Core.WwiseObjects.HircItems;assembly=SoundbankEditorCore"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+	<!--<Grid>
+		<StackPanel>
+			<Label>Specific Test</Label>
+			<Label Content="{Binding GetMyValue}" />
+			<Label Content="{Binding HircItem.EHircType}" />
+		</StackPanel>
+	</Grid>-->
+	<!--<UserControl.Resources>
+		<DataTemplate x:Key="ActionTemplate" >
+			<TextBlock Text="Action Template" />
+		</DataTemplate>
+
+		<DataTemplate x:Key="SoundTemplate" >
+			<TextBlock Text="Sound Template" />
+		</DataTemplate>
+	</UserControl.Resources>-->
+
+	<!--<ContentControl>
+		<ContentControl.Style>
+			<Style TargetType="{x:Type ContentControl}">
+				<Setter Property="ContentTemplate" Value="{StaticResource ActionTemplate}" />
+				<Style.Triggers>
+					<DataTrigger Binding="{Binding ElementName=Test, Path=IsChecked}" Value="True">
+						<Setter Property="ContentTemplate" Value="{StaticResource SoundTemplate}" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+		</ContentControl.Style>
+	</ContentControl>-->
+
+	<ContentPresenter Content="{Binding HircItem}">
+		<ContentPresenter.Resources>
+			<DataTemplate DataType="{x:Type hircItems:CAkAction}">
+				<Grid>
+					<Label Content="Action Template"></Label>
+				</Grid>
+			</DataTemplate>
+			<DataTemplate DataType="{x:Type hircItems:CAkSound}">
+				<local:SoundHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
+			</DataTemplate>
+		</ContentPresenter.Resources>
+	</ContentPresenter>
+</UserControl>

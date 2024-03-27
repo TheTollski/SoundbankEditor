@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="SoundbankEditor.SpecificHircItemEditorViews.SoundHircItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="300"
+						 DataContextChanged="OnDataContextChanged">
+	<StackPanel Width="300">
+		<Label HorizontalAlignment="Center" FontSize="16">Sound Item Edit Options</Label>
+		<DockPanel Width="280" LastChildFill="False">
+			<Label x:Name="lDirectParentId" DockPanel.Dock="Left" />
+			<Button x:Name="btnEditDirectParentId" DockPanel.Dock="Right" Content="Edit Parent ID" Width="100" Height="20" Click="BtnEditDirectParentId_Click"></Button>
+		</DockPanel>
+		<DockPanel Width="280" LastChildFill="False">
+			<!--<Label x:Name="lFileId" DockPanel.Dock="Left" DataContext="{Binding AkBankSourceData.AkMediaInformation}" Content="{Binding FileId, StringFormat='Audio File ID: \{0\}', Mode=OneWay}" />-->
+			<Label x:Name="lFileId" DockPanel.Dock="Left" />
+			<Button x:Name="btnEditFileId" DockPanel.Dock="Right" Content="Edit File ID" Width="100" Height="20" Click="BtnEditFileId_Click"></Button>
+		</DockPanel>
+	</StackPanel>
+</UserControl>

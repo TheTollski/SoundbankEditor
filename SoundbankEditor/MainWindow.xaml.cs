@@ -203,15 +203,19 @@ namespace SoundbankEditor
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow();
+			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow(selectedItem.UlID);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
 			}
 
-			((HircItem)dgHircItems.SelectedItem).UlID = hircItemIdConverterWindow.Id.Value;
+			selectedItem.UlID = hircItemIdConverterWindow.Id.Value;
 			UpdateSelectedHircItemJson();
 			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
 		}
 
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
@@ -253,6 +257,8 @@ namespace SoundbankEditor
 
 			btnDeleteHircItem.IsEnabled = true;
 			tbHircItemJson.IsEnabled = true;
+
+			shiev.HircItem = selectedItem;
 		}
 
 		private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
@@ -311,6 +317,7 @@ namespace SoundbankEditor
 					newHircItem.CopyTo(existingHircItem);
 
 					SelectedHircItemJsonErrorMessage = null;
+					shiev.HircItem = newHircItem;
 				}
 				catch (Exception ex)
 				{
@@ -352,6 +359,14 @@ namespace SoundbankEditor
 			}
 
 			Clipboard.SetText(_rightClickedHircItem.UlID.ToString());
+		}
+
+		private void Shiev_HircItemUpdated(object sender, EventArgs e)
+		{
+			UpdateSelectedHircItemJson();
+			// dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
 		}
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)
