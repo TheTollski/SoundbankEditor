@@ -152,6 +152,7 @@ namespace SoundbankEditor
 			btnConvertJsonToBnk.IsEnabled = false;
 			btnSave.IsEnabled = true;
 			btnSaveAs.IsEnabled = true;
+			btnViewKnownValidationErrorCounts.IsEnabled = true;
 			cbAddHircItemType.IsEnabled = true;
 
 			_areChangesPending = false;
@@ -212,10 +213,26 @@ namespace SoundbankEditor
 			btnConvertJsonToBnk.IsEnabled = true;
 			btnSave.IsEnabled = false;
 			btnSaveAs.IsEnabled = false;
+			btnViewKnownValidationErrorCounts.IsEnabled = false;
 			cbAddHircItemType.IsEnabled = false;
 
 			_areChangesPending = false;
 			UpdateTitle();
+		}
+
+		private void BtnViewKnownValidationErrorCounts_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null || HircItems == null)
+			{
+				return;
+			}
+
+			var hircItemsWithKnownValidationErrors = HircItems
+				.Select(hi => new KeyValuePair<uint, int>(hi.UlID, hi.GetKnownValidationErrors(_openSoundbank).Count))
+				.Where(kvp => kvp.Value > 0)
+				.Select(kvp => $"{kvp.Key}: {kvp.Value}");
+
+			MessageBox.Show(string.Join("\n", hircItemsWithKnownValidationErrors), "Hirc Items With Known Validation Errors");
 		}
 
 		private void BtnConvertBnkToJson_Click(object sender, RoutedEventArgs e)
