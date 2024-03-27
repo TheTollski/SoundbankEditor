@@ -82,6 +82,11 @@ namespace SoundbankEditor.Core.WwiseObjects
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			throw new NotImplementedException();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			if (NumReleasableHircItem != HircItems.Count)

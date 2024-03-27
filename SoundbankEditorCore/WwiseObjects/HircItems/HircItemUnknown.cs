@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public class HircItemUnknown : HircItem
 	{
 		public HircType EHircType { get; set; }
-		public uint DwSectionSize { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public byte[]? Data { get; set; }
@@ -21,36 +21,43 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public HircItemUnknown(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
-			DwSectionSize = binaryReader.ReadUInt32();
+			uint sectionSize = binaryReader.ReadUInt32();
 
 			long position = binaryReader.BaseStream.Position;
 
 			UlID = binaryReader.ReadUInt32();
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < DwSectionSize)
+			if (bytesReadFromThisObject < sectionSize)
 			{
-				Data = binaryReader.ReadBytes((int)DwSectionSize - bytesReadFromThisObject);
+				Data = binaryReader.ReadBytes((int)sectionSize - bytesReadFromThisObject);
 			}
+		}
+
+		public uint ComputeTotalSize()
+		{
+			uint size = 9;
+			if (Data != null) size += (uint)Data.Length;
+			return size;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);
-			binaryWriter.Write(DwSectionSize);
-
+			uint expectedSize = ComputeTotalSize() - 5;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
-
 			binaryWriter.Write(UlID);
+
 			if (Data != null)
 			{
 				binaryWriter.Write(Data);
 			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != DwSectionSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected Unknown HIRC item '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected Unknown HIRC item '{UlID}' section size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

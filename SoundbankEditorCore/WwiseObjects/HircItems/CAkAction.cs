@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public class CAkAction : HircItem
 	{
 		public HircType EHircType { get; set; }
-		public uint DwSectionSize { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public CAkActionType UlActionType { get; set; }
@@ -33,10 +33,8 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public CAkAction(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
-			DwSectionSize = binaryReader.ReadUInt32();
-
+			uint sectionSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
-
 			UlID = binaryReader.ReadUInt32();
 
 			UlActionType = (CAkActionType)binaryReader.ReadUInt16();
@@ -63,20 +61,30 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < DwSectionSize)
+			if (bytesReadFromThisObject != sectionSize)
 			{
-				throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CakAction '{UlID}'.");
+				throw new Exception($"Expected to read {sectionSize} bytes from CakAction '{UlID}' but {bytesReadFromThisObject} bytes were read.");
 			}
+		}
+
+		public uint ComputeTotalSize()
+		{
+			uint size = 16 + AkPropBundle1.ComputeTotalSize() + AkPropBundle2.ComputeTotalSize();
+			if (ActiveActionParams != null) size += ActiveActionParams.ComputeTotalSize();
+			if (PlayActionParams != null) size += PlayActionParams.ComputeTotalSize();
+			if (SeekActionParams != null) size += SeekActionParams.ComputeTotalSize();
+			if (ValueActionParams != null) size += ValueActionParams.ComputeTotalSize();
+			return size;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);
-			binaryWriter.Write(DwSectionSize);
-
+			uint expectedSize = ComputeTotalSize() - 5;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
-
 			binaryWriter.Write(UlID);
+
 			binaryWriter.Write((short)UlActionType);
 			binaryWriter.Write(IdExt);
 			binaryWriter.Write(IdExt_4);
@@ -88,9 +96,9 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ValueActionParams?.WriteToBinary(binaryWriter);
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != DwSectionSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected CAkAction '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected CakAction '{UlID}' size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -131,6 +139,14 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ExceptParams = new ExceptParams(binaryReader);
 		}
 
+		public uint ComputeTotalSize()
+		{
+			uint size = 1 + ExceptParams.ComputeTotalSize();
+			if (PauseActionSpecificParams != null) size += PauseActionSpecificParams.ComputeTotalSize();
+			if (ResumeActionSpecificParams != null) size += ResumeActionSpecificParams.ComputeTotalSize();
+			return size;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector);
@@ -151,6 +167,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ByBitVector = binaryReader.ReadByte();
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 1;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector);
@@ -166,6 +187,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public ResumeActionSpecificParams(BinaryReader binaryReader)
 		{
 			ByBitVector = binaryReader.ReadByte();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 1;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -186,6 +212,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		{
 			ByBitVector = binaryReader.ReadByte();
 			FileId = binaryReader.ReadUInt32();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 5;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -212,6 +243,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ExceptParams = new ExceptParams(binaryReader);
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 2 + RandomizerModifier.ComputeTotalSize() + ExceptParams.ComputeTotalSize();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(IsSeekRelativeToDuration);
@@ -236,6 +272,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			SeekValueMax = binaryReader.ReadSingle();
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 12;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(SeekValue);
@@ -257,6 +298,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ExceptParams = new ExceptParams(binaryReader);
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 1 + ExceptParams.ComputeTotalSize();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector);
@@ -266,29 +312,28 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 
 	public class ExceptParams : WwiseObject
 	{
-		public uint ExceptionCount { get; set; }
 		public List<object> Exceptions { get; set; } = new List<object>();
 
 		public ExceptParams() { }
 
 		public ExceptParams(BinaryReader binaryReader)
 		{
-			ExceptionCount = binaryReader.ReadUInt32();
-			if (ExceptionCount > 0)
+			uint exceptionCount = binaryReader.ReadUInt32();
+			if (exceptionCount > 0)
 			{
 				throw new Exception("ExceptParams.Exceptions is not supported.");
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 4;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (ExceptionCount != Exceptions.Count)
-			{
-				throw new Exception($"Expected ExceptParams to have {ExceptionCount} children but it has {Exceptions.Count}.");
-			}
-
-			binaryWriter.Write(ExceptionCount);
-			if (ExceptionCount > 0)
+			binaryWriter.Write((uint)Exceptions.Count);
+			if (Exceptions.Count > 0)
 			{
 				throw new Exception("ExceptParams.Exceptions is not supported.");
 			}

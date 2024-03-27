@@ -42,6 +42,18 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			InitialRtpc = new InitialRtpc(binaryReader);
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 10
+				+ NodeInitialFxParams.ComputeTotalSize()
+				+ NodeInitialParams.ComputeTotalSize()
+				+ PositioningParams.ComputeTotalSize()
+				+ AuxParams.ComputeTotalSize()
+				+ AdvSettingsParams.ComputeTotalSize()
+				+ StateChunk.ComputeTotalSize()
+				+ InitialRtpc.ComputeTotalSize();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			NodeInitialFxParams.WriteToBinary(binaryWriter);
@@ -61,7 +73,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 	public class NodeInitialFxParams : WwiseObject
 	{
 		public byte IsOverrideParentFX { get; set; }
-		public byte FxCount { get; set; }
 		public byte? BitsFxBypass { get; set; }
 		public List<FxChunk> FxChunks { get; set; } = new List<FxChunk>();
 
@@ -70,27 +81,29 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 		public NodeInitialFxParams(BinaryReader binaryReader)
 		{
 			IsOverrideParentFX = binaryReader.ReadByte();
-			FxCount = binaryReader.ReadByte();
+			byte fxCount = binaryReader.ReadByte();
 
-			if (FxCount > 0)
+			if (fxCount > 0)
 			{
 				BitsFxBypass = binaryReader.ReadByte();
-				for (int i = 0; i < FxCount; i++)
+				for (int i = 0; i < fxCount; i++)
 				{
 					FxChunks.Add(new FxChunk(binaryReader));
 				}
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			uint size = 2 + (uint)FxChunks.Sum(fc => fc.ComputeTotalSize());
+			if (BitsFxBypass != null) size += 1;
+			return size;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (FxCount != FxChunks.Count)
-			{
-				throw new Exception($"Expected NodeInitialFxParams to have {FxCount} children but it has {FxChunks.Count}.");
-			}
-
 			binaryWriter.Write(IsOverrideParentFX);
-			binaryWriter.Write(FxCount);
+			binaryWriter.Write((byte)FxChunks.Count);
 			if (BitsFxBypass != null)
 			{
 				binaryWriter.Write(BitsFxBypass.Value);
@@ -119,6 +132,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			IsRendered = binaryReader.ReadByte();
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 7;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(FxIndex);
@@ -139,6 +157,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 		{
 			AkPropBundle1 = new AkPropBundle(binaryReader);
 			AkPropBundle2 = new AkPropBundle(binaryReader);
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return AkPropBundle1.ComputeTotalSize() + AkPropBundle2.ComputeTotalSize();
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -178,6 +201,14 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			uint size = 1;
+			if (Bits3d != null) size += 1;
+			if (AttenuationId != null) size += 4;
+			return size;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByVector);
@@ -201,6 +232,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 		public AuxParams(BinaryReader binaryReader)
 		{
 			ByBitVector = binaryReader.ReadByte();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 1;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -228,6 +264,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			ByBitVector2 = binaryReader.ReadByte();
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 6;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector1);
@@ -240,29 +281,28 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 
 	public class StateChunk : WwiseObject
 	{
-		public uint NumStateGroups { get; set; }
 		public List<object> StateGroups { get; set; } = new List<object>();
 
 		public StateChunk() { }
 
 		public StateChunk(BinaryReader binaryReader)
 		{
-			NumStateGroups = binaryReader.ReadUInt32();
-			if (NumStateGroups > 0)
+			uint numStateGroups = binaryReader.ReadUInt32();
+			if (numStateGroups > 0)
 			{
 				throw new Exception("StateChunk.StateGroups is not supported.");
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 4;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (NumStateGroups != StateGroups.Count)
-			{
-				throw new Exception($"Expected StateChunk to have {NumStateGroups} groups but it has {StateGroups.Count}.");
-			}
-
-			binaryWriter.Write(NumStateGroups);
-			if (NumStateGroups > 0)
+			binaryWriter.Write((uint)StateGroups.Count);
+			if (StateGroups.Count > 0)
 			{
 				throw new Exception("StateChunk.StateGroups is not supported.");
 			}
@@ -271,28 +311,27 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 
 	public class InitialRtpc : WwiseObject
 	{
-		public ushort RtpcCount { get; set; }
 		public List<Rtpc> RtpcList { get; set; } = new List<Rtpc>();
 
 		public InitialRtpc() { }
 
 		public InitialRtpc(BinaryReader binaryReader)
 		{
-			RtpcCount = binaryReader.ReadUInt16();
-			for (int i = 0; i < RtpcCount; i++)
+			ushort rtpcCount = binaryReader.ReadUInt16();
+			for (int i = 0; i < rtpcCount; i++)
 			{
 				RtpcList.Add(new Rtpc(binaryReader));
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 2 + (uint)RtpcList.Sum(r => r.ComputeTotalSize());
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (RtpcCount != RtpcList.Count)
-			{
-				throw new Exception($"Expected InitialRtpc to have {RtpcCount} Rtpcs but it has {RtpcList.Count}.");
-			}
-
-			binaryWriter.Write(RtpcCount);
+			binaryWriter.Write((ushort)RtpcList.Count);
 			for (int i = 0; i < RtpcList.Count; i++)
 			{
 				RtpcList[i].WriteToBinary(binaryWriter);
@@ -309,7 +348,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 		public byte ParamId { get; set; }
 		public uint RtpcCurveId { get; set; }
 		public byte Scaling { get; set; }
-		public ushort ListCount { get; set; }
 		public List<AkRTPCGraphPoint> GraphPoints { get; set; } = new List<AkRTPCGraphPoint>();
 
 		public Rtpc() { }
@@ -322,29 +360,27 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			ParamId = binaryReader.ReadByte();
 			RtpcCurveId = binaryReader.ReadUInt32();
 			Scaling = binaryReader.ReadByte();
-			ListCount = binaryReader.ReadUInt16();
-
-			for (int i = 0; i < ListCount; i++)
+			ushort listCount = binaryReader.ReadUInt16();
+			for (int i = 0; i < listCount; i++)
 			{
 				GraphPoints.Add(new AkRTPCGraphPoint(binaryReader));
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 14 + (uint)GraphPoints.Sum(gp => gp.ComputeTotalSize());
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (ListCount != GraphPoints.Count)
-			{
-				throw new Exception($"Expected Rtpc to have {ListCount} graph points but it has {GraphPoints.Count}.");
-			}
-
 			binaryWriter.Write(RtpcId);
 			binaryWriter.Write(RtpcType);
 			binaryWriter.Write(RtpcAccum);
 			binaryWriter.Write(ParamId);
 			binaryWriter.Write(RtpcCurveId);
 			binaryWriter.Write(Scaling);
-			binaryWriter.Write(ListCount);
-
+			binaryWriter.Write((ushort)GraphPoints.Count);
 			for (int i = 0; i < GraphPoints.Count; i++)
 			{
 				GraphPoints[i].WriteToBinary(binaryWriter);
@@ -365,6 +401,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 			From = binaryReader.ReadSingle();
 			To = binaryReader.ReadSingle();
 			Interp = binaryReader.ReadUInt32();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 12;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)

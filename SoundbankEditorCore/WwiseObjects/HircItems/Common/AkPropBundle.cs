@@ -8,32 +8,31 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 {
 	public class AkPropBundle : WwiseObject
 	{
-		public byte PropCount { get; set; }
 		public List<AkProp> Props { get; set; } = new List<AkProp>();
 
 		public AkPropBundle() { }
 
 		public AkPropBundle(BinaryReader binaryReader)
 		{
-			PropCount = binaryReader.ReadByte();
-			for (int i = 0; i < PropCount; i++)
+			byte propCount = binaryReader.ReadByte();
+			for (int i = 0; i < propCount; i++)
 			{
 				Props.Add(new AkProp { Id = binaryReader.ReadByte() });
 			}
-			for (int i = 0; i < PropCount; i++)
+			for (int i = 0; i < propCount; i++)
 			{
 				Props[i].Value = binaryReader.ReadSingle();
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 1 + (uint)(5 * Props.Count);
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (PropCount != Props.Count)
-			{
-				throw new Exception($"Expected AkPropBundle to have {PropCount} props but it has {Props.Count}.");
-			}
-
-			binaryWriter.Write(PropCount);
+			binaryWriter.Write((byte)Props.Count);
 			for (int i = 0; i < Props.Count; i++)
 			{
 				binaryWriter.Write(Props[i].Id);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -133,6 +134,10 @@ namespace SoundbankEditor
 					throw new JsonException();
 				}
 
+				using MemoryStream memoryStream = new MemoryStream();
+				using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+				newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
+
 				bool hasIdChanged = newHircItem.UlID != existingHircItem.UlID;
 
 				newHircItem.CopyTo(existingHircItem);
@@ -143,9 +148,16 @@ namespace SoundbankEditor
 				}
 
 				IsSelectedHircItemJsonValid = true;
-			} catch (JsonException ex)
+			}
+			catch (Exception ex)
 			{
-				IsSelectedHircItemJsonValid = false;
+				if (ex is JsonException || ex is SerializationException)
+				{
+					IsSelectedHircItemJsonValid = false;
+					return;
+				}
+
+				throw;
 			}
 		}
 	}

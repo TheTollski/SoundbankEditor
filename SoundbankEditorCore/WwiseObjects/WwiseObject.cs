@@ -9,6 +9,7 @@ namespace SoundbankEditor.Core.WwiseObjects
 {
 	public interface WwiseObject
 	{
+		public uint ComputeTotalSize();
 		public void WriteToBinary(BinaryWriter binaryWriter);
 	}
 }

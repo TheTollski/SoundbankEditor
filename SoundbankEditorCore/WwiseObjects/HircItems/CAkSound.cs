@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public class CAkSound : HircItem
 	{
 		public HircType EHircType { get; set; }
-		public uint DwSectionSize { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public AkBankSourceData AkBankSourceData { get; set; } = new AkBankSourceData();
@@ -24,37 +24,40 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public CAkSound(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
-			DwSectionSize = binaryReader.ReadUInt32();
-
+			uint sectionSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
-
 			UlID = binaryReader.ReadUInt32();
 
 			AkBankSourceData = new AkBankSourceData(binaryReader);
 			NodeBaseParams = new NodeBaseParams(binaryReader);
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < DwSectionSize)
+			if (bytesReadFromThisObject != sectionSize)
 			{
-				throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CakSound '{UlID}'.");
+				throw new Exception($"Expected to read {sectionSize} bytes from CAkSound '{UlID}' but {bytesReadFromThisObject} bytes were read.");
 			}
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 9 + AkBankSourceData.ComputeTotalSize() + NodeBaseParams.ComputeTotalSize();
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((byte)EHircType);
-			binaryWriter.Write(DwSectionSize);
-
+			uint expectedSize = ComputeTotalSize() - 5;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
-
 			binaryWriter.Write(UlID);
+
 			AkBankSourceData.WriteToBinary(binaryWriter);
 			NodeBaseParams.WriteToBinary(binaryWriter);
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != DwSectionSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected CAkSound '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected CAkSound '{UlID}' section size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -72,6 +75,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			UlPluginId = binaryReader.ReadUInt32();
 			StreamType = binaryReader.ReadByte();
 			AkMediaInformation = new AkMediaInformation(binaryReader);
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 5 + AkMediaInformation.ComputeTotalSize();
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -99,6 +107,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			FileId = binaryReader.ReadUInt32();
 			InMemoryMediaSize = binaryReader.ReadUInt32();
 			SourceBits = binaryReader.ReadByte();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 13;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)

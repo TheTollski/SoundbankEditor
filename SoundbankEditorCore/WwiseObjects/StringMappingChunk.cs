@@ -37,6 +37,11 @@ namespace SoundbankEditor.Core.WwiseObjects
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			throw new NotImplementedException();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			Header.WriteToBinary(binaryWriter);
@@ -72,6 +77,11 @@ namespace SoundbankEditor.Core.WwiseObjects
 			BankId = binaryReader.ReadUInt32();
 			StringSize = binaryReader.ReadByte();
 			FileName = Encoding.UTF8.GetString(binaryReader.ReadBytes(StringSize));
+		}
+
+		public uint ComputeTotalSize()
+		{
+			throw new NotImplementedException();
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)

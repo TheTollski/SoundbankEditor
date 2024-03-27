@@ -3,6 +3,7 @@ using SoundbankEditor.Core.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public class CAkSwitchCntr : HircItem
 	{
 		public HircType EHircType { get; set; }
-		public uint DwSectionSize { get; set; }
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
@@ -22,12 +22,9 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint DefaultSwitch { get; set; }
 		public byte IsContinuousValidation { get; set; }
-		public uint ChildCount { get; set; }
 		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> ChildIds { get; set; } = new List<uint>();
-		public uint SwitchPackageCount { get; set; }
 		public List<CAkSwitchPackage> SwitchPackages { get; set; } = new List<CAkSwitchPackage>();
-		public uint SwitchParamsCount { get; set; }
 		public List<AkSwitchNodeParams> SwitchParams { get; set; } = new List<AkSwitchNodeParams>();
 
 		public CAkSwitchCntr() { }
@@ -35,10 +32,8 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public CAkSwitchCntr(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
-			DwSectionSize = binaryReader.ReadUInt32();
-
+			uint sectionSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
-
 			UlID = binaryReader.ReadUInt32();
 
 			NodeBaseParams = new NodeBaseParams(binaryReader);
@@ -46,75 +41,71 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			GroupId = binaryReader.ReadUInt32();
 			DefaultSwitch = binaryReader.ReadUInt32();
 			IsContinuousValidation = binaryReader.ReadByte();
-			ChildCount = binaryReader.ReadUInt32();
-			for (int i = 0; i < ChildCount; i++)
+			uint childCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < childCount; i++)
 			{
 				ChildIds.Add(binaryReader.ReadUInt32());
 			}
-			SwitchPackageCount = binaryReader.ReadUInt32();
-			for (int i = 0; i < SwitchPackageCount; i++)
+			uint switchPackageCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < switchPackageCount; i++)
 			{
 				SwitchPackages.Add(new CAkSwitchPackage(binaryReader));
 			}
-			SwitchParamsCount = binaryReader.ReadUInt32();
-			for (int i = 0; i < SwitchParamsCount; i++)
+			uint switchParamsCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < switchParamsCount; i++)
 			{
 				SwitchParams.Add(new AkSwitchNodeParams(binaryReader));
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
-			if (bytesReadFromThisObject < DwSectionSize)
+			if (bytesReadFromThisObject != sectionSize)
 			{
-				throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CAkSwitchCntr '{UlID}'.");
+				throw new Exception($"Expected to read {sectionSize} bytes from CAkSwitchCntr '{UlID}' but {bytesReadFromThisObject} bytes were read.");
 			}
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 31
+				+ NodeBaseParams.ComputeTotalSize()
+				+ (uint)(ChildIds.Count * 4)
+				+ (uint)SwitchPackages.Sum(s => s.ComputeTotalSize())
+				+ (uint)SwitchParams.Sum(s=> s.ComputeTotalSize());
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (ChildCount != ChildIds.Count)
-			{
-				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {ChildCount} children but it has {ChildIds.Count}.");
-			}
-			if (SwitchPackageCount != SwitchPackages.Count)
-			{
-				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {SwitchPackageCount} SwitchPackages but it has {SwitchPackages.Count}.");
-			}
-			if (SwitchParamsCount != SwitchParams.Count)
-			{
-				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {SwitchParamsCount} SwitchParams but it has {SwitchParams.Count}.");
-			}
-
 			binaryWriter.Write((byte)EHircType);
-			binaryWriter.Write(DwSectionSize);
-
+			uint expectedSize = ComputeTotalSize() - 5;
+			binaryWriter.Write(expectedSize);
 			long position = binaryWriter.BaseStream.Position;
-
 			binaryWriter.Write(UlID);
+
 			NodeBaseParams.WriteToBinary(binaryWriter);
 			binaryWriter.Write(GroupType);
 			binaryWriter.Write(GroupId);
 			binaryWriter.Write(DefaultSwitch);
 			binaryWriter.Write(IsContinuousValidation);
-			binaryWriter.Write(ChildCount);
+			binaryWriter.Write((uint)ChildIds.Count);
 			for (int i = 0; i < ChildIds.Count; i++)
 			{
 				binaryWriter.Write(ChildIds[i]);
 			}
-			binaryWriter.Write(SwitchPackageCount);
+			binaryWriter.Write((uint)SwitchPackages.Count);
 			for (int i = 0; i < SwitchPackages.Count; i++)
 			{
 				SwitchPackages[i].WriteToBinary(binaryWriter);
 			}
-			binaryWriter.Write(SwitchParamsCount);
+			binaryWriter.Write((uint)SwitchParams.Count);
 			for (int i = 0; i < SwitchParams.Count; i++)
 			{
 				SwitchParams[i].WriteToBinary(binaryWriter);
 			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
-			if (bytesWrittenFromThisObject != DwSectionSize)
+			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new Exception($"Expected CAkSwitchCntr '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected CAkSwitchCntr '{UlID}' section size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -123,7 +114,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	{
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint SwitchId { get; set; }
-		public uint NodeCount { get; set; }
 		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> NodeIds { get; set; } = new List<uint>();
 
@@ -132,22 +122,22 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public CAkSwitchPackage(BinaryReader binaryReader)
 		{
 			SwitchId = binaryReader.ReadUInt32();
-			NodeCount = binaryReader.ReadUInt32();
-			for (int i = 0; i < NodeCount; i++)
+			uint nodeCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < nodeCount; i++)
 			{
 				NodeIds.Add(binaryReader.ReadUInt32());
 			}
 		}
 
+		public uint ComputeTotalSize()
+		{
+			return 8 + (uint)(NodeIds.Count * 4);
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			if (NodeCount != NodeIds.Count)
-			{
-				throw new Exception($"Expected CAkSwitchPackage to have {NodeCount} nodes but it has {NodeIds.Count}.");
-			}
-
 			binaryWriter.Write(SwitchId);
-			binaryWriter.Write(NodeCount);
+			binaryWriter.Write((uint)NodeIds.Count);
 			for (int i = 0; i < NodeIds.Count; i++)
 			{
 				binaryWriter.Write(NodeIds[i]);
@@ -173,6 +163,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ByBitVector2 = binaryReader.ReadByte();
 			FadeOutTime = binaryReader.ReadSingle();
 			FadeInTime = binaryReader.ReadSingle();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 14;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)

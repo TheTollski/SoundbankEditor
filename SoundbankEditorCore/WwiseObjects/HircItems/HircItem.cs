@@ -19,7 +19,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public interface HircItem : WwiseObject
 	{
 		public HircType EHircType { get; set; }
-		public uint DwSectionSize { get; set; }
 		public uint UlID { get; set; }
 	}
 

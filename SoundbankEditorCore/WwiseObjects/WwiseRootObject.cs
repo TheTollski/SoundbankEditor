@@ -20,6 +20,11 @@ namespace SoundbankEditor.Core.WwiseObjects
 		public string? DwTag { get; set; }
 		public uint DwChunkSize { get; set; }
 
+		public uint ComputeTotalSize()
+		{
+			throw new NotImplementedException();
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(DwTag[0]);
