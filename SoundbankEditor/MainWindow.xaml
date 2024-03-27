@@ -53,11 +53,16 @@
 			<DataGrid
 				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
 				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
-				ItemsSource="{Binding HircItems}">
+				ItemsSource="{Binding HircItems}" MouseRightButtonUp="DgHircItems_MouseRightButtonUp">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
 					<DataGridTextColumn Header="ID" Binding="{Binding Path=UlID, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="1*" />
 				</DataGrid.Columns>
+				<DataGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Copy ID" Click="MenuItem_Click" />
+					</ContextMenu>
+				</DataGrid.ContextMenu>
 			</DataGrid>
 		</Grid>
 		

@@ -348,5 +348,40 @@ namespace SoundbankEditor
 		{
 			Title = $"{(_areChangesPending ? "*" : string.Empty)}{System.IO.Path.GetFileName(_openSoundbankFilePath)} - Soundbank Editor";
 		}
+
+		HircItem? _rightClickedHircItem;
+		private void DgHircItems_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		{
+			e.Handled = true;
+
+			var hit = VisualTreeHelper.HitTest((Visual)sender, e.GetPosition((IInputElement)sender));
+			DependencyObject cell = VisualTreeHelper.GetParent(hit.VisualHit);
+			while (cell != null && !(cell is DataGridCell)) cell = VisualTreeHelper.GetParent(cell);
+			
+			DataGridCell? clickedCell = cell as DataGridCell;
+			if (clickedCell == null)
+			{
+				return;
+			}
+
+			HircItem? clickedHircItem = clickedCell.DataContext as HircItem;
+			if (clickedHircItem == null)
+			{
+				return;
+			}
+
+			_rightClickedHircItem = clickedHircItem;
+			dgHircItems.ContextMenu.IsOpen = true;
+		}
+
+		private void MenuItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_rightClickedHircItem == null)
+			{
+				return;
+			}
+
+			Clipboard.SetText(_rightClickedHircItem.UlID.ToString());
+		}
 	}
 }
