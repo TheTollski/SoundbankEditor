@@ -1,4 +1,5 @@
 ﻿using SoundbankEditor.Core.WwiseObjects;
+using SoundbankEditor.Core.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,15 @@ namespace SoundbankEditor.Core
 	public class SoundBank
 	{
 		private List<WwiseRootObject> wwiseRootObjects;
+
+		public List<HircItem> HircItems
+		{
+			get
+			{
+				HircChunk hircChunk = (HircChunk)wwiseRootObjects.Single(wro => wro.Header.DwTag == "HIRC");
+				return hircChunk.HircItems;
+			}
+		}
 
 		private SoundBank(List<WwiseRootObject> wwiseRootObjects)
 		{

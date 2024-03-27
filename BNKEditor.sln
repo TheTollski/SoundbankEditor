@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BNKEditorTests", "BNKEditor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundbankEditorCore", "SoundbankEditorCore\SoundbankEditorCore.csproj", "{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundbankEditor", "SoundbankEditor\SoundbankEditor.csproj", "{B0202B52-10A3-4BEA-BA81-C992D786597D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0202B52-10A3-4BEA-BA81-C992D786597D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0202B52-10A3-4BEA-BA81-C992D786597D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0202B52-10A3-4BEA-BA81-C992D786597D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0202B52-10A3-4BEA-BA81-C992D786597D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
