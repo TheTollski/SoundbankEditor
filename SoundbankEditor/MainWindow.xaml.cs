@@ -123,6 +123,11 @@ namespace SoundbankEditor
 				WwiseShortIdUtility.AddNames(File.ReadAllLines(customNamesPath).ToList(), true);
 			}
 
+			btnAddHircItem.IsEnabled = true;
+			btnSave.IsEnabled = true;
+			btnSaveAs.IsEnabled = true;
+			cbAddHircItemType.IsEnabled = true;
+
 			_areChangesPending = false;
 			UpdateTitle();
 		}
@@ -193,13 +198,40 @@ namespace SoundbankEditor
 				return;
 			}
 
-			HircItem selectedHircItem = (HircItem)dgHircItems.SelectedItem;
+			HircItem? selectedHircItem = (HircItem)dgHircItems.SelectedItem;
+			if (selectedHircItem == null)
+			{
+				return;
+			}
+
 			if (MessageBox.Show($"Are you sure you want to delete HIRC item '{selectedHircItem.UlID}'?", "Confirm HIRC Item Deletion", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
 			{
 				return;
 			}
 
 			HircItems.Remove(selectedHircItem);
+
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
+		}
+
+		private void BtnDuplicateHircItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null)
+			{
+				return;
+			}
+
+			HircItem? selectedHircItem = (HircItem)dgHircItems.SelectedItem;
+			if (selectedHircItem == null)
+			{
+				return;
+			}
+
+			HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(JsonSerializer.Serialize(selectedHircItem));
+			HircItems.Insert(0, newHircItem);
+
 			dgHircItems.Items.Refresh();
 			_areChangesPending = true;
 			UpdateTitle();
@@ -237,6 +269,38 @@ namespace SoundbankEditor
 			MessageBox.Show($"{SelectedHircItemJsonErrorMessage}");
 		}
 
+		private void BtnMoveHircItemDown_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null || dgHircItems.SelectedIndex < 0 || dgHircItems.SelectedIndex > HircItems.Count - 2)
+			{
+				return;
+			}
+
+			var temp = HircItems[dgHircItems.SelectedIndex + 1];
+			HircItems[dgHircItems.SelectedIndex + 1] = HircItems[dgHircItems.SelectedIndex];
+			HircItems[dgHircItems.SelectedIndex] = temp;
+
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
+		}
+
+		private void BtnMoveHircItemUp_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null || dgHircItems.SelectedIndex < 1)
+			{
+				return;
+			}
+
+			var temp = HircItems[dgHircItems.SelectedIndex - 1];
+			HircItems[dgHircItems.SelectedIndex - 1] = HircItems[dgHircItems.SelectedIndex];
+			HircItems[dgHircItems.SelectedIndex] = temp;
+
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
+		}
+
 		private void DgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (dgHircItems.SelectedIndex < 0)
@@ -244,6 +308,9 @@ namespace SoundbankEditor
 				UpdateSelectedHircItemJson();
 
 				btnDeleteHircItem.IsEnabled = false;
+				btnDuplicateHircItem.IsEnabled = false;
+				btnMoveHircItemDown.IsEnabled = false;
+				btnMoveHircItemUp.IsEnabled = false;
 				tbHircItemJson.IsEnabled = false;
 				return;
 			}
@@ -265,6 +332,9 @@ namespace SoundbankEditor
 			UpdateSelectedHircItemJson();
 
 			btnDeleteHircItem.IsEnabled = true;
+			btnDuplicateHircItem.IsEnabled = true;
+			btnMoveHircItemDown.IsEnabled = dgHircItems.SelectedIndex < HircItems.Count - 1;
+			btnMoveHircItemUp.IsEnabled = dgHircItems.SelectedIndex > 0;
 			tbHircItemJson.IsEnabled = true;
 
 			shiev.HircItem = selectedItem;

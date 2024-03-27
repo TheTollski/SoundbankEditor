@@ -24,9 +24,9 @@
 		
 		<Menu Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 			<MenuItem Header="File">
-				<MenuItem Header="Open" Click="BtnOpen_Click"></MenuItem>
-				<MenuItem Header="Save" Click="BtnSave_Click"></MenuItem>
-				<MenuItem Header="Save As" Click="BtnSaveAs_Click"></MenuItem>
+				<MenuItem x:Name="btnOpen" Header="Open" Click="BtnOpen_Click"></MenuItem>
+				<MenuItem x:Name="btnSave" Header="Save" Click="BtnSave_Click" IsEnabled="False"></MenuItem>
+				<MenuItem x:Name="btnSaveAs" Header="Save As" Click="BtnSaveAs_Click" IsEnabled="False"></MenuItem>
 			</MenuItem>
 		</Menu>
 
@@ -40,17 +40,25 @@
 
 			<Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">HIRC Items</Label>
 
-			<ComboBox
-				x:Name="cbAddHircItemType"
-				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
-			<Button
-				x:Name="btnAddHircItem"
-				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="120,0,0,0"
-				Click="BtnAddHircItem_Click">Add HIRC Item</Button>
-			<Button
-				x:Name="btnDeleteHircItem"
-				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
-				Click="BtnDeleteHircItem_Click">Delete HIRC Item</Button>
+			<StackPanel Grid.Row = "1" Orientation="Horizontal" HorizontalAlignment="Center">
+				<ComboBox x:Name="cbAddHircItemType"
+									Grid.Row="1" Grid.Column="0" Width="80" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0" IsEnabled="False" />
+				<Button x:Name="btnAddHircItem"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0"
+								Click="BtnAddHircItem_Click" IsEnabled="False">Add Item</Button>
+				<Button x:Name="btnDuplicateHircItem"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0"
+								Click="BtnDuplicateHircItem_Click" IsEnabled="False">Duplicate Item</Button>
+				<Button x:Name="btnDeleteHircItem"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 0, 0"
+								Click="BtnDeleteHircItem_Click" IsEnabled="False">Delete Item</Button>
+				<Button x:Name="btnMoveHircItemUp"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 0, 0"
+								Click="BtnMoveHircItemUp_Click" IsEnabled="False">Move Up</Button>
+				<Button x:Name="btnMoveHircItemDown"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 5, 0"
+								Click="BtnMoveHircItemDown_Click" IsEnabled="False">Move Down</Button>
+			</StackPanel>
 
 			<DataGrid
 				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
