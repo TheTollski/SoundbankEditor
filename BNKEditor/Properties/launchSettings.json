@@ -15,6 +15,14 @@
     "ShortId": {
       "commandName": "Project",
       "commandLineArgs": "aa_selected_test"
+    },
+    "DatToJson": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\event_data.dat"
+    },
+    "JsonToDat": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\event_data_temp.json"
     }
   }
 }

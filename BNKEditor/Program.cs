@@ -52,6 +52,20 @@ if (fileExtension == "bnk")
 
 if (fileExtension == "json")
 {
+	if (File.ReadAllText(args[0]).Contains("\"A\""))
+	{
+		Console.WriteLine($"Converting JSON to DAT...");
+
+		SoundData soundData = SoundData.CreateFromJsonFile(args[0]);
+
+		string outputDatFilePath = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.dat";
+		soundData.WriteToDatFile(outputDatFilePath);
+
+		Console.WriteLine($"DAT file saved: '{outputDatFilePath}'");
+
+		return;
+	}
+
 	Console.WriteLine($"Converting JSON to BNK...");
 
 	SoundBank soundBank = SoundBank.CreateFromJsonFile(args[0]);
@@ -62,6 +76,23 @@ if (fileExtension == "json")
 	Console.WriteLine($"BNK file saved: '{outputBnkFilePath}'");
 
 	return;
+}
+
+if (fileExtension == "dat")
+{
+	Console.WriteLine($"Converting DAT to JSON...");
+
+	SoundData soundData = SoundData.CreateFromDatFile(args[0]);
+
+	string outputJsonFilePath = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.json";
+	soundData.WriteToJsonFile(outputJsonFilePath);
+
+	Console.WriteLine($"JSON file saved: '{outputJsonFilePath}'");
+
+	ProcessStartInfo psi = new ProcessStartInfo();
+	psi.FileName = outputJsonFilePath;
+	psi.UseShellExecute = true;
+	Process.Start(psi);
 }
 
 Console.WriteLine($"Unsupported file extension '{fileExtension}'. Exiting...");
