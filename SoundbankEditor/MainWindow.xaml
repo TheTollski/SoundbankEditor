@@ -44,6 +44,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="30" />
 				<RowDefinition Height="30" />
+				<RowDefinition Height="30" />
 				<RowDefinition />
 			</Grid.RowDefinitions>
 
@@ -68,9 +69,15 @@
 								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 5, 0"
 								Click="BtnMoveHircItemDown_Click" IsEnabled="False">Move Down</Button>
 			</StackPanel>
+			<StackPanel Grid.Row = "2" Orientation="Horizontal" HorizontalAlignment="Center">
+				<TextBox x:Name="tbGoToHircItemId" Width="100" Height="20" Margin="5, 0, 0, 0" IsEnabled="False" />
+				<Button x:Name="btnGoToHircItem"
+								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0"
+								Click="BtnGotoHircItem_Click" IsEnabled="False">Go To Item</Button>
+			</StackPanel>
 
 			<DataGrid
-				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
+				x:Name="dgHircItems" Grid.Row="3" Grid.Column="0" 
 				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged" CanUserSortColumns="False"
 				ItemsSource="{Binding HircItems}" MouseRightButtonUp="DgHircItems_MouseRightButtonUp">
 				<DataGrid.Columns>

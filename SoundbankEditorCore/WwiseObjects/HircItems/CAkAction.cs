@@ -72,6 +72,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 				UlActionType == CAkActionType.SetBusVolume_M ||
 				UlActionType == CAkActionType.SetGameParameter_O ||
 				UlActionType == CAkActionType.SetLPF_M ||
+				UlActionType == CAkActionType.SetVolume_O ||
 				UlActionType == CAkActionType.Unmute
 			)
 			{
@@ -177,6 +178,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		Play = 1027,
 		Mute = 1539,
 		Unmute = 1795,
+		SetVolume_O = 2563,
 		SetBusVolume_M = 3074,
 		SetLPF_M = 3586,
 		ResetLPF_M = 3842,
@@ -396,7 +398,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		{
 			ByBitVector = binaryReader.ReadByte();
 
-			if (actionType == CAkActionType.ResetLPF_M || actionType == CAkActionType.SetBusVolume_M || actionType == CAkActionType.SetLPF_M)
+			if (actionType == CAkActionType.ResetLPF_M ||
+					actionType == CAkActionType.SetBusVolume_M ||
+					actionType == CAkActionType.SetLPF_M ||
+					actionType == CAkActionType.SetVolume_O)
 			{
 				AkPropActionSpecificParams = new AkPropActionSpecificParams(binaryReader);
 			}

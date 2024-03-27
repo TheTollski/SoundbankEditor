@@ -151,10 +151,12 @@ namespace SoundbankEditor
 			btnClose.IsEnabled = true;
 			btnConvertBnkToJson.IsEnabled = false;
 			btnConvertJsonToBnk.IsEnabled = false;
+			btnGoToHircItem.IsEnabled = true;
 			btnSave.IsEnabled = true;
 			btnSaveAs.IsEnabled = true;
 			btnViewKnownValidationErrorCounts.IsEnabled = true;
 			cbAddHircItemType.IsEnabled = true;
+			tbGoToHircItemId.IsEnabled = true;
 
 			_areChangesPending = false;
 			UpdateTitle();
@@ -212,10 +214,12 @@ namespace SoundbankEditor
 			btnClose.IsEnabled = false;
 			btnConvertBnkToJson.IsEnabled = true;
 			btnConvertJsonToBnk.IsEnabled = true;
+			btnGoToHircItem.IsEnabled = false;
 			btnSave.IsEnabled = false;
 			btnSaveAs.IsEnabled = false;
 			btnViewKnownValidationErrorCounts.IsEnabled = false;
 			cbAddHircItemType.IsEnabled = false;
+			tbGoToHircItemId.IsEnabled = false;
 
 			_areChangesPending = false;
 			UpdateTitle();
@@ -397,6 +401,29 @@ namespace SoundbankEditor
 			UpdateTitle();
 
 			dgHircItems.SelectedIndex = dgHircItems.SelectedIndex - 1;
+		}
+
+		private void BtnGotoHircItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (HircItems == null)
+			{
+				return;
+			}
+
+			uint shortId;
+			if (!uint.TryParse(tbGoToHircItemId.Text, out shortId))
+			{
+				shortId = WwiseShortIdUtility.ConvertToShortId(tbGoToHircItemId.Text);
+			}
+
+			int index = HircItems.FindIndex(hi => hi.UlID == shortId);
+			if (index < 0)
+			{
+				return;
+			}
+
+			dgHircItems.SelectedIndex = index;
+			dgHircItems.ScrollIntoView(HircItems[index]);
 		}
 
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
