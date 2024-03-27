@@ -47,7 +47,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public SeekActionParams? SeekActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
 
-		public CAkAction() { }
+		public CAkAction()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkAction(BinaryReader binaryReader)
 		{

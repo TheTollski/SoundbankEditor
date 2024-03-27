@@ -41,7 +41,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public InitialRtpc InitialRtpc { get; set; } = new InitialRtpc();
 		public List<object> RtpcInit { get; set; } = new List<object>();
 
-		public CAkFxShareSet() { }
+		public CAkFxShareSet()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkFxShareSet(BinaryReader binaryReader)
 		{

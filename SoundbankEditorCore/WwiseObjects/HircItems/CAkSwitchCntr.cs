@@ -46,7 +46,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public List<CAkSwitchPackage> SwitchPackages { get; set; } = new List<CAkSwitchPackage>();
 		public List<AkSwitchNodeParams> SwitchParams { get; set; } = new List<AkSwitchNodeParams>();
 
-		public CAkSwitchCntr() { }
+		public CAkSwitchCntr()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkSwitchCntr(BinaryReader binaryReader)
 		{

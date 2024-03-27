@@ -2,6 +2,7 @@
 using SoundbankEditor.Core.WwiseObjects;
 using SoundbankEditor.Core.WwiseObjects.HircItems;
 using SoundbankEditorCore.Utility;
+using SoundbankEditorCore.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -89,6 +90,8 @@ namespace SoundbankEditor
 		{
 			InitializeComponent();
 			DataContext = this;
+
+			cbAddHircItemType.ItemsSource = Enum.GetNames(typeof(HircType)).Order();
 		}
 
 		//
@@ -112,6 +115,7 @@ namespace SoundbankEditor
 
 			HircItems = _openSoundBank.HircItems;
 			_openFilePath = openFileDialog.FileName;
+			_areChangesPending = false;
 			UpdateTitle();
 		}
 
@@ -152,7 +156,17 @@ namespace SoundbankEditor
 				return;
 			}
 
-			//HircItems.Add()
+			string? selectedItemString = cbAddHircItemType.SelectedItem as string;
+			if (selectedItemString == null)
+			{
+				return;
+			}
+
+			HircType hircType = (HircType)Enum.Parse(typeof(HircType), selectedItemString);
+			HircItems.Insert(0, HircItemFactory.Create(hircType));
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
 		}
 
 		private void BtnDeleteHircItem_Click(object sender, RoutedEventArgs e)

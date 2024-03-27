@@ -38,7 +38,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public AkBankSourceData AkBankSourceData { get; set; } = new AkBankSourceData();
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
 
-		public CAkSound() { }
+		public CAkSound()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkSound(BinaryReader binaryReader)
 		{

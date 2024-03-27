@@ -1,4 +1,5 @@
 ﻿using SoundbankEditor.Core.WwiseObjects.HircItems;
+using SoundbankEditorCore.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,42 +32,7 @@ namespace SoundbankEditor.Core.WwiseObjects
 				HircType hircType = (HircType)binaryReader.ReadByte();
 				binaryReader.BaseStream.Position -= 1;
 
-				if (hircType == HircType.Sound) // 2
-				{
-					HircItems.Add(new CAkSound(binaryReader));
-				}
-				else if (hircType == HircType.Action) // 3
-				{
-					HircItems.Add(new CAkAction(binaryReader));
-				}
-				else if (hircType == HircType.Event) // 4
-				{
-					HircItems.Add(new CAkEvent(binaryReader));
-				}
-				else if (hircType == HircType.RandomSequenceContainer) // 5
-				{
-					HircItems.Add(new CAkRanSeqCntr(binaryReader));
-				}
-				else if (hircType == HircType.SwitchContainer) // 6
-				{
-					HircItems.Add(new CAkSwitchCntr(binaryReader));
-				}
-				else if (hircType == HircType.ActorMixer) // 7
-				{
-					HircItems.Add(new CAkActorMixer(binaryReader));
-				}
-				else if (hircType == HircType.Attenuation) // 14
-				{
-					HircItems.Add(new CAkAttenuation(binaryReader));
-				}
-				else if (hircType == HircType.FxShareSet) // 18
-				{
-					HircItems.Add(new CAkFxShareSet(binaryReader));
-				}
-				else
-				{
-					HircItems.Add(new HircItemUnknown(binaryReader));
-				}
+				HircItems.Add(HircItemFactory.Create(hircType, binaryReader));
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);

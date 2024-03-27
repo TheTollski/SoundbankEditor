@@ -45,7 +45,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public List<CAkConversionTable> Curves { get; set; } = new List<CAkConversionTable>();
 		public InitialRtpc InitialRtpc { get; set; } = new InitialRtpc();
 
-		public CAkAttenuation() { }
+		public CAkAttenuation()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkAttenuation(BinaryReader binaryReader)
 		{

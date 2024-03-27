@@ -36,7 +36,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> ActionIds { get; set; } = new List<uint>();
 
-		public CAkEvent() { }
+		public CAkEvent()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkEvent(BinaryReader binaryReader)
 		{

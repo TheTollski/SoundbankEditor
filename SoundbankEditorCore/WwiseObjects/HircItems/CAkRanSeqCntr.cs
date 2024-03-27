@@ -50,7 +50,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public List<uint> ChildIds { get; set; } = new List<uint>();
 		public CAkPlayList CAkPlayList { get; set; } = new CAkPlayList();
 
-		public CAkRanSeqCntr() { }
+		public CAkRanSeqCntr()
+		{
+			EHircType = EXPECTED_HIRC_TYPE;
+		}
 
 		public CAkRanSeqCntr(BinaryReader binaryReader)
 		{

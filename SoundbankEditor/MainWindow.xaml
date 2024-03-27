@@ -38,13 +38,16 @@
 
 			<TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">HIRC Items</TextBlock>
 
+			<ComboBox
+				x:Name="cbAddHircItemType"
+				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" />
 			<Button
 				x:Name="btnAddHircItem"
-				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center"
+				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="120,0,0,0"
 				Click="BtnAddHircItem_Click">Add HIRC Item</Button>
 			<Button
 				x:Name="btnDeleteHircItem"
-				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
 				Click="BtnDeleteHircItem_Click">Delete HIRC Item</Button>
 			
 			<DataGrid
