@@ -32,7 +32,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			UpdateAllFields();
 		}
 
-		private void BtnEditDirectParentId_Click(object sender, RoutedEventArgs e)
+		private void IfevEditDirectParentId_Click(object sender, EventArgs e)
 		{
 			if (_cakSound == null)
 			{
@@ -54,7 +54,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 		}
 
-		private void BtnEditFileId_Click(object sender, RoutedEventArgs e)
+		private void IfevEditFileId_Click(object sender, EventArgs e)
 		{
 			if (_cakSound == null)
 			{
@@ -94,7 +94,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			tbDirectParentId.Text = $"Parent ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSound.NodeBaseParams.DirectParentID)}";
+			ifevParentId.Value =_cakSound.NodeBaseParams.DirectParentID.ToString();
 		}
 
 		private void UpdateFileIdTextBlock()
@@ -104,7 +104,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			tbFileId.Text = $"File ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSound.AkBankSourceData.AkMediaInformation.FileId)}";
+			ifevFileId.Value = _cakSound.AkBankSourceData.AkMediaInformation.FileId.ToString();
 		}
 	}
 }

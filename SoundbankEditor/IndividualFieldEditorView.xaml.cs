@@ -73,8 +73,22 @@ namespace SoundbankEditor
 
 			tbTitleAndValue.Text = $"{Title}: {value}";
 
-			btnCopy.Content = $"Copy {Title}";
-			btnEdit.Content = $"Edit {Title}";
+			string? title = Title != null && Title.Length > 10
+				? AbbreviateSentence(Title)
+				: Title;
+
+			btnCopy.Content = $"Copy {title}";
+			btnEdit.Content = $"Edit {title}";
+		}
+
+		private string AbbreviateSentence(string sentence)
+		{
+			var words = sentence.Split(' ');
+			return string.Join(' ', words.Select(word =>
+			{
+				if (word.Length <= 3) return word;
+				return word.Substring(0, 2) + ".";
+			}));
 		}
 	}
 }

@@ -26,18 +26,9 @@
 		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Switch Container Item Edit Options</Label>
 		
 		<StackPanel Grid.Row="1">
-			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
-				<TextBlock x:Name="tbDirectParentId" DockPanel.Dock="Left" MaxWidth="480" Text="Parent ID: " />
-				<Button x:Name="btnEditDirectParentId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Parent ID" Click="BtnEditDirectParentId_Click"></Button>
-			</DockPanel>
-			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
-				<TextBlock x:Name="tbGroupId" DockPanel.Dock="Left" MaxWidth="480" Text="Group ID: " />
-				<Button x:Name="btnEditGroupId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Group ID" Click="BtnEditGroupId_Click"></Button>
-			</DockPanel>
-			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
-				<TextBlock x:Name="tbDefaultSwitchId" DockPanel.Dock="Left" MaxWidth="480" Text="Default Switch ID: " />
-				<Button x:Name="btnEditDefaultSwitchId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Def. Sw. ID" Click="BtnEditDefaultSwitchId_Click"></Button>
-			</DockPanel>
+			<main:IndividualFieldEditorView x:Name="ifevParentId" Margin="0,5,0,0" Title="Parent ID" IsValueAShortId="True" OnEditClicked="IfevEditDirectParentId_Click" />
+			<main:IndividualFieldEditorView x:Name="ifevGroupId" Margin="0,5,0,0" Title="Group ID" IsValueAShortId="True" OnEditClicked="IfevEditGroupId_Click" />
+			<main:IndividualFieldEditorView x:Name="ifevDefaultSwitchId" Margin="0,5,0,0" Title="Default Switch ID" IsValueAShortId="True" OnEditClicked="IfevEditDefaultSwitchId_Click" />
 		</StackPanel>
 		
 		<TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" Text="Switch Packages" />
@@ -65,14 +56,8 @@
 		</DataGrid>
 
 		<StackPanel Grid.Row="5">
-			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
-				<TextBlock x:Name="tbSwitchId" DockPanel.Dock="Left" MaxWidth="480" Text="Switch ID: " />
-				<Button x:Name="btnEditSwitchId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Switch ID" Click="BtnEditSwitchId_Click" IsEnabled="False"></Button>
-			</DockPanel>
-			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
-				<TextBlock x:Name="tbNodeIds" DockPanel.Dock="Left" MaxWidth="480" Text="Node IDs: " />
-				<Button x:Name="btnEditNodeIds" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Node IDs" Click="BtnEditNodeIds_Click" IsEnabled="False"></Button>
-			</DockPanel>
+			<main:IndividualFieldEditorView x:Name="ifevSwitchId" Margin="0,5,0,0" Title="Switch ID" IsValueAShortId="True" OnEditClicked="IfevEditSwitchId_Click" IsEnabled="False" />
+			<main:IndividualFieldEditorView x:Name="ifevNodeIds" Margin="0,5,0,0" Title="Node IDs" IsValueAShortId="False" OnEditClicked="IfevEditNodeIds_Click" IsEnabled="False" />
 		</StackPanel>
 	</Grid>
 </UserControl>

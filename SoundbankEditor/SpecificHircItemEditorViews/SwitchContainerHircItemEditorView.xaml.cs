@@ -72,122 +72,6 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
-		private void BtnEditDefaultSwitchId_Click(object sender, RoutedEventArgs e)
-		{
-			if (_cakSwitchCntr == null)
-			{
-				return;
-			}
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Default Switch ID", _cakSwitchCntr.DefaultSwitch);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			_cakSwitchCntr.DefaultSwitch = hircItemIdConverterWindow.Id.Value;
-			UpdateDefaultSwitchIdTextBlock();
-			HircItemUpdated?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void BtnEditDirectParentId_Click(object sender, RoutedEventArgs e)
-		{
-			if (_cakSwitchCntr == null)
-			{
-				return;
-			}
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Direct Parent ID", _cakSwitchCntr.NodeBaseParams.DirectParentID);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			_cakSwitchCntr.NodeBaseParams.DirectParentID = hircItemIdConverterWindow.Id.Value;
-			UpdateDirectParentIdTextBlock();
-			HircItemUpdated?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void BtnEditGroupId_Click(object sender, RoutedEventArgs e)
-		{
-			if (_cakSwitchCntr == null)
-			{
-				return;
-			}
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Group ID", _cakSwitchCntr.GroupId);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			_cakSwitchCntr.GroupId = hircItemIdConverterWindow.Id.Value;
-			UpdateGroupIdTextBlock();
-			HircItemUpdated?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void BtnEditNodeIds_Click(object sender, RoutedEventArgs e)
-		{
-			if (_cakSwitchCntr == null)
-			{
-				return;
-			}
-
-			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
-			if (selectedSwitchPackage == null)
-			{
-				return;
-			}
-
-			var hircItemIdListConverterWindow = new HircItemIdListConverterWindow(selectedSwitchPackage.NodeIds);
-			if (hircItemIdListConverterWindow.ShowDialog() != true)
-			{
-				return;
-			}
-
-			List<uint> addedIds = hircItemIdListConverterWindow.Ids.Where(id => !selectedSwitchPackage.NodeIds.Contains(id)).ToList();
-			List<uint> removedIds = selectedSwitchPackage.NodeIds.Where(id => !hircItemIdListConverterWindow.Ids.Contains(id)).ToList();
-			selectedSwitchPackage.NodeIds = hircItemIdListConverterWindow.Ids;
-
-			foreach (uint nodeId in addedIds)
-			{
-				AddLinksToNodeIdIfNecessary(nodeId);
-			}
-			foreach (uint nodeId in removedIds)
-			{
-				RemoveLinksToNodeIdIfUnused(nodeId);
-			}
-			
-			UpdateNodeIdsTextBlock();
-			UpdateSwitchesDataGrid();
-			HircItemUpdated?.Invoke(this, EventArgs.Empty);
-		}
-
-		private void BtnEditSwitchId_Click(object sender, RoutedEventArgs e)
-		{
-			if (_cakSwitchCntr == null)
-			{
-				return;
-			}
-
-			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
-			if (selectedSwitchPackage == null)
-			{
-				return;
-			}
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Switch ID", selectedSwitchPackage.SwitchId);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			selectedSwitchPackage.SwitchId = hircItemIdConverterWindow.Id.Value;
-			UpdateSwitchesDataGrid();
-			UpdateSwitchIdTextBlock();
-			HircItemUpdated?.Invoke(this, EventArgs.Empty);
-		}
-
 		private void BtnMoveSwitchDown_Click(object sender, RoutedEventArgs e)
 		{
 			if (_cakSwitchCntr == null || dgSwitches.SelectedIndex < 0 || dgSwitches.SelectedIndex > _cakSwitchCntr.SwitchPackages.Count - 2)
@@ -239,11 +123,127 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			btnDeleteSwitch.IsEnabled = isASwitchSelected;
 			btnMoveSwitchDown.IsEnabled = isASwitchSelected;
 			btnMoveSwitchUp.IsEnabled = isASwitchSelected;
-			btnEditSwitchId.IsEnabled = isASwitchSelected;
-			btnEditNodeIds.IsEnabled = isASwitchSelected;
+			ifevSwitchId.IsEnabled = isASwitchSelected;
+			ifevNodeIds.IsEnabled = isASwitchSelected;
 
 			UpdateNodeIdsTextBlock();
 			UpdateSwitchIdTextBlock();
+		}
+
+		private void IfevEditDefaultSwitchId_Click(object sender, EventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Default Switch ID", _cakSwitchCntr.DefaultSwitch);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			_cakSwitchCntr.DefaultSwitch = hircItemIdConverterWindow.Id.Value;
+			UpdateDefaultSwitchIdTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditDirectParentId_Click(object sender, EventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Direct Parent ID", _cakSwitchCntr.NodeBaseParams.DirectParentID);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			_cakSwitchCntr.NodeBaseParams.DirectParentID = hircItemIdConverterWindow.Id.Value;
+			UpdateDirectParentIdTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditGroupId_Click(object sender, EventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Group ID", _cakSwitchCntr.GroupId);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			_cakSwitchCntr.GroupId = hircItemIdConverterWindow.Id.Value;
+			UpdateGroupIdTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditNodeIds_Click(object sender, EventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			if (selectedSwitchPackage == null)
+			{
+				return;
+			}
+
+			var hircItemIdListConverterWindow = new HircItemIdListConverterWindow(selectedSwitchPackage.NodeIds);
+			if (hircItemIdListConverterWindow.ShowDialog() != true)
+			{
+				return;
+			}
+
+			List<uint> addedIds = hircItemIdListConverterWindow.Ids.Where(id => !selectedSwitchPackage.NodeIds.Contains(id)).ToList();
+			List<uint> removedIds = selectedSwitchPackage.NodeIds.Where(id => !hircItemIdListConverterWindow.Ids.Contains(id)).ToList();
+			selectedSwitchPackage.NodeIds = hircItemIdListConverterWindow.Ids;
+
+			foreach (uint nodeId in addedIds)
+			{
+				AddLinksToNodeIdIfNecessary(nodeId);
+			}
+			foreach (uint nodeId in removedIds)
+			{
+				RemoveLinksToNodeIdIfUnused(nodeId);
+			}
+
+			UpdateNodeIdsTextBlock();
+			UpdateSwitchesDataGrid();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditSwitchId_Click(object sender, EventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			if (selectedSwitchPackage == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Switch ID", selectedSwitchPackage.SwitchId);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			selectedSwitchPackage.SwitchId = hircItemIdConverterWindow.Id.Value;
+			UpdateSwitchesDataGrid();
+			UpdateSwitchIdTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
 		//
@@ -299,7 +299,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			tbDefaultSwitchId.Text = $"Default Switch ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSwitchCntr.DefaultSwitch)}";
+			ifevDefaultSwitchId.Value = _cakSwitchCntr.DefaultSwitch.ToString();
 		}
 
 		private void UpdateDirectParentIdTextBlock()
@@ -309,7 +309,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			tbDirectParentId.Text = $"Parent ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSwitchCntr.NodeBaseParams.DirectParentID)}";
+			ifevParentId.Value = _cakSwitchCntr.NodeBaseParams.DirectParentID.ToString();
 		}
 
 		private void UpdateGroupIdTextBlock()
@@ -319,7 +319,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			tbGroupId.Text = $"Group ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSwitchCntr.GroupId)}";
+			ifevGroupId.Value = _cakSwitchCntr.GroupId.ToString();
 		}
 
 		private void UpdateNodeIdsTextBlock()
@@ -334,7 +334,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 					? string.Join(',', selectedSwitchPackage.NodeIds.Select(id => WwiseShortIdUtility.ConvertShortIdToReadableString(id)))
 					: "";
 
-			tbNodeIds.Text = $"Node IDs: {nodeIdsString}";
+			ifevNodeIds.Value = nodeIdsString;
 		}
 
 		private void UpdateSwitchIdTextBlock()
@@ -345,7 +345,9 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
-			tbSwitchId.Text = $"Switch ID: {(selectedSwitchPackage != null ? WwiseShortIdUtility.ConvertShortIdToReadableString(selectedSwitchPackage.SwitchId) : "")}";
+			ifevSwitchId.Value = selectedSwitchPackage != null
+				? selectedSwitchPackage.SwitchId.ToString()
+				: "";
 		}
 
 		private void UpdateSwitchesDataGrid()

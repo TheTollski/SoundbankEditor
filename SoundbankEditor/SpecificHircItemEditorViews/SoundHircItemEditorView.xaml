@@ -4,19 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
+						 xmlns:main="clr-namespace:SoundbankEditor"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="600"
 						 DataContextChanged="OnDataContextChanged">
 	<StackPanel Width="600">
 		<Label HorizontalAlignment="Center" FontSize="16">Sound Item Edit Options</Label>
-		<DockPanel Width="580" LastChildFill="False" Margin="0,5,0,0">
-			<TextBlock x:Name="tbDirectParentId" DockPanel.Dock="Left" MaxWidth="480" Text="Parent ID:" />
-			<Button x:Name="btnEditDirectParentId" DockPanel.Dock="Right" Content="Edit Parent ID" Width="100" Height="20" Click="BtnEditDirectParentId_Click"></Button>
-		</DockPanel>
-		<DockPanel Width="580" LastChildFill="False" Margin="0,5,0,0">
-			<!--<Label x:Name="lFileId" DockPanel.Dock="Left" DataContext="{Binding AkBankSourceData.AkMediaInformation}" Content="{Binding FileId, StringFormat='Audio File ID: \{0\}', Mode=OneWay}" />-->
-			<TextBlock x:Name="tbFileId" DockPanel.Dock="Left" MaxWidth="480" Text="File ID:" />
-			<Button x:Name="btnEditFileId" DockPanel.Dock="Right" Content="Edit File ID" Width="100" Height="20" Click="BtnEditFileId_Click"></Button>
-		</DockPanel>
+		<main:IndividualFieldEditorView x:Name="ifevParentId" Margin="0,5,0,0" Title="Parent ID" IsValueAShortId="True" OnEditClicked="IfevEditDirectParentId_Click" />
+		<main:IndividualFieldEditorView x:Name="ifevFileId" Margin="0,5,0,0" Title="File ID" IsValueAShortId="True" OnEditClicked="IfevEditFileId_Click" />
 	</StackPanel>
 </UserControl>

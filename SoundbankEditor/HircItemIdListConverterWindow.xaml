@@ -36,10 +36,7 @@
 			</DataGrid.Columns>
 		</DataGrid>
 
-		<DockPanel Grid.Row="3" Width="580" LastChildFill="False">
-			<TextBlock x:Name="tbId" DockPanel.Dock="Left" MaxWidth="480" Text="ID: " />
-			<Button x:Name="btnEditId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit ID" Click="BtnEditId_Click" IsEnabled="False"></Button>
-		</DockPanel>
+		<local:IndividualFieldEditorView x:Name="ifevId" Grid.Row="3" Margin="0,5,0,0" Title="ID" IsValueAShortId="True" OnEditClicked="IfevEditId_Click" IsEnabled="False" />
 
 		<DockPanel Grid.Row="4" Width="300" LastChildFill="false">
 			<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 0, 0, 0" Content="Confirm" Click="BtnConfirm_Click" />

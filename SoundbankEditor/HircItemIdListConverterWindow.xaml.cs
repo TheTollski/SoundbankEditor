@@ -77,25 +77,6 @@ namespace SoundbankEditor
 			UpdateIdsDataGrid();
 		}
 
-		private void BtnEditId_Click(object sender, RoutedEventArgs e)
-		{
-			uint? selectedId = dgIds.SelectedItem as uint?;
-			if (selectedId == null)
-			{
-				return;
-			}
-
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set ID", selectedId);
-			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
-			{
-				return;
-			}
-
-			Ids[dgIds.SelectedIndex] = hircItemIdConverterWindow.Id.Value;
-			UpdateIdsDataGrid();
-			UpdateIdTextBlock();
-		}
-
 		private void BtnMoveDown_Click(object sender, RoutedEventArgs e)
 		{
 			if (dgIds.SelectedIndex < 0 || dgIds.SelectedIndex > Ids.Count - 2)
@@ -137,8 +118,27 @@ namespace SoundbankEditor
 			btnDelete.IsEnabled = isAnIdSelected;
 			btnMoveDown.IsEnabled = isAnIdSelected;
 			btnMoveUp.IsEnabled = isAnIdSelected;
-			btnEditId.IsEnabled = isAnIdSelected;
+			ifevId.IsEnabled = isAnIdSelected;
 
+			UpdateIdTextBlock();
+		}
+
+		private void IfevEditId_Click(object sender, EventArgs e)
+		{
+			uint? selectedId = dgIds.SelectedItem as uint?;
+			if (selectedId == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set ID", selectedId);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			Ids[dgIds.SelectedIndex] = hircItemIdConverterWindow.Id.Value;
+			UpdateIdsDataGrid();
 			UpdateIdTextBlock();
 		}
 
@@ -157,7 +157,9 @@ namespace SoundbankEditor
 		private void UpdateIdTextBlock()
 		{
 			uint? selectedId = dgIds.SelectedItem as uint?;
-			tbId.Text = $"ID: {(selectedId != null ? WwiseShortIdUtility.ConvertShortIdToReadableString(selectedId.Value) : "")}";
+			ifevId.Value = selectedId != null
+				? selectedId.ToString()
+				: "";
 		}
 	}
 }
