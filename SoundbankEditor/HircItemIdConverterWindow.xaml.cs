@@ -27,7 +27,19 @@ namespace SoundbankEditor
 		{
 			InitializeComponent();
 			Title = title;
-			Id = originalId;
+			
+			if (originalId != null)
+			{
+				string? name = WwiseShortIdUtility.GetNameFromShortId(originalId.Value);
+				if (name != null)
+				{
+					tbIdOrName.Text = name;
+				}
+				else
+				{
+					Id = originalId;
+				}
+			}
 
 			tbIdOrName.Focus();
 			tbIdOrName.SelectAll();

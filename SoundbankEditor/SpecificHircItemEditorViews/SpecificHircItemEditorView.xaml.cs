@@ -25,9 +25,9 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			"HircItem", typeof(HircItem), typeof(SpecificHircItemEditorView), new UIPropertyMetadata(null)
 		);
 
-		public HircItem HircItem
+		public HircItem? HircItem
 		{
-			get { return (HircItem)GetValue(HircItemProperty); }
+			get { return (HircItem?)GetValue(HircItemProperty); }
 			set { SetValue(HircItemProperty, value); }
 		}
 

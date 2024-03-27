@@ -18,6 +18,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		public SoundHircItemEditorView()
 		{
 			InitializeComponent();
+			MainWindow.OnHircItemUpdated = UpdateAllFields;
 		}
 
 		//
@@ -28,8 +29,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		{
 			_cakSound = (CAkSound)DataContext;
 
-			UpdateDirectParentIdTextBlock();
-			UpdateFileIdTextBlock();
+			UpdateAllFields();
 		}
 
 		private void BtnEditDirectParentId_Click(object sender, RoutedEventArgs e)
@@ -80,6 +80,12 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		//
 		// Helpers
 		//
+
+		private void UpdateAllFields()
+		{
+			UpdateDirectParentIdTextBlock();
+			UpdateFileIdTextBlock();
+		}
 
 		private void UpdateDirectParentIdTextBlock()
 		{

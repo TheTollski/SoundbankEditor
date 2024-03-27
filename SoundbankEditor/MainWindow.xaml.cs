@@ -30,6 +30,8 @@ namespace SoundbankEditor
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
+		public static Action? OnHircItemUpdated { get; set; }
+
 		public event PropertyChangedEventHandler? PropertyChanged;
 		protected virtual void OnPropertyChanged(string propertyName)
 		{
@@ -192,6 +194,12 @@ namespace SoundbankEditor
 				return;
 			}
 
+			if (_areChangesPending &&
+					MessageBox.Show($"There are unsaved changes to this soundbank. If you close it now, you will lose these changes.", "Confirm Close", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+			{
+				return;
+			}
+
 			_openSoundbankFilePath = null;
 			_openSoundbank = null;
 			HircItems = null;
@@ -267,7 +275,7 @@ namespace SoundbankEditor
 
 			SoundBank soundBank = SoundBank.CreateFromJsonFile(openFileDialog.FileName);
 
-			string outputBnkFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.json";
+			string outputBnkFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.bnk";
 			if (File.Exists(outputBnkFilePath) &&
 					MessageBox.Show($"A file exists at '{outputBnkFilePath}'. If you proceed, you will overwrite this file.", "Confirm File Overwite", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
 			{
@@ -513,7 +521,7 @@ namespace SoundbankEditor
 					newHircItem.CopyTo(existingHircItem);
 
 					SelectedHircItemJsonErrorMessage = null;
-					shiev.HircItem = newHircItem; // This shouldn't be.
+					OnHircItemUpdated?.Invoke();
 				}
 				catch (Exception ex)
 				{

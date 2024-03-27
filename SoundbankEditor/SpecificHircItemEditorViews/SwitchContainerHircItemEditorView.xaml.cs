@@ -22,6 +22,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		public SwitchContainerHircItemEditorView()
 		{
 			InitializeComponent();
+			MainWindow.OnHircItemUpdated += UpdateAllFields;
 		}
 
 		//
@@ -32,10 +33,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		{
 			_cakSwitchCntr = (CAkSwitchCntr)DataContext;
 
-			UpdateDefaultSwitchIdTextBlock();
-			UpdateDirectParentIdTextBlock();
-			UpdateGroupIdTextBlock();
-			UpdateSwitchesDataGrid();
+			UpdateAllFields();
 		}
 
 		private void BtnAddSwitch_Click(object sender, RoutedEventArgs e)
@@ -284,6 +282,14 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				_cakSwitchCntr.ChildIds.RemoveAll(id => id == nodeId);
 				_cakSwitchCntr.SwitchParams.RemoveAll(sp => sp.NodeId == nodeId);
 			}
+		}
+
+		private void UpdateAllFields()
+		{
+			UpdateDefaultSwitchIdTextBlock();
+			UpdateDirectParentIdTextBlock();
+			UpdateGroupIdTextBlock();
+			UpdateSwitchesDataGrid();
 		}
 
 		private void UpdateDefaultSwitchIdTextBlock()
