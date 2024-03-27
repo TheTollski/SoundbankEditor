@@ -14,6 +14,8 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public uint ActionCount { get; set; }
 		public List<uint> ActionIds { get; set; } = new List<uint>();
 
+		public CAkEvent() { }
+
 		public CAkEvent(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();

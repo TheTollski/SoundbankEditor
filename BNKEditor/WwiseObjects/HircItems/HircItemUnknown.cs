@@ -13,6 +13,8 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public uint UlID { get; set; }
 		public byte[]? Data { get; set; }
 
+		public HircItemUnknown() { }
+
 		public HircItemUnknown(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();

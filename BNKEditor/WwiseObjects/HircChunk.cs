@@ -11,9 +11,13 @@ namespace BNKEditor.WwiseObjects
 {
 	public class HircChunk : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; }
+		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
 		public uint NumReleasableHircItem { get; set; }
 		public List<HircItem> HircItems { get; set; } = new List<HircItem>();
+
+		public HircChunk()
+		{
+		}
 
 		public HircChunk(BinaryReader binaryReader)
 		{

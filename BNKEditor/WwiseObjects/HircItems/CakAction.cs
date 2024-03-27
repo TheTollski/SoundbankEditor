@@ -14,14 +14,15 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public ActionType UlActionType { get; set; }
 		public uint IdExt { get; set; }
 		public byte IdExt_4 { get; set; }
-		public AkPropBundle AkPropBundle1 { get; set; }
-		public AkPropBundle AkPropBundle2 { get; set; }
+		public AkPropBundle AkPropBundle1 { get; set; } = new AkPropBundle();
+		public AkPropBundle AkPropBundle2 { get; set; } = new AkPropBundle();
 
 		public PlayActionParams? PlayActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
 
 		public byte[]? Data { get; set; }
 
+		public CakAction() { }
 
 		public CakAction(BinaryReader binaryReader)
 		{
@@ -91,10 +92,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 		Unmute = 1795,
 	}
 
-	public class AkPropBundle
+	public class AkPropBundle : WwiseObject
 	{
 		public byte PropCount { get; set; }
 		public List<AkProp> Props { get; set; } = new List<AkProp>();
+
+		public AkPropBundle() { }
 
 		public AkPropBundle(BinaryReader binaryReader)
 		{
@@ -116,10 +119,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public class AkProp
+	public class AkProp : WwiseObject
 	{
 		public byte Id { get; set; }
 		public uint Value { get; set; }
+
+		public AkProp() { }
 
 		public AkProp(BinaryReader binaryReader)
 		{
@@ -134,10 +139,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public class PlayActionParams
+	public class PlayActionParams : WwiseObject
 	{
 		public byte ByBitVector { get; set; }
 		public uint FileId { get; set; }
+
+		public PlayActionParams() { }
 
 		public PlayActionParams(BinaryReader binaryReader)
 		{
@@ -153,11 +160,13 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public class ValueActionParams
+	public class ValueActionParams : WwiseObject
 	{
 		public byte ByBitVector { get; set; }
 		public uint ExceptionCount { get; set; }
-		public List<object> Exceptions { get; set; }
+		public List<object>? Exceptions { get; set; }
+
+		public ValueActionParams() { }
 
 		public ValueActionParams(BinaryReader binaryReader)
 		{

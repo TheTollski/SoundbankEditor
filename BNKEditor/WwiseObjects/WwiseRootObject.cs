@@ -7,17 +7,15 @@ using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects
 {
-	[JsonDerivedType(typeof(BankHeader))]
-	[JsonDerivedType(typeof(HircChunk))]
-	[JsonDerivedType(typeof(StringMappingChunk))]
-	public interface WwiseRootObject
+	[JsonDerivedType(typeof(BankHeader), "BKHD")]
+	[JsonDerivedType(typeof(HircChunk), "HIRC")]
+	[JsonDerivedType(typeof(StringMappingChunk), "STID")]
+	public interface WwiseRootObject : WwiseObject
 	{
 		public WwiseRootObjectHeader Header { get; set; }
-
-		public void WriteToBinary(BinaryWriter binaryWriter);
 	}
 
-	public class WwiseRootObjectHeader
+	public class WwiseRootObjectHeader : WwiseObject
 	{
 		public string? DwTag { get; set; }
 		public uint DwChunkSize { get; set; }

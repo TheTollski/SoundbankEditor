@@ -8,7 +8,7 @@ namespace BNKEditor.WwiseObjects
 {
 	public class BankHeader : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; }
+		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
 		public uint DwBankGeneratorVersion { get; set; }
 		public uint DwSoundBankID { get; set; }     // Name of the file
 		public uint DwLanguageID { get; set; }      // Enum 11 - English
@@ -16,6 +16,10 @@ namespace BNKEditor.WwiseObjects
 		public uint DwProjectID { get; set; }
 
 		public byte[]? Padding { get; set; }
+
+		public BankHeader()
+		{
+		}
 
 		public BankHeader(BinaryReader binaryReader)
 		{

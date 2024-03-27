@@ -9,11 +9,12 @@ namespace BNKEditor.WwiseObjects
 {
 	public class StringMappingChunk : WwiseRootObject
 	{
-		public WwiseRootObjectHeader Header { get; set; }
+		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
 		public uint UiType { get; set; }
 		public uint UiSize { get; set; }
 		public List<AKBKHashHeader> BankIDToFileName { get; set; } = new List<AKBKHashHeader>();
 
+		public StringMappingChunk() { }
 
 		public StringMappingChunk(BinaryReader binaryReader)
 		{
@@ -46,11 +47,13 @@ namespace BNKEditor.WwiseObjects
 		}
 	}
 
-	public class AKBKHashHeader
+	public class AKBKHashHeader : WwiseObject
 	{
 		public uint BankId { get; set; }
 		public byte StringSize { get; set; }
-		public string FileName { get; set; }
+		public string FileName { get; set; } = string.Empty;
+
+		public AKBKHashHeader() { }
 
 		public AKBKHashHeader(BinaryReader binaryReader)
 		{

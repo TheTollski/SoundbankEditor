@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems
 {
-	[JsonDerivedType(typeof(CakAction))]
-	[JsonDerivedType(typeof(CAkEvent))]
-	[JsonDerivedType(typeof(HircItemUnknown))]
-	public interface HircItem
+	[JsonDerivedType(typeof(CakAction), "Action")]
+	[JsonDerivedType(typeof(CAkEvent), "Event")]
+	[JsonDerivedType(typeof(HircItemUnknown), "Unknown")]
+	public interface HircItem : WwiseObject
 	{
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
 		public uint UlID { get; set; }
-
-		public void WriteToBinary(BinaryWriter binaryWriter);
 	}
 
 	public enum HircType : byte

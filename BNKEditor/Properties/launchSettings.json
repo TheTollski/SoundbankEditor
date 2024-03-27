@@ -1,6 +1,14 @@
 {
   "profiles": {
-    "BNKEditor": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "BNKEditor_OpenJson": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders_temp.json"
+    },
+    "BNKEditor_OpenBnk": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders.bnk"
     }
