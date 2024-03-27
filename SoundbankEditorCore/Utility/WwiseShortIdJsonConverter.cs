@@ -16,7 +16,7 @@ namespace SoundbankEditor.Core.Utility
 			string valueString = reader.GetString();
 			if (!uint.TryParse(valueString.Split(" ")[0], out uint value))
 			{
-				throw new Exception($"Unable to convert '{valueString}' to a Wwise short ID. The value must be an unsigned integer optionally followed by a space and additional text.");
+				throw new JsonException($"Unable to convert '{valueString}' to a Wwise short ID. The value must be an unsigned integer optionally followed by a space and additional text.");
 			}
 
 			return value;

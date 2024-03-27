@@ -1,6 +1,7 @@
 ﻿using SoundbankEditor.Core;
 using SoundbankEditor.Core.WwiseObjects;
 using SoundbankEditor.Core.WwiseObjects.HircItems;
+using SoundbankEditorCore.Utility;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,10 +36,50 @@ namespace SoundbankEditor
 			}
 		}
 
-		public string? SelectedHircJson { get; set; }
+		private List<HircItem>? _hircItems;
+		public List<HircItem>? HircItems
+		{
+			get
+			{
+				return _hircItems;
+			}
+			set
+			{
+				_hircItems = value;
+				OnPropertyChanged(nameof(HircItems));
+			}
+		}
 
+		private bool _isSelectedHircItemJsonValid;
+		public bool IsSelectedHircItemJsonValid
+		{
+			get
+			{
+				return _isSelectedHircItemJsonValid;
+			}
+			set 
+			{
+				_isSelectedHircItemJsonValid = value;
+				OnPropertyChanged(nameof(IsSelectedHircItemJsonValid));
+			} 
+		}
 
-		private SoundBank? openSoundBank;
+		private string? _selectedHircItemJson;
+		public string? SelectedHircItemJson
+		{
+			get
+			{
+				return _selectedHircItemJson;
+			}
+			set
+			{
+				_selectedHircItemJson = value;
+				OnPropertyChanged(nameof(SelectedHircItemJson));
+			}
+		}
+
+		private bool _isProgrammaticallyChangingSelectedHircItemJson;
+		private SoundBank? _openSoundBank;
 
 		public MainWindow()
 		{
@@ -46,7 +87,7 @@ namespace SoundbankEditor
 			DataContext = this;
 		}
 
-		void OpenFile(object sender, RoutedEventArgs e)
+		private void OpenFile(object sender, RoutedEventArgs e)
 		{
 			System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			openFileDialog1.Filter = $"SoundBank|*.bnk";
@@ -58,27 +99,54 @@ namespace SoundbankEditor
 				return;
 			}
 
-			openSoundBank = SoundBank.CreateFromBnkFile(openFileDialog1.FileName);
+			_openSoundBank = SoundBank.CreateFromBnkFile(openFileDialog1.FileName);
 			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
 
-			dgList.ItemsSource = openSoundBank.HircItems;
-			//dgList.SelectionChanged += SelectedItemChanged;
+			HircItems = _openSoundBank.HircItems;
 		}
 
-		void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+		private void dgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			HircItem selectedItem = (HircItem)dgList.SelectedItem;
-			SelectedHircJson = JsonSerializer.Serialize(
+			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
+
+			_isProgrammaticallyChangingSelectedHircItemJson = true;
+			SelectedHircItemJson = JsonSerializer.Serialize(
 				selectedItem,
 				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
 			);
-			OnPropertyChanged(nameof(SelectedHircJson));
+			_isProgrammaticallyChangingSelectedHircItemJson = false;
 		}
 
+		private void tbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if (SelectedHircItemJson == null)
+			{
+				return;
+			}
 
+			try
+			{
+				HircItem existingHircItem = HircItems[dgHircItems.SelectedIndex];
+				HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(SelectedHircItemJson);
+				if (newHircItem == null)
+				{
+					throw new JsonException();
+				}
 
-		
+				bool hasIdChanged = newHircItem.UlID != existingHircItem.UlID;
 
-		
+				newHircItem.CopyTo(existingHircItem);
+
+				if (!_isProgrammaticallyChangingSelectedHircItemJson && hasIdChanged)
+				{
+					dgHircItems.Items.Refresh();
+				}
+
+				IsSelectedHircItemJsonValid = true;
+			} catch (JsonException ex)
+			{
+				IsSelectedHircItemJsonValid = false;
+			}
+		}
 	}
 }

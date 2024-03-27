@@ -30,8 +30,10 @@
 			</MenuItem>
 		</Menu>
 
-		<DataGrid x:Name="dgList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" 
-							AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="SelectedItemChanged">
+		<DataGrid
+			x:Name="dgHircItems" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" 
+			AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="dgHircItems_SelectionChanged"
+			ItemsSource="{Binding HircItems}">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
 				<DataGridTextColumn Header="ID" Binding="{Binding Path=UlID, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="1*" />
@@ -40,7 +42,23 @@
 
 		<ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1">
 			<TextBox
-							 Text="{Binding SelectedHircJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				x:Name="tbHircItemJson"
+				Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+				TextChanged="tbHircItemJson_TextChanged" />
 		</ScrollViewer>
+		
+		<TextBlock Grid.Row="1" Grid.Column="1" Width="140" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0" Foreground="Red">
+			<TextBlock.Style>
+				<Style TargetType="TextBlock">
+					<Setter Property="Visibility" Value="Visible" />
+					<Style.Triggers>
+						<DataTrigger Binding="{Binding IsSelectedHircItemJsonValid}" Value="True">
+							<Setter Property="Visibility" Value="Hidden" />
+						</DataTrigger>
+					</Style.Triggers>
+				</Style>
+			</TextBlock.Style>
+			Invalid JSON, cannot save!
+		</TextBlock>
 	</Grid>
 </Window>
