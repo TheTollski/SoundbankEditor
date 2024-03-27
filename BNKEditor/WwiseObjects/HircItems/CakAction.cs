@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BNKEditor.WwiseObjects.HircItems.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
 		public uint UlID { get; set; }
-		public ActionType UlActionType { get; set; }
+		public CakActionType UlActionType { get; set; }
 		public uint IdExt { get; set; }
 		public byte IdExt_4 { get; set; }
 		public AkPropBundle AkPropBundle1 { get; set; } = new AkPropBundle();
@@ -33,18 +34,18 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 			UlID = binaryReader.ReadUInt32();
 
-			UlActionType = (ActionType)binaryReader.ReadUInt16();
+			UlActionType = (CakActionType)binaryReader.ReadUInt16();
 			IdExt = binaryReader.ReadUInt32();
 			IdExt_4 = binaryReader.ReadByte();
 			AkPropBundle1 = new AkPropBundle(binaryReader);
 			AkPropBundle2 = new AkPropBundle(binaryReader);
 
 			bool knownType = true;
-			if (UlActionType == ActionType.Mute || UlActionType == ActionType.Unmute)
+			if (UlActionType == CakActionType.Mute || UlActionType == CakActionType.Unmute)
 			{
 				ValueActionParams = new ValueActionParams(binaryReader);
 			}
-			else if (UlActionType == ActionType.Play)
+			else if (UlActionType == CakActionType.Play)
 			{
 				PlayActionParams = new PlayActionParams(binaryReader);
 			}
@@ -85,56 +86,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public enum ActionType : ushort
+	public enum CakActionType : ushort
 	{
 		Resume = 771,
 		Play = 1027,
 		Mute = 1539,
 		Unmute = 1795,
-	}
-
-	public class AkPropBundle : WwiseObject
-	{
-		public byte PropCount { get; set; }
-		public List<AkProp> Props { get; set; } = new List<AkProp>();
-
-		public AkPropBundle() { }
-
-		public AkPropBundle(BinaryReader binaryReader)
-		{
-			PropCount = binaryReader.ReadByte();
-			for (int i = 0; i < PropCount; i++)
-			{
-				Props.Add(new AkProp { Id = binaryReader.ReadByte() });
-			}
-			for (int i = 0; i < PropCount; i++)
-			{
-				Props[i].Value = binaryReader.ReadSingle();
-			}
-		}
-
-		public void WriteToBinary(BinaryWriter binaryWriter)
-		{
-			binaryWriter.Write(PropCount);
-			for (int i = 0; i < Props.Count; i++)
-			{
-				binaryWriter.Write(Props[i].Id);
-			}
-			for (int i = 0; i < Props.Count; i++)
-			{
-				binaryWriter.Write(Props[i].Value);
-			}
-		}
-	}
-
-	public class AkProp
-	{
-		public byte Id { get; set; }
-		public float Value { get; set; }
-
-		public AkProp() { }
-
-		// Note: An AkProp is not stored as a whole in the binary. For a list, all the AkProp IDs are stored and then all the values are stored.
 	}
 
 	public class PlayActionParams : WwiseObject
