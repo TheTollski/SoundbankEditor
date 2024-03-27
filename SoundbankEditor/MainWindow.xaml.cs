@@ -170,8 +170,17 @@ namespace SoundbankEditor
 				return;
 			}
 
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set New HIRC Item ID");
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
 			HircType hircType = (HircType)Enum.Parse(typeof(HircType), selectedItemString);
-			HircItems.Insert(0, HircItemFactory.Create(hircType));
+			HircItem newHircItem = HircItemFactory.Create(hircType);
+			newHircItem.UlID = hircItemIdConverterWindow.Id.Value;
+			HircItems.Insert(0, newHircItem);
+
 			dgHircItems.Items.Refresh();
 			_areChangesPending = true;
 			UpdateTitle();
@@ -205,7 +214,7 @@ namespace SoundbankEditor
 
 			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(selectedItem.UlID);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set HIRC Item ID", selectedItem.UlID);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;

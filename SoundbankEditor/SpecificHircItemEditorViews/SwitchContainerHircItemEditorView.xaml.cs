@@ -81,7 +81,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(_cakSwitchCntr.DefaultSwitch);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Default Switch ID", _cakSwitchCntr.DefaultSwitch);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
@@ -99,7 +99,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(_cakSwitchCntr.NodeBaseParams.DirectParentID);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Direct Parent ID", _cakSwitchCntr.NodeBaseParams.DirectParentID);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
@@ -117,7 +117,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(_cakSwitchCntr.GroupId);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Group ID", _cakSwitchCntr.GroupId);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
@@ -178,7 +178,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(selectedSwitchPackage.SwitchId);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Switch ID", selectedSwitchPackage.SwitchId);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;

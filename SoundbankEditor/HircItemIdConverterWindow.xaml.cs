@@ -23,10 +23,14 @@ namespace SoundbankEditor
 	/// </summary>
 	public partial class HircItemIdConverterWindow : Window
 	{
-		public HircItemIdConverterWindow(uint? originalId = null)
+		public HircItemIdConverterWindow(string title, uint? originalId = null)
 		{
 			InitializeComponent();
+			Title = title;
 			Id = originalId;
+
+			tbIdOrName.Focus();
+			tbIdOrName.SelectAll();
 		}
 
 		public uint? Id
@@ -51,7 +55,7 @@ namespace SoundbankEditor
 			DialogResult = false;
 		}
 
-		private void BtnSave_Click(object sender, RoutedEventArgs e)
+		private void BtnConfirm_Click(object sender, RoutedEventArgs e)
 		{
 			if (Id != null)
 			{

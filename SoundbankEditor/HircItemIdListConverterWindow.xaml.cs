@@ -43,7 +43,13 @@ namespace SoundbankEditor
 
 		private void BtnAdd_Click(object sender, RoutedEventArgs e)
 		{
-			Ids.Insert(0, 0);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set ID");
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			Ids.Insert(0, hircItemIdConverterWindow.Id.Value);
 
 			UpdateIdsDataGrid();
 		}
@@ -79,7 +85,7 @@ namespace SoundbankEditor
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(selectedId);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set ID", selectedId);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;

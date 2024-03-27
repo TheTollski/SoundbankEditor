@@ -39,7 +39,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(_cakSound.NodeBaseParams.DirectParentID);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Direct Parent ID", _cakSound.NodeBaseParams.DirectParentID);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
@@ -61,7 +61,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var hircItemIdConverterWindow = new HircItemIdConverterWindow(_cakSound.AkBankSourceData.AkMediaInformation.FileId);
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set File ID", _cakSound.AkBankSourceData.AkMediaInformation.FileId);
 			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
 			{
 				return;
