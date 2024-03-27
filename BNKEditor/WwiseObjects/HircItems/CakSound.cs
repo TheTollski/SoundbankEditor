@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems
 {
-	public class CakSound : HircItem
+	public class CAkSound : HircItem
 	{
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
@@ -16,9 +16,9 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public AkBankSourceData AkBankSourceData { get; set; } = new AkBankSourceData();
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
 
-		public CakSound() { }
+		public CAkSound() { }
 
-		public CakSound(BinaryReader binaryReader)
+		public CAkSound(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
 			DwSectionSize = binaryReader.ReadUInt32();

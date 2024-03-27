@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems
 {
-	public class CakAction : HircItem
+	public class CAkAction : HircItem
 	{
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
 		public uint UlID { get; set; }
-		public CakActionType UlActionType { get; set; }
+		public CAkActionType UlActionType { get; set; }
 		public uint IdExt { get; set; }
 		public byte IdExt_4 { get; set; }
 		public AkPropBundle AkPropBundle1 { get; set; } = new AkPropBundle();
@@ -23,9 +23,9 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public byte[]? ExtraData { get; set; }
 
-		public CakAction() { }
+		public CAkAction() { }
 
-		public CakAction(BinaryReader binaryReader)
+		public CAkAction(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
 			DwSectionSize = binaryReader.ReadUInt32();
@@ -34,18 +34,18 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 			UlID = binaryReader.ReadUInt32();
 
-			UlActionType = (CakActionType)binaryReader.ReadUInt16();
+			UlActionType = (CAkActionType)binaryReader.ReadUInt16();
 			IdExt = binaryReader.ReadUInt32();
 			IdExt_4 = binaryReader.ReadByte();
 			AkPropBundle1 = new AkPropBundle(binaryReader);
 			AkPropBundle2 = new AkPropBundle(binaryReader);
 
 			bool knownType = true;
-			if (UlActionType == CakActionType.Mute || UlActionType == CakActionType.Unmute)
+			if (UlActionType == CAkActionType.Mute || UlActionType == CAkActionType.Unmute)
 			{
 				ValueActionParams = new ValueActionParams(binaryReader);
 			}
-			else if (UlActionType == CakActionType.Play)
+			else if (UlActionType == CAkActionType.Play)
 			{
 				PlayActionParams = new PlayActionParams(binaryReader);
 			}
@@ -86,7 +86,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public enum CakActionType : ushort
+	public enum CAkActionType : ushort
 	{
 		Resume = 771,
 		Play = 1027,
