@@ -155,12 +155,17 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 			// I'm not sure about some of the value in the bit vector, so this logic will probably need to change.
 
 			bool _positioningInfoOverrideParent = (ByVector >> 0 & 1) == 1;
-			bool _hasListenerRelativeRouting = (ByVector >> 1 & 1) == 1;
+			bool _3dPositioningAvailable = (ByVector >> 3 & 1) == 1;
 
-			if (_positioningInfoOverrideParent && _hasListenerRelativeRouting)
+			if (_positioningInfoOverrideParent && _3dPositioningAvailable)
 			{
 				Bits3d = binaryReader.ReadByte();
 				AttenuationId = binaryReader.ReadUInt32();
+
+				if (Bits3d == 0)
+				{
+					throw new Exception("Cannot handle empty Bits3d.");
+				}
 			}
 		}
 

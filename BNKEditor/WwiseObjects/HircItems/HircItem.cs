@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 namespace BNKEditor.WwiseObjects.HircItems
 {
 	[JsonDerivedType(typeof(CAkAction), "Action")]
+	[JsonDerivedType(typeof(CAkActorMixer), "Actor Mixer")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CAkRanSeqCntr), "Random/Sequence Container")]
 	[JsonDerivedType(typeof(CAkSound), "Sound")]
-	[JsonDerivedType(typeof(CAkSwitchCntr), "SwitchCntr")]
+	[JsonDerivedType(typeof(CAkSwitchCntr), "Switch Container")]
 	[JsonDerivedType(typeof(HircItemUnknown), "Unknown")]
 	public interface HircItem : WwiseObject
 	{
@@ -28,7 +29,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		Event = 4,
 		RandomSequenceContainer = 5,
 		SwitchContainer = 6,
-		//ActorMixer = 7,
+		ActorMixer = 7,
 		//Audio_Bus = 8,
 		//LayerContainer = 9,
 
