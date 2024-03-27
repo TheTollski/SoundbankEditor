@@ -106,7 +106,7 @@ namespace SoundbankEditor
 		{
 			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			openFileDialog.Filter = $"Soundbank|*.bnk";
-			openFileDialog.Title = "Select Soundbank";
+			openFileDialog.Title = "Select Soundbank to Open";
 			openFileDialog.Multiselect = false;
 
 			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -152,6 +152,7 @@ namespace SoundbankEditor
 			btnConvertBnkToJson.IsEnabled = false;
 			btnConvertJsonToBnk.IsEnabled = false;
 			btnGoToHircItem.IsEnabled = true;
+			btnImportHircItem.IsEnabled = true;
 			btnSave.IsEnabled = true;
 			btnSaveAs.IsEnabled = true;
 			btnViewKnownValidationErrorCounts.IsEnabled = true;
@@ -215,6 +216,7 @@ namespace SoundbankEditor
 			btnConvertBnkToJson.IsEnabled = true;
 			btnConvertJsonToBnk.IsEnabled = true;
 			btnGoToHircItem.IsEnabled = false;
+			btnImportHircItem.IsEnabled = false;
 			btnSave.IsEnabled = false;
 			btnSaveAs.IsEnabled = false;
 			btnViewKnownValidationErrorCounts.IsEnabled = false;
@@ -424,6 +426,50 @@ namespace SoundbankEditor
 
 			dgHircItems.SelectedIndex = index;
 			dgHircItems.ScrollIntoView(HircItems[index]);
+		}
+
+		private void BtnImportHircItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundbank == null || HircItems == null)
+			{
+				return;
+			}
+
+			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			openFileDialog.Filter = $"Soundbank|*.bnk";
+			openFileDialog.Title = "Select Soundbank to Import From";
+			openFileDialog.Multiselect = false;
+
+			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+
+			SoundBank soundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
+			if (soundBank.GeneratorVersion != _openSoundbank.GeneratorVersion)
+			{
+				MessageBox.Show($"'{openFileDialog.FileName}' has a different bank generator version from the opened soundbank.");
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Select HIRC Item ID to Import");
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			HircItem? hircItem = soundBank.HircItems.Find(hi => hi.UlID == hircItemIdConverterWindow.Id.Value);
+			if (hircItem == null)
+			{
+				MessageBox.Show($"No HIRC item with ID '{hircItemIdConverterWindow.Id.Value}' was found in '{openFileDialog.FileName}'.");
+				return;
+			}
+
+			HircItems.Insert(dgHircItems.SelectedIndex, hircItem);
+
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
 		}
 
 		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)

@@ -112,7 +112,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			// Validate DefaultSwitch
 			if (!SwitchPackages.Any(sp => sp.SwitchId == DefaultSwitch))
 			{
-				knownValidationErrors.Add($"CAkSwitchCntr's '{UlID}' DefaultSwitch is '{NodeBaseParams.DirectParentID}', but no switch package in the CAkSwitchCntr has that ID.");
+				knownValidationErrors.Add($"CAkSwitchCntr's '{UlID}' DefaultSwitch is '{DefaultSwitch}', but no switch package in the CAkSwitchCntr has that ID.");
 			}
 
 			// Validate ChildIds

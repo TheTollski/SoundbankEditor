@@ -15,11 +15,20 @@ namespace SoundbankEditor.Core
 	{
 		private List<WwiseRootObject> wwiseRootObjects;
 
+		public uint GeneratorVersion
+		{
+			get
+			{
+				BankHeader bankHeader = (BankHeader)wwiseRootObjects.Single(wro => wro.Tag == Enum.GetName(WwiseRootObjectType.BKHD));
+				return bankHeader.BankGeneratorVersion;
+			}
+		}
+
 		public List<HircItem> HircItems
 		{
 			get
 			{
-				HircChunk hircChunk = (HircChunk)wwiseRootObjects.Single(wro => wro.Tag == "HIRC");
+				HircChunk hircChunk = (HircChunk)wwiseRootObjects.Single(wro => wro.Tag == Enum.GetName(WwiseRootObjectType.HIRC));
 				return hircChunk.HircItems;
 			}
 		}
