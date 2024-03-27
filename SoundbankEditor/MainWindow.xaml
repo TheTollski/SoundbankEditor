@@ -28,8 +28,12 @@
 				<MenuItem x:Name="btnSave" Header="Save" Click="BtnSave_Click" IsEnabled="False"></MenuItem>
 				<MenuItem x:Name="btnSaveAs" Header="Save As" Click="BtnSaveAs_Click" IsEnabled="False"></MenuItem>
 				<MenuItem x:Name="btnClose" Header="Close" Click="BtnClose_Click" IsEnabled="False"></MenuItem>
+				<Separator />
 				<MenuItem x:Name="btnConvertBnkToJson" Header="Convert BNK to JSON" Click="BtnConvertBnkToJson_Click"></MenuItem>
 				<MenuItem x:Name="btnConvertJsonToBnk" Header="Convert JSON to BNK" Click="BtnConvertJsonToBnk_Click"></MenuItem>
+			</MenuItem>
+			<MenuItem Header="Help">
+				<MenuItem x:Name="btnAbout" Header="About" Click="BtnAbout_Click"></MenuItem>
 			</MenuItem>
 		</Menu>
 

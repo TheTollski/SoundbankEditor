@@ -287,6 +287,14 @@ namespace SoundbankEditor
 			// TODO: Write custom names file
 		}
 
+		private void BtnAbout_Click(object sender, RoutedEventArgs e)
+		{
+			MessageBox.Show($"" +
+				$"Soundbank Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}\n" +
+				$"Created by: Tollski",
+				"About");
+		}
+
 		private void BtnAddHircItem_Click(object sender, RoutedEventArgs e)
 		{
 			if (_openSoundbank == null)
