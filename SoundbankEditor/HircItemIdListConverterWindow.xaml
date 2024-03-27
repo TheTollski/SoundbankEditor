@@ -1,0 +1,49 @@
+﻿<Window x:Class="SoundbankEditor.HircItemIdListConverterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SoundbankEditor"
+        mc:Ignorable="d"
+        Title="Set Short IDs" Height="250" Width="600">
+	<Window.Resources>
+		<local:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
+	</Window.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="1*" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+		</Grid.RowDefinitions>
+		
+		<Label Grid.Row="0" HorizontalAlignment="Center" >Short IDs</Label>
+
+		<StackPanel Grid.Row = "1" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button x:Name="btnAdd" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Add" Click="BtnAdd_Click"/>
+			<Button x:Name="btnDelete" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Delete" Click="BtnDelete_Click" IsEnabled="False" />
+			<Button x:Name="btnSort" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Sort" Click="BtnSort_Click" />
+			<Button x:Name="btnMoveUp" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Up" Click="BtnMoveUp_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveDown" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Down" Click="BtnMoveDown_Click" IsEnabled="False" />
+		</StackPanel>
+
+		<DataGrid x:Name="dgIds" Grid.Row="2"
+							AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged">
+			<DataGrid.Columns>
+				<DataGridTextColumn Width="100*" Header="ID" Binding="{Binding Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" />
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<DockPanel Grid.Row="3" Width="580" LastChildFill="False">
+			<TextBlock x:Name="tbId" DockPanel.Dock="Left" MaxWidth="480" Text="ID: " />
+			<Button x:Name="btnEditId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit ID" Click="BtnEditId_Click" IsEnabled="False"></Button>
+		</DockPanel>
+
+		<DockPanel Grid.Row="4" Width="300" LastChildFill="false">
+			<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 0, 0, 0" Content="Confirm" Click="BtnConfirm_Click" />
+			<Button DockPanel.Dock="Right" Width="100" Height="20" Margin="0, 0, 10, 0" Content="Cancel" Click="BtnCancel_Click" />
+		</DockPanel>
+	</Grid>
+</Window>

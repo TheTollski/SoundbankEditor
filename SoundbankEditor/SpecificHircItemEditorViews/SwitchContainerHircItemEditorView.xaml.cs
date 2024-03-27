@@ -1,6 +1,7 @@
 ﻿using SoundbankEditor.Core;
 using SoundbankEditor.Core.WwiseObjects.HircItems;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
@@ -66,10 +67,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			_cakSwitchCntr.SwitchPackages.RemoveAt(dgSwitches.SelectedIndex);
 			foreach (uint nodeId in selectedSwitchPackage.NodeIds)
 			{
-				if (!_cakSwitchCntr.SwitchPackages.Any(sp => sp.NodeIds.Contains(nodeId)))
-				{
-					_cakSwitchCntr.SwitchParams.RemoveAll(sp => sp.NodeId == nodeId);
-				}
+				RemoveLinksToNodeIdIfUnused(nodeId);
 			}
 
 			UpdateSwitchesDataGrid();
@@ -130,6 +128,68 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
+		private void BtnEditNodeIds_Click(object sender, RoutedEventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			if (selectedSwitchPackage == null)
+			{
+				return;
+			}
+
+			var hircItemIdListConverterWindow = new HircItemIdListConverterWindow(selectedSwitchPackage.NodeIds);
+			if (hircItemIdListConverterWindow.ShowDialog() != true)
+			{
+				return;
+			}
+
+			List<uint> addedIds = hircItemIdListConverterWindow.Ids.Where(id => !selectedSwitchPackage.NodeIds.Contains(id)).ToList();
+			foreach (uint nodeId in addedIds)
+			{
+				AddLinksToNodeIdIfNecessary(nodeId);
+			}
+
+			List<uint> removedIds = selectedSwitchPackage.NodeIds.Where(id => !hircItemIdListConverterWindow.Ids.Contains(id)).ToList();
+			foreach (uint nodeId in removedIds)
+			{
+				RemoveLinksToNodeIdIfUnused(nodeId);
+			}
+
+			selectedSwitchPackage.NodeIds = hircItemIdListConverterWindow.Ids;
+			UpdateNodeIdsTextBlock();
+			UpdateSwitchesDataGrid();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void BtnEditSwitchId_Click(object sender, RoutedEventArgs e)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			if (selectedSwitchPackage == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow(selectedSwitchPackage.SwitchId);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			selectedSwitchPackage.SwitchId = hircItemIdConverterWindow.Id.Value;
+			UpdateSwitchesDataGrid();
+			UpdateSwitchIdTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
 		private void BtnMoveSwitchDown_Click(object sender, RoutedEventArgs e)
 		{
 			if (_cakSwitchCntr == null || dgSwitches.SelectedIndex < 0 || dgSwitches.SelectedIndex > _cakSwitchCntr.SwitchPackages.Count - 2)
@@ -167,6 +227,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
+			_cakSwitchCntr.ChildIds.Sort((a, b) => WwiseShortIdUtility.CompareShortIds(a, b));
 			_cakSwitchCntr.SwitchPackages.Sort((a, b) => WwiseShortIdUtility.CompareShortIds(a.SwitchId, b.SwitchId));
 			_cakSwitchCntr.SwitchParams.Sort((a, b) => WwiseShortIdUtility.CompareShortIds(a.NodeId, b.NodeId));
 
@@ -180,11 +241,50 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			btnDeleteSwitch.IsEnabled = isASwitchSelected;
 			btnMoveSwitchDown.IsEnabled = isASwitchSelected;
 			btnMoveSwitchUp.IsEnabled = isASwitchSelected;
+			btnEditSwitchId.IsEnabled = isASwitchSelected;
+			btnEditNodeIds.IsEnabled = isASwitchSelected;
+
+			UpdateNodeIdsTextBlock();
+			UpdateSwitchIdTextBlock();
 		}
 
 		//
 		// Helpers
 		//
+
+		private void AddLinksToNodeIdIfNecessary(uint nodeId)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			if (!_cakSwitchCntr.ChildIds.Any(id => id == nodeId))
+			{
+				_cakSwitchCntr.ChildIds.Add(nodeId);
+				_cakSwitchCntr.ChildIds.Sort((a, b) => WwiseShortIdUtility.CompareShortIds(a, b));
+			}
+
+			if (!_cakSwitchCntr.SwitchParams.Any(sp => sp.NodeId == nodeId))
+			{
+				_cakSwitchCntr.SwitchParams.Add(new AkSwitchNodeParams { NodeId = nodeId, ByBitVector2 = 1 });
+				_cakSwitchCntr.SwitchParams.Sort((a, b) => WwiseShortIdUtility.CompareShortIds(a.NodeId, b.NodeId));
+			}
+		}
+
+		private void RemoveLinksToNodeIdIfUnused(uint nodeId)
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			if (!_cakSwitchCntr.SwitchPackages.Any(sp => sp.NodeIds.Contains(nodeId)))
+			{
+				_cakSwitchCntr.ChildIds.RemoveAll(id => id == nodeId);
+				_cakSwitchCntr.SwitchParams.RemoveAll(sp => sp.NodeId == nodeId);
+			}
+		}
 
 		private void UpdateDefaultSwitchIdTextBlock()
 		{
@@ -216,6 +316,32 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			tbGroupId.Text = $"Group ID: {WwiseShortIdUtility.ConvertShortIdToReadableString(_cakSwitchCntr.GroupId)}";
 		}
 
+		private void UpdateNodeIdsTextBlock()
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			string nodeIdsString = selectedSwitchPackage != null
+					? string.Join(',', selectedSwitchPackage.NodeIds.Select(id => WwiseShortIdUtility.ConvertShortIdToReadableString(id)))
+					: "";
+
+			tbNodeIds.Text = $"Node IDs: {nodeIdsString}";
+		}
+
+		private void UpdateSwitchIdTextBlock()
+		{
+			if (_cakSwitchCntr == null)
+			{
+				return;
+			}
+
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
+			tbSwitchId.Text = $"Switch ID: {(selectedSwitchPackage != null ? WwiseShortIdUtility.ConvertShortIdToReadableString(selectedSwitchPackage.SwitchId) : "")}";
+		}
+
 		private void UpdateSwitchesDataGrid()
 		{
 			if (_cakSwitchCntr == null)
@@ -223,7 +349,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			CAkSwitchPackage selectedSwitchPackage = (CAkSwitchPackage)dgSwitches.SelectedItem;
+			CAkSwitchPackage? selectedSwitchPackage = dgSwitches.SelectedItem as CAkSwitchPackage;
 			dgSwitches.ItemsSource = _cakSwitchCntr.SwitchPackages;
 			dgSwitches.Items.Refresh();
 

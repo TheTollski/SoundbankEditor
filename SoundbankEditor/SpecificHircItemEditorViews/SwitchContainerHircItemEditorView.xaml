@@ -20,6 +20,7 @@
 			<RowDefinition Height="30" />
 			<RowDefinition Height="30" />
 			<RowDefinition Height="1*" />
+			<RowDefinition Height="55" />
 		</Grid.RowDefinitions>
 
 		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Switch Container Item Edit Options</Label>
@@ -48,13 +49,13 @@
 			<Button x:Name="btnMoveSwitchUp" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Up" Click="BtnMoveSwitchUp_Click" IsEnabled="False" />
 			<Button x:Name="btnMoveSwitchDown" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Down" Click="BtnMoveSwitchDown_Click" IsEnabled="False" />
 		</StackPanel>
-		
+
 		<DataGrid x:Name="dgSwitches" Grid.Row="4"
 								AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged">
 			<DataGrid.Columns>
-				<DataGridTextColumn Header="Switch ID" Binding="{Binding Path=SwitchId, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="200" />
-				<DataGridTextColumn Header="#Node" Binding="{Binding Path=NodeIds.Count}" IsReadOnly="True" Width="50" />
-				<DataGridTextColumn Header="Node IDs" Binding="{Binding Path=NodeIds, Converter={StaticResource wwiseShortIdsListValueConverter}}" IsReadOnly="True" Width="1*" />
+				<DataGridTextColumn Width="250" Header="Switch ID" Binding="{Binding Path=SwitchId, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" />
+				<DataGridTextColumn Width="50" Header="#Node" Binding="{Binding Path=NodeIds.Count}" IsReadOnly="True" />
+				<DataGridTextColumn Width="1*" Header="Node IDs" Binding="{Binding Path=NodeIds, Converter={StaticResource wwiseShortIdsListValueConverter}}" IsReadOnly="True" />
 			</DataGrid.Columns>
 			<!--<DataGrid.ContextMenu>
 					<ContextMenu>
@@ -62,5 +63,16 @@
 					</ContextMenu>
 				</DataGrid.ContextMenu>-->
 		</DataGrid>
+
+		<StackPanel Grid.Row="5">
+			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
+				<TextBlock x:Name="tbSwitchId" DockPanel.Dock="Left" MaxWidth="480" Text="Switch ID: " />
+				<Button x:Name="btnEditSwitchId" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Switch ID" Click="BtnEditSwitchId_Click" IsEnabled="False"></Button>
+			</DockPanel>
+			<DockPanel Width="580" LastChildFill="False" Margin="0, 5, 0, 0">
+				<TextBlock x:Name="tbNodeIds" DockPanel.Dock="Left" MaxWidth="480" Text="Node IDs: " />
+				<Button x:Name="btnEditNodeIds" DockPanel.Dock="Right" Width="100" Height="20" Content="Edit Node IDs" Click="BtnEditNodeIds_Click" IsEnabled="False"></Button>
+			</DockPanel>
+		</StackPanel>
 	</Grid>
 </UserControl>
