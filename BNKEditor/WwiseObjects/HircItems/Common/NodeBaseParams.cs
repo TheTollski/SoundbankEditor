@@ -1,8 +1,10 @@
-﻿using System;
+﻿using BNKEditor.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems.Common
@@ -11,7 +13,9 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 	{
 		public NodeInitialFxParams NodeInitialFxParams { get; set; } = new NodeInitialFxParams();
 		public byte OverrideAttachmentParams { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint OverrideBusId { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint DirectParentID { get; set; }
 		public byte ByBitVector { get; set; }
 		public NodeInitialParams NodeInitialParams { get; set; } = new NodeInitialParams();
@@ -148,6 +152,7 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 	{
 		public byte ByVector { get; set; }
 		public byte? Bits3d { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint? AttenuationId { get; set; }
 
 		public PositioningParams() { }
@@ -297,6 +302,7 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 	public class Rtpc : WwiseObject
 	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint RtpcId { get; set; }
 		public byte RtpcType { get; set; }
 		public byte RtpcAccum { get; set; }

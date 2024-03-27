@@ -35,27 +35,15 @@ if (fileExtension == "bnk")
 {
 	Console.WriteLine($"Converting BNK to JSON...");
 
-	using FileStream fileStream = File.OpenRead(args[0]);
-	using BinaryReader binaryReader = new BinaryReader(fileStream);
+	SoundBank soundBank = SoundBank.CreateFromBnkFile(args[0]);
 
-	BnkReader bnkReader = new BnkReader();
-	List<WwiseRootObject> wwiseRootObjects = bnkReader.Parse(binaryReader);
+	string outputJsonFilePath = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.json";
+	soundBank.WriteToJsonFile(outputJsonFilePath);
 
-	string bnkJson = JsonSerializer.Serialize(
-		wwiseRootObjects,
-		new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
-	);
-
-	string path = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.json";
-
-	Console.WriteLine($"Writing JSON to file: '{path}'");
-
-	File.WriteAllText(path, bnkJson);
-
-	Console.WriteLine("JSON file saved.");
+	Console.WriteLine($"JSON file saved: '{outputJsonFilePath}'");
 
 	ProcessStartInfo psi = new ProcessStartInfo();
-	psi.FileName = path;
+	psi.FileName = outputJsonFilePath;
 	psi.UseShellExecute = true;
 	Process.Start(psi);
 
@@ -66,32 +54,12 @@ if (fileExtension == "json")
 {
 	Console.WriteLine($"Converting JSON to BNK...");
 
-	string fileText = File.ReadAllText(args[0]);
+	SoundBank soundBank = SoundBank.CreateFromJsonFile(args[0]);
 
-	List<WwiseRootObject>? wwiseRootObjects = JsonSerializer.Deserialize<List<WwiseRootObject>>(fileText);
-	if (wwiseRootObjects == null)
-	{
-		Console.WriteLine($"Unable to parse Wwise objects from JSON file. Exiting...");
-		return;
-	}
+	string outputBnkFilePath = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.bnk";
+	soundBank.WriteToBnkFile(outputBnkFilePath);
 
-	using MemoryStream memoryStream = new MemoryStream();
-	using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-
-	for (int i = 0; i < wwiseRootObjects.Count; i++)
-	{
-		wwiseRootObjects[i].WriteToBinary(binaryWriter);
-	}
-
-	byte[] serializedBytes = memoryStream.ToArray();
-
-	string path = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.bnk";
-
-	Console.WriteLine($"Writing to BNK file: '{path}'");
-
-	File.WriteAllBytes(path, serializedBytes);
-
-	Console.WriteLine("BNK file saved.");
+	Console.WriteLine($"BNK file saved: '{outputBnkFilePath}'");
 
 	return;
 }

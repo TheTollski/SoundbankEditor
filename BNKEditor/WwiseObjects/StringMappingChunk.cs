@@ -1,8 +1,10 @@
-﻿using System;
+﻿using BNKEditor.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects
@@ -58,6 +60,7 @@ namespace BNKEditor.WwiseObjects
 
 	public class AKBKHashHeader : WwiseObject
 	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint BankId { get; set; }
 		public byte StringSize { get; set; }
 		public string FileName { get; set; } = string.Empty;

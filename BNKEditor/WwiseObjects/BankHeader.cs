@@ -1,7 +1,9 @@
-﻿using System;
+﻿using BNKEditor.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects
@@ -10,9 +12,11 @@ namespace BNKEditor.WwiseObjects
 	{
 		public WwiseRootObjectHeader Header { get; set; } = new WwiseRootObjectHeader();
 		public uint DwBankGeneratorVersion { get; set; }
-		public uint DwSoundBankID { get; set; }     // Name of the file
-		public uint DwLanguageID { get; set; }      // Enum 11 - English
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint DwSoundBankID { get; set; }
+		public uint DwLanguageID { get; set; }
 		public uint BFeedbackInBank { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint DwProjectID { get; set; }
 
 		public byte[]? Padding { get; set; }

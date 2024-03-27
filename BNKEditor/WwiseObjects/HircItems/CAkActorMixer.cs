@@ -1,8 +1,10 @@
-﻿using BNKEditor.WwiseObjects.HircItems.Common;
+﻿using BNKEditor.Utility;
+using BNKEditor.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems
@@ -11,9 +13,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 	{
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
 		public uint ChildCount { get; set; }
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> ChildIds { get; set; } = new List<uint>();
 
 		public CAkActorMixer() { }

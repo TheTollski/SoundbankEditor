@@ -8,8 +8,18 @@ namespace BNKEditor
 {
 	public class WwiseShortIdUtility
 	{
+		public static Dictionary<uint, string> KnownShortIdsMap = new Dictionary<uint, string>();
+
 		const uint FNV1_32_BIT_OFFSET_BASIS = 2166136261;
 		const uint FNV1_32_BIT_PRIME = 16777619;
+
+		public static void AddNames(List<string> names)
+		{
+			foreach (string name in names)
+			{
+				KnownShortIdsMap[ConvertToShortId(name)] = name;
+			}
+		}
 
 		public static uint ConvertToShortId(string name)
 		{

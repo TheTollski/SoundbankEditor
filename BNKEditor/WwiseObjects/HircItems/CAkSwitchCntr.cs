@@ -1,8 +1,10 @@
-﻿using BNKEditor.WwiseObjects.HircItems.Common;
+﻿using BNKEditor.Utility;
+using BNKEditor.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor.WwiseObjects.HircItems
@@ -11,13 +13,17 @@ namespace BNKEditor.WwiseObjects.HircItems
 	{
 		public HircType EHircType { get; set; }
 		public uint DwSectionSize { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
 		public byte GroupType { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint GroupId { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint DefaultSwitch { get; set; }
 		public byte IsContinuousValidation { get; set; }
 		public uint ChildCount { get; set; }
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> ChildIds { get; set; } = new List<uint>();
 		public uint SwitchPackageCount { get; set; }
 		public List<CAkSwitchPackage> SwitchPackages { get; set; } = new List<CAkSwitchPackage>();
@@ -115,8 +121,10 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 	public class CAkSwitchPackage : WwiseObject
 	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint SwitchId { get; set; }
 		public uint NodeCount { get; set; }
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> NodeIds { get; set; } = new List<uint>();
 
 		public CAkSwitchPackage() { }
@@ -149,6 +157,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 	public class AkSwitchNodeParams : WwiseObject
 	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint NodeId { get; set; }
 		public byte ByBitVector1 { get; set; }
 		public byte ByBitVector2 { get; set; }
