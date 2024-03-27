@@ -5,11 +5,11 @@ VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BNKEditor", "BNKEditor\BNKEditor.csproj", "{5F681DE2-E9FF-44E2-8356-52735D87CC1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BNKEditorTests", "BNKEditorTests\BNKEditorTests.csproj", "{F21834D4-C487-4C87-88D0-B562C81EE669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundbankEditorTests", "BNKEditorTests\SoundbankEditorTests.csproj", "{F21834D4-C487-4C87-88D0-B562C81EE669}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundbankEditorCore", "SoundbankEditorCore\SoundbankEditorCore.csproj", "{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundbankEditorCore", "SoundbankEditorCore\SoundbankEditorCore.csproj", "{CB849CB6-CEF5-4561-8644-BAF1C720F9AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundbankEditor", "SoundbankEditor\SoundbankEditor.csproj", "{B0202B52-10A3-4BEA-BA81-C992D786597D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundbankEditor", "SoundbankEditor\SoundbankEditor.csproj", "{B0202B52-10A3-4BEA-BA81-C992D786597D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,7 +3,7 @@ using SoundbankEditor.Core.WwiseObjects;
 using System.IO;
 using System.IO.Pipes;
 
-namespace BNKEditorTests
+namespace SoundbankEditorTests
 {
 	public class SoundBankTests
 	{
