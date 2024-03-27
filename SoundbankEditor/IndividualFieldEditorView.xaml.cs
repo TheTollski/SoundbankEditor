@@ -67,7 +67,7 @@ namespace SoundbankEditor
 
 		private void UpdateText()
 		{
-			string? value = IsValueAShortId && Value != null
+			string? value = IsValueAShortId && !string.IsNullOrEmpty(Value)
 				? WwiseShortIdUtility.ConvertShortIdToReadableString(uint.Parse(Value))
 				: Value;
 

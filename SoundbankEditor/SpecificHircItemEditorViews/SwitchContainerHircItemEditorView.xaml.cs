@@ -205,6 +205,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 			List<uint> addedIds = hircItemIdListConverterWindow.Ids.Where(id => !selectedSwitchPackage.NodeIds.Contains(id)).ToList();
 			List<uint> removedIds = selectedSwitchPackage.NodeIds.Where(id => !hircItemIdListConverterWindow.Ids.Contains(id)).ToList();
+
 			selectedSwitchPackage.NodeIds = hircItemIdListConverterWindow.Ids;
 
 			foreach (uint nodeId in addedIds)

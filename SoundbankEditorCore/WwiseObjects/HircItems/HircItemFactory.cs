@@ -26,7 +26,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			}
 			if (hircType == HircType.RandomSequenceContainer) // 5
 			{
-				return binaryReader != null ? new CAkRanSeqCntr(binaryReader) : new CAkRanSeqCntr();
+				return binaryReader != null ? new CAkRanSeqCntr(binaryReader) : CreateCakRanSeqCntrForBattleVoOrders();
 			}
 			if (hircType == HircType.SwitchContainer) // 6
 			{
@@ -46,6 +46,70 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			}
 
 			return binaryReader != null ? new HircItemUnknown(binaryReader) : new HircItemUnknown();
+		}
+
+		public static CAkRanSeqCntr CreateCakRanSeqCntrForBattleVoOrders()
+		{
+			return new CAkRanSeqCntr
+			{
+				NodeBaseParams = new NodeBaseParams
+				{
+					NodeInitialFxParams = new NodeInitialFxParams
+					{
+						IsOverrideParentFX = 0,
+						FxChunks = new List<FxChunk> { },
+					},
+					OverrideAttachmentParams = 0,
+					OverrideBusId = 0,
+					DirectParentID = 0,
+					ByBitVector = 0,
+					NodeInitialParams = new NodeInitialParams
+					{
+						AkPropBundle1 = new AkPropBundle(),
+						AkPropBundle2 = new AkPropBundle(),
+					},
+					PositioningParams = new PositioningParams
+					{
+						ByVector = 192,
+					},
+					AuxParams = new AuxParams
+					{
+						ByBitVector = 0,
+					},
+					AdvSettingsParams = new AdvSettingsParams
+					{
+						ByBitVector1 = 0,
+						VirtualQueueBehavior = 1,
+						MaxNumInstance = 0,
+						BelowThresholdBehavior = 0,
+						ByBitVector2 = 0,
+					},
+					StateChunk = new StateChunk
+					{
+						StateGroups = new List<object>(),
+					},
+					InitialRtpc = new InitialRtpc
+					{
+						RtpcList = new List<Rtpc>(),
+					},
+				},
+				LoopCount = 1,
+				LoopModMin = 0,
+				LoopModMax = 0,
+				TransitionTime = 1000,
+				TransitionTimeModMin = 0,
+				TransitionTimeModMax = 0,
+				AvoidRepeatCount = 1,
+				TransitionMode = 0,
+				RandomMode = 0,
+				Mode = 0,
+				ByBitVector = 18,
+				ChildIds = new List<uint>(),
+				CAkPlayList = new CAkPlayList
+				{
+					PlaylistItems = new List<AkPlaylistItem>(),
+				},
+			};
 		}
 
 		public static CAkSound CreateCAkSoundForBattleVoOrders()

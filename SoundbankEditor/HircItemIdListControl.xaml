@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="SoundbankEditor.HircItemIdListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoundbankEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="600">
+	<UserControl.Resources>
+		<local:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
+	</UserControl.Resources>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="1*" />
+			<RowDefinition Height="30" />
+
+		</Grid.RowDefinitions>
+
+		<Label x:Name="lHeader" Grid.Row="0" HorizontalAlignment="Center" FontSize="14">IDs</Label>
+
+		<StackPanel Grid.Row = "1" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button x:Name="btnAdd" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Add" Click="BtnAdd_Click" IsEnabled="False" />
+			<Button x:Name="btnDelete" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Delete" Click="BtnDelete_Click" IsEnabled="False" />
+			<Button x:Name="btnSort" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Sort" Click="BtnSort_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveUp" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Up" Click="BtnMoveUp_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveDown" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Down" Click="BtnMoveDown_Click" IsEnabled="False" />
+		</StackPanel>
+
+		<DataGrid x:Name="dgIds" Grid.Row="2"
+						AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgSwitches_SelectionChanged" CanUserSortColumns="False">
+			<DataGrid.Columns>
+				<DataGridTextColumn Width="100*" Header="ID" Binding="{Binding Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" />
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<local:IndividualFieldEditorView x:Name="ifevId" Grid.Row="3" Margin="0,5,0,0" Title="ID" IsValueAShortId="True" OnEditClicked="IfevEditId_Click" IsEnabled="False" />
+	</Grid>
+</UserControl>

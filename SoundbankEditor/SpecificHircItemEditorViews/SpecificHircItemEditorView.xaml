@@ -39,10 +39,8 @@
 
 	<ContentPresenter Content="{Binding HircItem}">
 		<ContentPresenter.Resources>
-			<DataTemplate DataType="{x:Type hircItems:CAkAction}">
-				<Grid>
-					<Label Content="Action Template"></Label>
-				</Grid>
+			<DataTemplate DataType="{x:Type hircItems:CAkRanSeqCntr}">
+				<local:RandomSequenceContainerHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
 			</DataTemplate>
 			<DataTemplate DataType="{x:Type hircItems:CAkSound}">
 				<local:SoundHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
