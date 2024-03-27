@@ -21,7 +21,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SoundbankEditor
 {
@@ -83,8 +82,8 @@ namespace SoundbankEditor
 
 		private bool _areChangesPending;
 		private bool _isProgrammaticallyChangingSelectedHircItemJson;
-		private string? _openFilePath;
-		private SoundBank? _openSoundBank;
+		private SoundBank? _openSoundbank;
+		private string? _openSoundbankFilePath;
 		private int _selectedHircItemIndex = -1;
 
 		public MainWindow()
@@ -111,18 +110,25 @@ namespace SoundbankEditor
 				return;
 			}
 
-			_openSoundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
-			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
+			_openSoundbankFilePath = openFileDialog.FileName;
+			_openSoundbank = SoundBank.CreateFromBnkFile(_openSoundbankFilePath);
+			HircItems = _openSoundbank.HircItems;
 
-			HircItems = _openSoundBank.HircItems;
-			_openFilePath = openFileDialog.FileName;
+			WwiseShortIdUtility.ClearNames();
+			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList(), false);
+			string customNamesPath = GetCustomNamesFilePath();
+			if (File.Exists(customNamesPath))
+			{
+				WwiseShortIdUtility.AddNames(File.ReadAllLines(customNamesPath).ToList(), true);
+			}
+
 			_areChangesPending = false;
 			UpdateTitle();
 		}
 
 		private void BtnSave_Click(object sender, RoutedEventArgs e)
 		{
-			if (_openSoundBank == null || _openFilePath == null)
+			if (_openSoundbank == null || _openSoundbankFilePath == null)
 			{
 				return;
 			}
@@ -132,7 +138,7 @@ namespace SoundbankEditor
 
 		private void BtnSaveAs_Click(object sender, RoutedEventArgs e)
 		{
-			if (_openSoundBank == null)
+			if (_openSoundbank == null)
 			{
 				return;
 			}
@@ -146,13 +152,13 @@ namespace SoundbankEditor
 				return;
 			}
 
-			_openFilePath = saveFileDialog.FileName;
+			_openSoundbankFilePath = saveFileDialog.FileName;
 			SaveFile();
 		}
 
 		private void BtnAddHircItem_Click(object sender, RoutedEventArgs e)
 		{
-			if (_openSoundBank == null)
+			if (_openSoundbank == null)
 			{
 				return;
 			}
@@ -172,7 +178,7 @@ namespace SoundbankEditor
 
 		private void BtnDeleteHircItem_Click(object sender, RoutedEventArgs e)
 		{
-			if (_openSoundBank == null)
+			if (_openSoundbank == null)
 			{
 				return;
 			}
@@ -261,7 +267,7 @@ namespace SoundbankEditor
 
 			Dispatcher.Invoke(async () => // Run task in current thread.
 			{
-				await Task.Delay(100);
+				await Task.Delay(500);
 				if (cancellationToken.IsCancellationRequested)
 				{
 					return;
@@ -315,21 +321,32 @@ namespace SoundbankEditor
 		// Helper Functions
 		//
 
+		private string GetCustomNamesFilePath()
+		{
+			if (_openSoundbankFilePath == null)
+			{
+				throw new Exception($"No soundbank is open.");
+			}
+
+			return $"{Path.GetDirectoryName(_openSoundbankFilePath)}\\{Path.GetFileNameWithoutExtension(_openSoundbankFilePath)}_custom_names.txt";
+		}
+
 		private void SaveFile()
 		{
-			if (_openSoundBank == null || _openFilePath == null)
+			if (_openSoundbank == null || _openSoundbankFilePath == null)
 			{
 				return;
 			}
 
-			_openSoundBank.WriteToBnkFile(_openFilePath);
+			_openSoundbank.WriteToBnkFile(_openSoundbankFilePath);
+			File.WriteAllLines(GetCustomNamesFilePath(), WwiseShortIdUtility.GetAllNames(true));
 			_areChangesPending = false;
 			UpdateTitle();
 		}
 
 		private void UpdateTitle()
 		{
-			Title = $"{(_areChangesPending ? "*" : string.Empty)}{System.IO.Path.GetFileName(_openFilePath)} - Soundbank Editor";
+			Title = $"{(_areChangesPending ? "*" : string.Empty)}{System.IO.Path.GetFileName(_openSoundbankFilePath)} - Soundbank Editor";
 		}
 	}
 }

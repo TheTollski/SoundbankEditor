@@ -35,6 +35,7 @@ if (fileExtension == "bnk")
 {
 	Console.WriteLine($"Converting BNK to JSON...");
 
+	WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
 	SoundBank soundBank = SoundBank.CreateFromBnkFile(args[0]);
 
 	string outputJsonFilePath = $"{Path.GetDirectoryName(args[0])}\\{Path.GetFileNameWithoutExtension(args[0])}_temp.json";

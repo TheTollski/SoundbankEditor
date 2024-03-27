@@ -8,17 +8,52 @@ namespace SoundbankEditor.Core
 {
 	public class WwiseShortIdUtility
 	{
-		public static Dictionary<uint, string> KnownShortIdsMap = new Dictionary<uint, string>();
+		private static Dictionary<uint, string> KnownBaseShortIdsMap = new Dictionary<uint, string>();
+		private static Dictionary<uint, string> KnownCustomShortIdsMap = new Dictionary<uint, string>();
 
 		const uint FNV1_32_BIT_OFFSET_BASIS = 2166136261;
 		const uint FNV1_32_BIT_PRIME = 16777619;
 
-		public static void AddNames(List<string> names)
+		public static void AddNames(List<string> names, bool areCustom = false)
 		{
+			var dict = areCustom ? KnownCustomShortIdsMap : KnownBaseShortIdsMap;
+
 			foreach (string name in names)
 			{
-				KnownShortIdsMap[ConvertToShortId(name)] = name;
+				dict[ConvertToShortId(name)] = name;
 			}
+		}
+
+		public static void ClearNames()
+		{
+			KnownBaseShortIdsMap.Clear();
+			KnownCustomShortIdsMap.Clear();
+		}
+
+		public static List<string> GetAllNames(bool onlyIncludeCustom)
+		{
+			List<string> names = KnownCustomShortIdsMap.Values.ToList();
+			if (!onlyIncludeCustom)
+			{
+				names.AddRange(KnownBaseShortIdsMap.Values.ToList());
+			}
+
+			return names;
+		}
+
+		public static string? GetNameFromShortId(uint shortId)
+		{
+			if (KnownBaseShortIdsMap.ContainsKey(shortId))
+			{
+				return KnownBaseShortIdsMap[shortId];
+			}
+
+			if (KnownCustomShortIdsMap.ContainsKey(shortId))
+			{
+				return KnownCustomShortIdsMap[shortId];
+			}
+
+			return null;
 		}
 
 		public static uint ConvertToShortId(string name)
