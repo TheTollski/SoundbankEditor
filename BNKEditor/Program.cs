@@ -52,7 +52,7 @@ if (fileExtension == "bnk")
 
 if (fileExtension == "json")
 {
-	if (File.ReadAllText(args[0]).Contains("\"A\""))
+	if (File.ReadAllText(args[0]).Contains("\"Events\""))
 	{
 		Console.WriteLine($"Converting JSON to DAT...");
 
@@ -93,6 +93,8 @@ if (fileExtension == "dat")
 	psi.FileName = outputJsonFilePath;
 	psi.UseShellExecute = true;
 	Process.Start(psi);
+
+	return;
 }
 
 Console.WriteLine($"Unsupported file extension '{fileExtension}'. Exiting...");

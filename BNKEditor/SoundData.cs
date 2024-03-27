@@ -1,39 +1,54 @@
-﻿using BNKEditor.WwiseObjects;
+﻿using BNKEditor.Utility;
+using BNKEditor.WwiseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace BNKEditor
 {
 	public class SoundData
 	{
-		public List<Tuple<string, uint>> A { get; set; }
-		public List<Tuple<string, List<string>>> B { get; set; }
-		public List<Tuple<string, List<string>>> C { get; set; }
-		public List<Tuple<string, List<uint>>> D { get; set; }
-		public List<string> E { get; set; }
-		public List<Tuple<uint, List<Tuple<uint, List<uint>>>>> F { get; set; }
+		public List<DatEvent> Events { get; set; }
+		public List<DatEnumWithStrings> Enums1 { get; set; } // These appears to be the different Groups that are available for switch containers to use.
+		public List<DatEnumWithStrings> Enums2 { get; set; }
+		public List<DatEnumWithUints> Enums3 { get; set; }
+		public List<string> Settings { get; set; }
+		public List<DatUnknownParent> Unknowns { get; set; }
 
-		public SoundData() { }
-
-		private SoundData(
-			List<Tuple<string, uint>> a,
-			List<Tuple<string, List<string>>> b,
-			List<Tuple<string, List<string>>> c,
-			List<Tuple<string, List<uint>>> d,
-			List<string> e,
-			List<Tuple<uint, List<Tuple<uint, List<uint>>>>> f
+		[JsonConstructor]
+		public SoundData(
+			List<DatEvent> events,
+			List<DatEnumWithStrings> enums1,
+			List<DatEnumWithStrings> enums2,
+			List<DatEnumWithUints> enums3,
+			List<string> settings,
+			List<DatUnknownParent> unknowns
 		)
 		{
-			A = a;
-			B = b;
-			C = c;
-			D = d;
-			E = e;
-			F = f;
+			Events = events;
+			Enums1 = enums1;
+			Enums2 = enums2;
+			Enums3 = enums3;
+			Settings = settings;
+			Unknowns = unknowns;
+		}
+
+		public void AddNames()
+		{
+			var names = new List<string>();
+			names.AddRange(Events.Select(e => e.Key));
+			names.AddRange(Enums1.Select(e => e.Key));
+			names.AddRange(Enums1.SelectMany(e => e.Values));
+			names.AddRange(Enums2.Select(e => e.Key));
+			names.AddRange(Enums2.SelectMany(e => e.Values));
+			names.AddRange(Enums3.Select(e => e.Key));
+			names.AddRange(Settings);
+
+			WwiseShortIdUtility.AddNames(names);
 		}
 
 		public static SoundData CreateFromDatFile(string inputDatFilePath)
@@ -41,112 +56,112 @@ namespace BNKEditor
 			using FileStream fileStream = File.OpenRead(inputDatFilePath);
 			using BinaryReader binaryReader = new BinaryReader(fileStream);
 
-			uint aSize = binaryReader.ReadUInt32();
-			var a = new List<Tuple<string, uint>>();
-			for (int i = 0; i < aSize; i++)
+			uint eventCount = binaryReader.ReadUInt32();
+			var events = new List<DatEvent>();
+			for (int i = 0; i < eventCount; i++)
 			{
-				uint stringSize = binaryReader.ReadUInt32();
-				string s = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize));
-				uint id = binaryReader.ReadUInt32();
+				uint keySize = binaryReader.ReadUInt32();
+				string key = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)keySize));
+				uint value = binaryReader.ReadUInt32();
 
-				a.Add(Tuple.Create(s, id));
+				events.Add(new DatEvent { Key = key, Value = value});
 			}
 
-			uint bSize = binaryReader.ReadUInt32();
-			var b = new List<Tuple<string, List<string>>>();
-			for (int i = 0; i < bSize; i++)
+			uint enums1Count = binaryReader.ReadUInt32();
+			var enums1 = new List<DatEnumWithStrings>();
+			for (int i = 0; i < enums1Count; i++)
 			{
-				uint stringSize1 = binaryReader.ReadUInt32();
-				string s1 = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize1));
+				uint keySize = binaryReader.ReadUInt32();
+				string key = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)keySize));
 				
-				uint arraySize = binaryReader.ReadUInt32();
-				var array = new List<string>();
-				for (int j = 0; j < arraySize; j++)
+				uint valueCount = binaryReader.ReadUInt32();
+				var values = new List<string>();
+				for (int j = 0; j < valueCount; j++)
 				{
-					uint stringSize2 = binaryReader.ReadUInt32();
-					string s2 = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize2));
+					uint stringSize = binaryReader.ReadUInt32();
+					string value = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize));
 
-					array.Add(s2);
+					values.Add(value);
 				}
 
-				b.Add(Tuple.Create(s1, array));
+				enums1.Add(new DatEnumWithStrings { Key = key, Values = values});
 			}
 
-			uint cSize = binaryReader.ReadUInt32();
-			var c = new List<Tuple<string, List<string>>>();
-			for (int i = 0; i < cSize; i++)
+			uint enums2Count = binaryReader.ReadUInt32();
+			var enums2 = new List<DatEnumWithStrings>();
+			for (int i = 0; i < enums2Count; i++)
 			{
-				uint stringSize1 = binaryReader.ReadUInt32();
-				string s1 = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize1));
+				uint keySize = binaryReader.ReadUInt32();
+				string key = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)keySize));
 
-				uint arraySize = binaryReader.ReadUInt32();
-				var array = new List<string>();
-				for (int j = 0; j < arraySize; j++)
+				uint valueCount = binaryReader.ReadUInt32();
+				var values = new List<string>();
+				for (int j = 0; j < valueCount; j++)
 				{
-					uint stringSize2 = binaryReader.ReadUInt32();
-					string s2 = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize2));
+					uint stringSize = binaryReader.ReadUInt32();
+					string value = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize));
 
-					array.Add(s2);
+					values.Add(value);
 				}
 
-				c.Add(Tuple.Create(s1, array));
+				enums2.Add(new DatEnumWithStrings { Key = key, Values = values });
 			}
 
-			uint dSize = binaryReader.ReadUInt32();
-			var d = new List<Tuple<string, List<uint>>>();
-			for (int i = 0; i < dSize; i++)
+			uint enums3Count = binaryReader.ReadUInt32();
+			var enums3 = new List<DatEnumWithUints>();
+			for (int i = 0; i < enums3Count; i++)
 			{
-				uint stringSize = binaryReader.ReadUInt32();
-				string s = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize));
+				uint keySize = binaryReader.ReadUInt32();
+				string key = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)keySize));
 
-				uint arraySize = binaryReader.ReadUInt32();
-				var array = new List<uint>();
-				for (int j = 0; j < arraySize; j++)
+				uint valueCount = binaryReader.ReadUInt32();
+				var values = new List<uint>();
+				for (int j = 0; j < valueCount; j++)
 				{
-					array.Add(binaryReader.ReadUInt32());
+					values.Add(binaryReader.ReadUInt32());
 				}
 
-				d.Add(Tuple.Create(s, array));
+				enums3.Add(new DatEnumWithUints { Key = key, Values = values });
 			}
 
-			uint eSize = binaryReader.ReadUInt32();
-			var e = new List<string>();
-			for (int i = 0; i < eSize; i++)
+			uint settingCount = binaryReader.ReadUInt32();
+			var settings = new List<string>();
+			for (int i = 0; i < settingCount; i++)
 			{
-				uint stringSize = binaryReader.ReadUInt32();
-				string s = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)stringSize));
+				uint settingSize = binaryReader.ReadUInt32();
+				string setting = Encoding.UTF8.GetString(binaryReader.ReadBytes((int)settingSize));
 
-				e.Add(s);
+				settings.Add(setting);
 			}
 
-			uint fSize = binaryReader.ReadUInt32();
-			var f = new List<Tuple<uint, List<Tuple<uint, List<uint>>>>>();
-			for (int i = 0; i < fSize; i++)
+			uint unknownCount = binaryReader.ReadUInt32();
+			var unknowns = new List<DatUnknownParent>();
+			for (int i = 0; i < unknownCount; i++)
 			{
-				uint val1 = binaryReader.ReadUInt32();
+				var unknownParent = new DatUnknownParent();
+				unknownParent.Key = binaryReader.ReadUInt32();
 				
-				uint arraySize1 = binaryReader.ReadUInt32();
-				var array1 = new List<Tuple<uint, List<uint>>>();
-				for (int j = 0; j < arraySize1; j++)
+				uint unknownParentValueCount = binaryReader.ReadUInt32();
+				unknownParent.Values = new List<DatUnknownChild>();
+				for (int j = 0; j < unknownParentValueCount; j++)
 				{
-					uint val2 = binaryReader.ReadUInt32();
+					var unknownChild = new DatUnknownChild();
+					unknownChild.Key = binaryReader.ReadUInt32();
 
-					uint arraySize2 = binaryReader.ReadUInt32();
-					var array2 = new List<uint>();
-					for (int k = 0; k < arraySize2; k++)
+					uint unknownChildValueCount = binaryReader.ReadUInt32();
+					unknownChild.Values = new List<uint>();
+					for (int k = 0; k < unknownChildValueCount; k++)
 					{
-						uint val3 = binaryReader.ReadUInt32();
-
-						array2.Add(val3);
+						unknownChild.Values.Add(binaryReader.ReadUInt32());
 					}
 
-					array1.Add(Tuple.Create(val2, array2));
+					unknownParent.Values.Add(unknownChild);
 				}
 
-				f.Add(Tuple.Create(val1, array1));
+				unknowns.Add(unknownParent);
 			}
 
-			return new SoundData(a, b, c, d, e, f);
+			return new SoundData(events, enums1, enums2, enums3, settings, unknowns);
 		}
 
 		public static SoundData CreateFromJsonFile(string inputJsonFilePath)
@@ -176,64 +191,64 @@ namespace BNKEditor
 			using MemoryStream memoryStream = new MemoryStream();
 			using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 
-			binaryWriter.Write((uint)A.Count);
-			for (int i = 0; i < A.Count; i++)
+			binaryWriter.Write((uint)Events.Count);
+			for (int i = 0; i < Events.Count; i++)
 			{
-				WriteStringToBinary(binaryWriter, A[i].Item1);
-				binaryWriter.Write(A[i].Item2);
+				WriteStringToBinary(binaryWriter, Events[i].Key);
+				binaryWriter.Write(Events[i].Value);
 			}
 
-			binaryWriter.Write((uint)B.Count);
-			for (int i = 0; i < B.Count; i++)
+			binaryWriter.Write((uint)Enums1.Count);
+			for (int i = 0; i < Enums1.Count; i++)
 			{
-				WriteStringToBinary(binaryWriter, B[i].Item1);
-				binaryWriter.Write((uint)B[i].Item2.Count);
-				for (int j = 0; j < B[i].Item2.Count; j++)
+				WriteStringToBinary(binaryWriter, Enums1[i].Key);
+				binaryWriter.Write((uint)Enums1[i].Values.Count);
+				for (int j = 0; j < Enums1[i].Values.Count; j++)
 				{
-					WriteStringToBinary(binaryWriter, B[i].Item2[j]);
+					WriteStringToBinary(binaryWriter, Enums1[i].Values[j]);
 				}
 			}
 
-			binaryWriter.Write((uint)C.Count);
-			for (int i = 0; i < C.Count; i++)
+			binaryWriter.Write((uint)Enums2.Count);
+			for (int i = 0; i < Enums2.Count; i++)
 			{
-				WriteStringToBinary(binaryWriter, C[i].Item1);
-				binaryWriter.Write((uint)C[i].Item2.Count);
-				for (int j = 0; j < C[i].Item2.Count; j++)
+				WriteStringToBinary(binaryWriter, Enums2[i].Key);
+				binaryWriter.Write((uint)Enums2[i].Values.Count);
+				for (int j = 0; j < Enums2[i].Values.Count; j++)
 				{
-					WriteStringToBinary(binaryWriter, C[i].Item2[j]);
+					WriteStringToBinary(binaryWriter, Enums2[i].Values[j]);
 				}
 			}
 
-			binaryWriter.Write((uint)D.Count);
-			for (int i = 0; i < D.Count; i++)
+			binaryWriter.Write((uint)Enums3.Count);
+			for (int i = 0; i < Enums3.Count; i++)
 			{
-				WriteStringToBinary(binaryWriter, D[i].Item1);
-				binaryWriter.Write((uint)D[i].Item2.Count);
-				for (int j = 0; j < D[i].Item2.Count; j++)
+				WriteStringToBinary(binaryWriter, Enums3[i].Key);
+				binaryWriter.Write((uint)Enums3[i].Values.Count);
+				for (int j = 0; j < Enums3[i].Values.Count; j++)
 				{
-					binaryWriter.Write(D[i].Item2[j]);
+					binaryWriter.Write(Enums3[i].Values[j]);
 				}
 			}
 
-			binaryWriter.Write((uint)E.Count);
-			for (int i = 0; i < E.Count; i++)
+			binaryWriter.Write((uint)Settings.Count);
+			for (int i = 0; i < Settings.Count; i++)
 			{
-				WriteStringToBinary(binaryWriter, E[i]);
+				WriteStringToBinary(binaryWriter, Settings[i]);
 			}
 
-			binaryWriter.Write((uint)F.Count);
-			for (int i = 0; i < F.Count; i++)
+			binaryWriter.Write((uint)Unknowns.Count);
+			for (int i = 0; i < Unknowns.Count; i++)
 			{
-				binaryWriter.Write(F[i].Item1);
-				binaryWriter.Write((uint)F[i].Item2.Count);
-				for (int j = 0; j < F[i].Item2.Count; j++)
+				binaryWriter.Write(Unknowns[i].Key);
+				binaryWriter.Write((uint)Unknowns[i].Values.Count);
+				for (int j = 0; j < Unknowns[i].Values.Count; j++)
 				{
-					binaryWriter.Write(F[i].Item2[j].Item1);
-					binaryWriter.Write((uint)F[i].Item2[j].Item2.Count);
-					for (int k = 0; k < F[i].Item2[j].Item2.Count; k++)
+					binaryWriter.Write(Unknowns[i].Values[j].Key);
+					binaryWriter.Write((uint)Unknowns[i].Values[j].Values.Count);
+					for (int k = 0; k < Unknowns[i].Values[j].Values.Count; k++)
 					{
-						binaryWriter.Write(F[i].Item2[j].Item2[k]);
+						binaryWriter.Write(Unknowns[i].Values[j].Values[k]);
 					}
 				}
 			}
@@ -244,12 +259,49 @@ namespace BNKEditor
 
 		public void WriteToJsonFile(string outputJsonFilePath)
 		{
+			AddNames();
+
 			string json = JsonSerializer.Serialize(
 				this,
-				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
+				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull }
 			);
 
 			File.WriteAllText(outputJsonFilePath, json);
 		}
+	}
+
+	public class DatEvent
+	{
+		public string Key { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint Value { get; set; }
+	}
+
+	public class DatEnumWithStrings
+	{
+		public string Key { get; set; }
+		public List<string> Values { get; set; }
+	}
+
+	public class DatEnumWithUints
+	{
+		public string Key { get; set; }
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
+		public List<uint> Values { get; set; }
+	}
+
+	public class DatUnknownParent
+	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint Key { get; set; }
+		public List<DatUnknownChild> Values { get; set; }
+	}
+
+	public class DatUnknownChild
+	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint Key { get; set; }
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
+		public List<uint> Values { get; set; }
 	}
 }

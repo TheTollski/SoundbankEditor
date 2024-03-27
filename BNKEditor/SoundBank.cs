@@ -21,8 +21,6 @@ namespace BNKEditor
 
 		public static SoundBank CreateFromBnkFile(string inputBnkFilePath)
 		{
-			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
-
 			using FileStream fileStream = File.OpenRead(inputBnkFilePath);
 			using BinaryReader binaryReader = new BinaryReader(fileStream);
 
@@ -86,6 +84,8 @@ namespace BNKEditor
 
 		public void WriteToJsonFile(string outputJsonFilePath)
 		{
+			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList());
+
 			string bnkJson = JsonSerializer.Serialize(
 				wwiseRootObjects,
 				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }

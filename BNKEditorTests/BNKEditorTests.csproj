@@ -36,6 +36,9 @@
     <None Update="Resources\TW Attila\battle_vo_orders_barbarian_inf1.bnk">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\TW Attila\event_data.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
