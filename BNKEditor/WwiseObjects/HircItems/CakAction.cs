@@ -3,6 +3,7 @@ using BNKEditor.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public AkPropBundle AkPropBundle1 { get; set; } = new AkPropBundle();
 		public AkPropBundle AkPropBundle2 { get; set; } = new AkPropBundle();
 
+		public ActiveActionParams? ActiveActionParams { get; set; }
 		public PlayActionParams? PlayActionParams { get; set; }
+		public SeekActionParams? SeekActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
-
-		public byte[]? ExtraData { get; set; }
 
 		public CAkAction() { }
 
@@ -44,29 +45,27 @@ namespace BNKEditor.WwiseObjects.HircItems
 			AkPropBundle1 = new AkPropBundle(binaryReader);
 			AkPropBundle2 = new AkPropBundle(binaryReader);
 
-			bool knownType = true;
 			if (UlActionType == CAkActionType.Mute || UlActionType == CAkActionType.Unmute)
 			{
 				ValueActionParams = new ValueActionParams(binaryReader);
+			}
+			else if (UlActionType == CAkActionType.Pause || UlActionType == CAkActionType.Resume || UlActionType == CAkActionType.Stop)
+			{
+				ActiveActionParams = new ActiveActionParams(binaryReader, UlActionType);
 			}
 			else if (UlActionType == CAkActionType.Play)
 			{
 				PlayActionParams = new PlayActionParams(binaryReader);
 			}
-			else
+			else if (UlActionType == CAkActionType.Seek)
 			{
-				knownType = false;
+				SeekActionParams = new SeekActionParams(binaryReader);
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject < DwSectionSize)
 			{
-				if (knownType)
-				{
-					throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CakAction '{UlID}'.");
-				}
-
-				ExtraData = binaryReader.ReadBytes((int)DwSectionSize - bytesReadFromThisObject);
+				throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CakAction '{UlID}'.");
 			}
 		}
 
@@ -83,13 +82,10 @@ namespace BNKEditor.WwiseObjects.HircItems
 			binaryWriter.Write(IdExt_4);
 			AkPropBundle1.WriteToBinary(binaryWriter);
 			AkPropBundle2.WriteToBinary(binaryWriter);
+			ActiveActionParams?.WriteToBinary(binaryWriter);
 			PlayActionParams?.WriteToBinary(binaryWriter);
+			SeekActionParams?.WriteToBinary(binaryWriter);
 			ValueActionParams?.WriteToBinary(binaryWriter);
-
-			if (ExtraData != null)
-			{
-				binaryWriter.Write(ExtraData);
-			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
 			if (bytesWrittenFromThisObject != DwSectionSize)
@@ -101,10 +97,81 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 	public enum CAkActionType : ushort
 	{
+		Stop = 259,
+		Pause = 515,
 		Resume = 771,
 		Play = 1027,
 		Mute = 1539,
 		Unmute = 1795,
+		Seek = 7683,
+	}
+
+	public class ActiveActionParams : WwiseObject
+	{
+		public byte ByBitVector { get; set; }
+
+		public PauseActionSpecificParams? PauseActionSpecificParams { get; set; }
+		public ResumeActionSpecificParams? ResumeActionSpecificParams {  get; set; }
+
+		public ExceptParams ExceptParams { get; set; } = new ExceptParams();
+
+		public ActiveActionParams() { }
+
+		public ActiveActionParams(BinaryReader binaryReader, CAkActionType actionType)
+		{
+			ByBitVector = binaryReader.ReadByte();
+			if (actionType == CAkActionType.Pause)
+			{
+				PauseActionSpecificParams = new PauseActionSpecificParams(binaryReader);
+			}
+			else if (actionType == CAkActionType.Resume)
+			{
+				ResumeActionSpecificParams = new ResumeActionSpecificParams(binaryReader);
+			}
+			ExceptParams = new ExceptParams(binaryReader);
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(ByBitVector);
+			PauseActionSpecificParams?.WriteToBinary(binaryWriter);
+			ResumeActionSpecificParams?.WriteToBinary(binaryWriter);
+			ExceptParams.WriteToBinary(binaryWriter);
+		}
+	}
+
+	public class PauseActionSpecificParams : WwiseObject
+	{
+		public byte ByBitVector { get; set; }
+
+		public PauseActionSpecificParams() { }
+
+		public PauseActionSpecificParams(BinaryReader binaryReader)
+		{
+			ByBitVector = binaryReader.ReadByte();
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(ByBitVector);
+		}
+	}
+
+	public class ResumeActionSpecificParams : WwiseObject
+	{
+		public byte ByBitVector { get; set; }
+
+		public ResumeActionSpecificParams() { }
+
+		public ResumeActionSpecificParams(BinaryReader binaryReader)
+		{
+			ByBitVector = binaryReader.ReadByte();
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(ByBitVector);
+		}
 	}
 
 	public class PlayActionParams : WwiseObject
@@ -118,7 +185,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public PlayActionParams(BinaryReader binaryReader)
 		{
 			ByBitVector = binaryReader.ReadByte();
-			// Wwiser shows an extra field "eFadeCurve" that isn't in the data, it must be extrapolated from "byBitVector".
 			FileId = binaryReader.ReadUInt32();
 		}
 
@@ -129,22 +195,88 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
+	public class SeekActionParams : WwiseObject
+	{
+		public byte IsSeekRelativeToDuration { get; set; }
+		public RandomizerModifier RandomizerModifier { get; set; } = new RandomizerModifier();
+		public byte SnapToNearestMarker { get; set; }
+		public ExceptParams ExceptParams { get; set; } = new ExceptParams();
+
+		public SeekActionParams() { }
+
+		public SeekActionParams(BinaryReader binaryReader)
+		{
+			IsSeekRelativeToDuration = binaryReader.ReadByte();
+			RandomizerModifier = new RandomizerModifier(binaryReader);
+			SnapToNearestMarker = binaryReader.ReadByte();
+			ExceptParams = new ExceptParams(binaryReader);
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(IsSeekRelativeToDuration);
+			RandomizerModifier.WriteToBinary(binaryWriter);
+			binaryWriter.Write(SnapToNearestMarker);
+			ExceptParams.WriteToBinary(binaryWriter);
+		}
+	}
+
+	public class RandomizerModifier : WwiseObject
+	{
+		public float SeekValue { get; set; }
+		public float SeekValueMin { get; set; }
+		public float SeekValueMax { get; set; }
+
+		public RandomizerModifier() { }
+
+		public RandomizerModifier(BinaryReader binaryReader)
+		{
+			SeekValue = binaryReader.ReadSingle();
+			SeekValueMin = binaryReader.ReadSingle();
+			SeekValueMax = binaryReader.ReadSingle();
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(SeekValue);
+			binaryWriter.Write(SeekValueMin);
+			binaryWriter.Write(SeekValueMax);
+		}
+	}
+
 	public class ValueActionParams : WwiseObject
 	{
 		public byte ByBitVector { get; set; }
-		public uint ExceptionCount { get; set; }
-		public List<object> Exceptions { get; set; } = new List<object>();
+		public ExceptParams ExceptParams { get; set; } = new ExceptParams();
 
 		public ValueActionParams() { }
 
 		public ValueActionParams(BinaryReader binaryReader)
 		{
 			ByBitVector = binaryReader.ReadByte();
-			// Wwiser shows an extra field "eFadeCurve" that isn't in the data, it must be extrapolated from "byBitVector".
+			ExceptParams = new ExceptParams(binaryReader);
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(ByBitVector);
+			ExceptParams.WriteToBinary(binaryWriter);
+		}
+	}
+
+	public class ExceptParams : WwiseObject
+	{
+		public uint ExceptionCount { get; set; }
+		public List<object> Exceptions { get; set; } = new List<object>();
+
+		public ExceptParams() { }
+
+		public ExceptParams(BinaryReader binaryReader)
+		{
 			ExceptionCount = binaryReader.ReadUInt32();
 			if (ExceptionCount > 0)
 			{
-				throw new Exception("ValueActionParams.Exceptions is not supported.");
+				throw new Exception("ExceptParams.Exceptions is not supported.");
 			}
 		}
 
@@ -152,14 +284,13 @@ namespace BNKEditor.WwiseObjects.HircItems
 		{
 			if (ExceptionCount != Exceptions.Count)
 			{
-				throw new Exception($"Expected ValueActionParams to have {ExceptionCount} children but it has {Exceptions.Count}.");
+				throw new Exception($"Expected ExceptParams to have {ExceptionCount} children but it has {Exceptions.Count}.");
 			}
 
-			binaryWriter.Write(ByBitVector);
 			binaryWriter.Write(ExceptionCount);
 			if (ExceptionCount > 0)
 			{
-				throw new Exception("ValueActionParams.Exceptions is not supported.");
+				throw new Exception("ExceptParams.Exceptions is not supported.");
 			}
 		}
 	}
