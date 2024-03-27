@@ -8,6 +8,7 @@
         Title="Soundbank Editor" Height="800" Width="1200"
 				KeyDown="Window_KeyDown">
 	<Window.Resources>
+		<local:IsNullConverter x:Key="isNullConverter"/>
 		<local:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
 	</Window.Resources>
 	<Grid>
@@ -28,35 +29,62 @@
 			</MenuItem>
 		</Menu>
 
-		<DataGrid
-			x:Name="dgHircItems" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1" 
-			AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
-			ItemsSource="{Binding HircItems}">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
-				<DataGridTextColumn Header="ID" Binding="{Binding Path=UlID, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="1*" />
-			</DataGrid.Columns>
-		</DataGrid>
+		<Grid  Grid.Row="1" Grid.Column="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="30" />
+				<RowDefinition Height="30" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
 
+			<TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">HIRC Items</TextBlock>
+
+			<Button
+				x:Name="btnAddHircItem"
+				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center"
+				Click="BtnAddHircItem_Click">Add HIRC Item</Button>
+			<Button
+				x:Name="btnDeleteHircItem"
+				Grid.Row="1" Grid.Column="0" Width="100" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+				Click="BtnDeleteHircItem_Click">Delete HIRC Item</Button>
+			
+			<DataGrid
+				x:Name="dgHircItems" Grid.Row="2" Grid.Column="0" 
+				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged"
+				ItemsSource="{Binding HircItems}">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
+					<DataGridTextColumn Header="ID" Binding="{Binding Path=UlID, Converter={StaticResource wwiseShortIdValueConverter}}" IsReadOnly="True" Width="1*" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</Grid>
+		
 		<ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1">
 			<TextBox
 				x:Name="tbHircItemJson"
 				Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				TextChanged="TbHircItemJson_TextChanged" />
+				TextChanged="TbHircItemJson_TextChanged" IsEnabled="False" />
 		</ScrollViewer>
 		
-		<TextBlock Grid.Row="1" Grid.Column="1" Width="170" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0" Foreground="Red">
-			<TextBlock.Style>
-				<Style TargetType="TextBlock">
+		<Button
+			Grid.Row="1" Grid.Column="1" Width="170" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,20,0"
+			Foreground="Red"
+			Content="Invalid - Changes not persisted!"
+			Click="BtnInvalidHircItemJson_Click">
+			<Button.Style>
+				<Style TargetType="Button">
 					<Setter Property="Visibility" Value="Visible" />
 					<Style.Triggers>
-						<DataTrigger Binding="{Binding IsSelectedHircItemJsonValid}" Value="True">
+						<DataTrigger Binding="{Binding SelectedHircItemJsonErrorMessage, Converter={StaticResource isNullConverter}}" Value="True">
 							<Setter Property="Visibility" Value="Hidden" />
 						</DataTrigger>
 					</Style.Triggers>
 				</Style>
-			</TextBlock.Style>
-			Invalid - Changes not persisted!
-		</TextBlock>
+			</Button.Style>
+			<Button.Template>
+				<ControlTemplate TargetType="Button">
+					<ContentPresenter />
+				</ControlTemplate>
+			</Button.Template>
+		</Button>
 	</Grid>
 </Window>

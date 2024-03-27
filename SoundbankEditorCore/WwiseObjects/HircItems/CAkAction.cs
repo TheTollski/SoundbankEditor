@@ -13,7 +13,26 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 {
 	public class CAkAction : HircItem
 	{
-		public HircType EHircType { get; set; }
+		private const HircType EXPECTED_HIRC_TYPE = HircType.Action;
+
+		private HircType _hircType;
+		public HircType EHircType
+		{
+			get
+			{
+				return _hircType;
+			}
+			set
+			{
+				if (value != EXPECTED_HIRC_TYPE)
+				{
+					throw new Exception($"HIRC item of type '{GetType().Name}' cannot have {nameof(EHircType)} of '{(byte)value}', it must be '{(byte)EXPECTED_HIRC_TYPE}'.");
+				}
+
+				_hircType = value;
+			}
+		}
+
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
 		public CAkActionType UlActionType { get; set; }

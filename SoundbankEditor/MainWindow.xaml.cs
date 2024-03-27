@@ -51,20 +51,6 @@ namespace SoundbankEditor
 			}
 		}
 
-		private bool _isSelectedHircItemJsonValid = true;
-		public bool IsSelectedHircItemJsonValid
-		{
-			get
-			{
-				return _isSelectedHircItemJsonValid;
-			}
-			set 
-			{
-				_isSelectedHircItemJsonValid = value;
-				OnPropertyChanged(nameof(IsSelectedHircItemJsonValid));
-			} 
-		}
-
 		private string? _selectedHircItemJson;
 		public string? SelectedHircItemJson
 		{
@@ -79,10 +65,25 @@ namespace SoundbankEditor
 			}
 		}
 
+		private string? _selectedHircItemJsonErrorMessage;
+		public string? SelectedHircItemJsonErrorMessage
+		{
+			get
+			{
+				return _selectedHircItemJsonErrorMessage;
+			}
+			set
+			{
+				_selectedHircItemJsonErrorMessage = value;
+				OnPropertyChanged(nameof(SelectedHircItemJsonErrorMessage));
+			}
+		}
+
 		private bool _areChangesPending;
 		private bool _isProgrammaticallyChangingSelectedHircItemJson;
 		private string? _openFilePath;
 		private SoundBank? _openSoundBank;
+		private int _selectedHircItemIndex = -1;
 
 		public MainWindow()
 		{
@@ -144,8 +145,70 @@ namespace SoundbankEditor
 			SaveFile();
 		}
 
+		private void BtnAddHircItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundBank == null)
+			{
+				return;
+			}
+
+			//HircItems.Add()
+		}
+
+		private void BtnDeleteHircItem_Click(object sender, RoutedEventArgs e)
+		{
+			if (_openSoundBank == null)
+			{
+				return;
+			}
+
+			HircItem selectedHircItem = (HircItem)dgHircItems.SelectedItem;
+			if (MessageBox.Show($"Are you sure you want to delete HIRC item '{selectedHircItem.UlID}'?", "Confirm HIRC Item Deletion", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+			{
+				return;
+			}
+
+			HircItems.Remove(selectedHircItem);
+			dgHircItems.Items.Refresh();
+			_areChangesPending = true;
+			UpdateTitle();
+		}
+
+		private void BtnInvalidHircItemJson_Click(object sender, RoutedEventArgs e)
+		{
+			if (SelectedHircItemJsonErrorMessage == null)
+			{
+				return;
+			}
+
+			MessageBox.Show($"{SelectedHircItemJsonErrorMessage}");
+		}
+
 		private void DgHircItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			if (dgHircItems.SelectedIndex < 0)
+			{
+				_isProgrammaticallyChangingSelectedHircItemJson = true;
+				SelectedHircItemJson = "";
+				_isProgrammaticallyChangingSelectedHircItemJson = false;
+
+				btnDeleteHircItem.IsEnabled = false;
+				tbHircItemJson.IsEnabled = false;
+				return;
+			}
+
+			if (SelectedHircItemJsonErrorMessage != null && _selectedHircItemIndex != dgHircItems.SelectedIndex &&
+					MessageBox.Show($"There are unpersisted changes in your working HIRC item. Are you sure you want to select a different HIRC item?", "Confirm HIRC Item Selection", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+			{
+				dgHircItems.SelectionChanged -= DgHircItems_SelectionChanged;
+				dgHircItems.SelectedIndex = _selectedHircItemIndex;
+				dgHircItems.SelectionChanged += DgHircItems_SelectionChanged;
+				dgHircItems.Items.Refresh();
+				return;
+			}
+
+			_selectedHircItemIndex = dgHircItems.SelectedIndex;
+
 			HircItem selectedItem = (HircItem)dgHircItems.SelectedItem;
 
 			_isProgrammaticallyChangingSelectedHircItemJson = true;
@@ -154,11 +217,14 @@ namespace SoundbankEditor
 				new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull }
 			);
 			_isProgrammaticallyChangingSelectedHircItemJson = false;
+
+			btnDeleteHircItem.IsEnabled = true;
+			tbHircItemJson.IsEnabled = true;
 		}
 
 		private void TbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (HircItems == null || SelectedHircItemJson == null)
+			if (HircItems == null || SelectedHircItemJson == null || dgHircItems.SelectedIndex < 0)
 			{
 				return;
 			}
@@ -181,6 +247,11 @@ namespace SoundbankEditor
 					throw new JsonException();
 				}
 
+				if (existingHircItem.GetType() != newHircItem.GetType())
+				{
+					throw new JsonException($"You cannot change the '$type'.");
+				}
+
 				using MemoryStream memoryStream = new MemoryStream();
 				using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 				newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
@@ -194,17 +265,11 @@ namespace SoundbankEditor
 					dgHircItems.Items.Refresh();
 				}
 
-				IsSelectedHircItemJsonValid = true;
+				SelectedHircItemJsonErrorMessage = null;
 			}
 			catch (Exception ex)
 			{
-				if (ex is JsonException || ex is SerializationException)
-				{
-					IsSelectedHircItemJsonValid = false;
-					return;
-				}
-
-				throw;
+				SelectedHircItemJsonErrorMessage = ex.Message;
 			}
 		}
 
