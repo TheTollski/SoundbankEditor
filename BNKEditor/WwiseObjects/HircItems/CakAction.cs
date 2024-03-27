@@ -20,7 +20,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public PlayActionParams? PlayActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
 
-		public byte[]? Data { get; set; }
+		public byte[]? ExtraData { get; set; }
 
 		public CakAction() { }
 
@@ -60,8 +60,8 @@ namespace BNKEditor.WwiseObjects.HircItems
 				{
 					throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CakAction '{UlID}'.");
 				}
-				
-				Data = binaryReader.ReadBytes((int)DwSectionSize - bytesReadFromThisObject);
+
+				ExtraData = binaryReader.ReadBytes((int)DwSectionSize - bytesReadFromThisObject);
 			}
 		}
 
@@ -77,9 +77,10 @@ namespace BNKEditor.WwiseObjects.HircItems
 			AkPropBundle2.WriteToBinary(binaryWriter);
 			PlayActionParams?.WriteToBinary(binaryWriter);
 			ValueActionParams?.WriteToBinary(binaryWriter);
-			if (Data != null)
+
+			if (ExtraData != null)
 			{
-				binaryWriter.Write(Data);
+				binaryWriter.Write(ExtraData);
 			}
 		}
 	}

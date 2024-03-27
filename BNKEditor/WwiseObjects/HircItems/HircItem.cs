@@ -9,6 +9,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 {
 	[JsonDerivedType(typeof(CakAction), "Action")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
+	[JsonDerivedType(typeof(CakSound), "Sound")]
 	[JsonDerivedType(typeof(HircItemUnknown), "Unknown")]
 	public interface HircItem : WwiseObject
 	{

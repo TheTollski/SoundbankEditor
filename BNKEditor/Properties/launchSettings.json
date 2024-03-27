@@ -4,11 +4,11 @@
       "commandName": "WSL2",
       "distributionName": ""
     },
-    "BNKEditor_OpenJson": {
+    "JsonToBnk": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders_temp.json"
     },
-    "BNKEditor_OpenBnk": {
+    "BnkToJson": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders.bnk"
     }

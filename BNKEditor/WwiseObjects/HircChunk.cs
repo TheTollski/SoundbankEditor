@@ -1,6 +1,7 @@
 ﻿using BNKEditor.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text;
@@ -36,7 +37,11 @@ namespace BNKEditor.WwiseObjects
 				HircType hircType = (HircType)binaryReader.ReadByte();
 				binaryReader.BaseStream.Position -= 1;
 
-				if (hircType == HircType.Action) // 3
+				if (hircType == HircType.Sound) // 2
+				{
+					HircItems.Add(new CakSound(binaryReader));
+				}
+				else if (hircType == HircType.Action) // 3
 				{
 					HircItems.Add(new CakAction(binaryReader));
 				}
@@ -61,10 +66,19 @@ namespace BNKEditor.WwiseObjects
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			Header.WriteToBinary(binaryWriter);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(NumReleasableHircItem);
 			for (int i = 0; i < HircItems.Count; i++)
 			{
 				HircItems[i].WriteToBinary(binaryWriter);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			{
+				throw new Exception($"For HircChunk, expected chunk size to be {Header.DwChunkSize} but it was actually {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
