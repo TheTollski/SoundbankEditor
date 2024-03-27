@@ -117,10 +117,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 		{
 			binaryWriter.Write(IsOverrideParentFX);
 			binaryWriter.Write((byte)FxChunks.Count);
-			if (BitsFxBypass != null)
-			{
-				binaryWriter.Write(BitsFxBypass.Value);
-			}
+			if (BitsFxBypass != null) binaryWriter.Write(BitsFxBypass.Value);
 			for (int i = 0; i < FxChunks.Count; i++)
 			{
 				FxChunks[i].WriteToBinary(binaryWriter);
@@ -161,26 +158,26 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 
 	public class NodeInitialParams : WwiseObject
 	{
-		public AkPropBundle AkPropBundle1 { get; set; } = new AkPropBundle();
-		public AkPropBundle AkPropBundle2 { get; set; } = new AkPropBundle();
+		public AkPropBundle AkPropBundle { get; set; } = new AkPropBundle();
+		public AkPropBundleMinMax AkPropBundleMinMax { get; set; } = new AkPropBundleMinMax();
 
 		public NodeInitialParams() { }
 
 		public NodeInitialParams(BinaryReader binaryReader)
 		{
-			AkPropBundle1 = new AkPropBundle(binaryReader);
-			AkPropBundle2 = new AkPropBundle(binaryReader);
+			AkPropBundle = new AkPropBundle(binaryReader);
+			AkPropBundleMinMax = new AkPropBundleMinMax(binaryReader);
 		}
 
 		public uint ComputeTotalSize()
 		{
-			return AkPropBundle1.ComputeTotalSize() + AkPropBundle2.ComputeTotalSize();
+			return AkPropBundle.ComputeTotalSize() + AkPropBundleMinMax.ComputeTotalSize();
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			AkPropBundle1.WriteToBinary(binaryWriter);
-			AkPropBundle2.WriteToBinary(binaryWriter);
+			AkPropBundle.WriteToBinary(binaryWriter);
+			AkPropBundleMinMax.WriteToBinary(binaryWriter);
 		}
 	}
 
@@ -239,22 +236,44 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 	public class AuxParams : WwiseObject
 	{
 		public byte ByBitVector { get; set; }
+		public uint? AuxId1 { get; set; }
+		public uint? AuxId2 { get; set; }
+		public uint? AuxId3 { get; set; }
+		public uint? AuxId4 { get; set; }
 
 		public AuxParams() { }
 
 		public AuxParams(BinaryReader binaryReader)
 		{
 			ByBitVector = binaryReader.ReadByte();
+
+			bool hasAux = (ByBitVector >> 3 & 1) == 1;
+			if (hasAux)
+			{
+				AuxId1 = binaryReader.ReadUInt32();
+				AuxId2 = binaryReader.ReadUInt32();
+				AuxId3 = binaryReader.ReadUInt32();
+				AuxId4 = binaryReader.ReadUInt32();
+			}
 		}
 
 		public uint ComputeTotalSize()
 		{
-			return 1;
+			uint size = 1;
+			if (AuxId1 != null) size += 4;
+			if (AuxId2 != null) size += 4;
+			if (AuxId3 != null) size += 4;
+			if (AuxId4 != null) size += 4;
+			return size;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector);
+			if (AuxId1 != null) binaryWriter.Write(AuxId1.Value);
+			if (AuxId2 != null) binaryWriter.Write(AuxId2.Value);
+			if (AuxId3 != null) binaryWriter.Write(AuxId3.Value);
+			if (AuxId4 != null) binaryWriter.Write(AuxId4.Value);
 		}
 	}
 

@@ -66,11 +66,23 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			AkPropBundle1 = new AkPropBundle(binaryReader);
 			AkPropBundle2 = new AkPropBundle(binaryReader);
 
-			if (UlActionType == CAkActionType.Mute || UlActionType == CAkActionType.Unmute)
+			if (
+				UlActionType == CAkActionType.Mute ||
+				UlActionType == CAkActionType.ResetLPF_M ||
+				UlActionType == CAkActionType.SetBusVolume_M ||
+				UlActionType == CAkActionType.SetGameParameter_O ||
+				UlActionType == CAkActionType.SetLPF_M ||
+				UlActionType == CAkActionType.Unmute
+			)
 			{
-				ValueActionParams = new ValueActionParams(binaryReader);
+				ValueActionParams = new ValueActionParams(binaryReader, UlActionType);
 			}
-			else if (UlActionType == CAkActionType.Pause || UlActionType == CAkActionType.Resume || UlActionType == CAkActionType.Stop)
+			else if (
+				UlActionType == CAkActionType.Pause ||
+				UlActionType == CAkActionType.Resume ||
+				UlActionType == CAkActionType.Stop_E ||
+				UlActionType == CAkActionType.Stop_E_O
+			)
 			{
 				ActiveActionParams = new ActiveActionParams(binaryReader, UlActionType);
 			}
@@ -88,7 +100,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			}
 			else
 			{
-				throw new Exception($"CAkAction '{UlID}' is an unsupported action type.");
+				throw new Exception($"CAkAction '{UlID}' has an unsupported action type '{UlActionType}'.");
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
@@ -158,13 +170,18 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 
 	public enum CAkActionType : ushort
 	{
-		Stop = 259,
+		Stop_E = 258,
+		Stop_E_O = 259,
 		Pause = 515,
 		Resume = 771,
 		Play = 1027,
 		Mute = 1539,
 		Unmute = 1795,
+		SetBusVolume_M = 3074,
+		SetLPF_M = 3586,
+		ResetLPF_M = 3842,
 		SetState = 4612,
+		SetGameParameter_O = 4867,
 		Seek = 7683,
 	}
 
@@ -369,25 +386,107 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	public class ValueActionParams : WwiseObject
 	{
 		public byte ByBitVector { get; set; }
+		public AkPropActionSpecificParams? AkPropActionSpecificParams { get; set; }
+		public GameParameterActionSpecificParams? GameParameterActionSpecificParams { get; set; }
 		public ExceptParams ExceptParams { get; set; } = new ExceptParams();
 
 		public ValueActionParams() { }
 
-		public ValueActionParams(BinaryReader binaryReader)
+		public ValueActionParams(BinaryReader binaryReader, CAkActionType actionType)
 		{
 			ByBitVector = binaryReader.ReadByte();
+
+			if (actionType == CAkActionType.ResetLPF_M || actionType == CAkActionType.SetBusVolume_M || actionType == CAkActionType.SetLPF_M)
+			{
+				AkPropActionSpecificParams = new AkPropActionSpecificParams(binaryReader);
+			}
+			if (actionType == CAkActionType.SetGameParameter_O)
+			{
+				GameParameterActionSpecificParams = new GameParameterActionSpecificParams(binaryReader);
+			}
+
 			ExceptParams = new ExceptParams(binaryReader);
 		}
 
 		public uint ComputeTotalSize()
 		{
-			return 1 + ExceptParams.ComputeTotalSize();
+			uint size = 1 + ExceptParams.ComputeTotalSize();
+			if (AkPropActionSpecificParams != null) size += AkPropActionSpecificParams.ComputeTotalSize();
+			if (GameParameterActionSpecificParams != null) size += GameParameterActionSpecificParams.ComputeTotalSize();
+			return size;
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByBitVector);
+			if (AkPropActionSpecificParams != null) AkPropActionSpecificParams.WriteToBinary(binaryWriter);
+			if (GameParameterActionSpecificParams != null) GameParameterActionSpecificParams.WriteToBinary(binaryWriter);
 			ExceptParams.WriteToBinary(binaryWriter);
+		}
+	}
+
+	public class AkPropActionSpecificParams : WwiseObject
+	{
+		public byte ValueMeaning { get; set; }
+		public float RandomizerModifierBase { get; set; }
+		public float RandomizerModifierMin { get; set; }
+		public float RandomizerModifierMax { get; set; }
+
+		public AkPropActionSpecificParams() { }
+
+		public AkPropActionSpecificParams(BinaryReader binaryReader)
+		{
+			ValueMeaning = binaryReader.ReadByte();
+			RandomizerModifierBase = binaryReader.ReadSingle();
+			RandomizerModifierMin = binaryReader.ReadSingle();
+			RandomizerModifierMax = binaryReader.ReadSingle();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 13;
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(ValueMeaning);
+			binaryWriter.Write(RandomizerModifierBase);
+			binaryWriter.Write(RandomizerModifierMin);
+			binaryWriter.Write(RandomizerModifierMax);
+		}
+	}
+
+	public class GameParameterActionSpecificParams : WwiseObject
+	{
+		public byte BypassTransition { get; set; }
+		public byte ValueMeaning { get; set; }
+		public float RangedParameterBase { get; set; }
+		public float RangedParameterMin { get; set; }
+		public float RangedParameterMax { get; set; }
+
+		public GameParameterActionSpecificParams() { }
+
+		public GameParameterActionSpecificParams(BinaryReader binaryReader)
+		{
+			BypassTransition = binaryReader.ReadByte();
+			ValueMeaning = binaryReader.ReadByte();
+			RangedParameterBase = binaryReader.ReadSingle();
+			RangedParameterMin = binaryReader.ReadSingle();
+			RangedParameterMax = binaryReader.ReadSingle();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 14;
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(BypassTransition);
+			binaryWriter.Write(ValueMeaning);
+			binaryWriter.Write(RangedParameterBase);
+			binaryWriter.Write(RangedParameterMin);
+			binaryWriter.Write(RangedParameterMax);
 		}
 	}
 

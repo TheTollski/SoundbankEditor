@@ -65,8 +65,8 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					ByBitVector = 0,
 					NodeInitialParams = new NodeInitialParams
 					{
-						AkPropBundle1 = new AkPropBundle(),
-						AkPropBundle2 = new AkPropBundle(),
+						AkPropBundle = new AkPropBundle(),
+						AkPropBundleMinMax = new AkPropBundleMinMax(),
 					},
 					PositioningParams = new PositioningParams
 					{
@@ -141,7 +141,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					ByBitVector = 0,
 					NodeInitialParams = new NodeInitialParams
 					{
-						AkPropBundle1 = new AkPropBundle
+						AkPropBundle = new AkPropBundle
 						{
 							Props = new List<AkProp>
 							{
@@ -152,7 +152,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 								}
 							}
 						},
-						AkPropBundle2 = new AkPropBundle(),
+						AkPropBundleMinMax = new AkPropBundleMinMax(),
 					},
 					PositioningParams = new PositioningParams
 					{
@@ -199,8 +199,8 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					ByBitVector = 0,
 					NodeInitialParams = new NodeInitialParams
 					{
-						AkPropBundle1 = new AkPropBundle(),
-						AkPropBundle2 = new AkPropBundle(),
+						AkPropBundle = new AkPropBundle(),
+						AkPropBundleMinMax = new AkPropBundleMinMax(),
 					},
 					PositioningParams = new PositioningParams
 					{

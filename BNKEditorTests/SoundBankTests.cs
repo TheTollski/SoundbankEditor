@@ -8,6 +8,8 @@ namespace BNKEditorTests
 	public class SoundBankTests
 	{
 		[Theory]
+		[InlineData("Resources\\TW Attila\\battle.bnk")]
+		[InlineData("Resources\\TW Attila\\battle_advice.bnk")]
 		[InlineData("Resources\\TW Attila\\battle_vo_orders.bnk")]
 		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian.bnk")]
 		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian_inf1.bnk")]
