@@ -12,6 +12,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -290,7 +291,15 @@ namespace SoundbankEditor
 				return;
 			}
 
-			SoundBank soundBank = SoundBank.CreateFromJsonFile(openFileDialog.FileName);
+			string fileText = File.ReadAllText(openFileDialog.FileName);
+			SoundBank soundBank = SoundBank.CreateFromJson(fileText);
+
+			List<string> baseNames = File.ReadAllLines("TWA_Names.txt").ToList();
+			List<string> customNames = Regex.Matches(fileText, "\\[\\w+\\]")
+				.Select(m => m.Value.Substring(1, m.Value.Length - 2))
+				.Distinct()
+				.Where(s => !baseNames.Contains(s))
+				.ToList();
 
 			string outputBnkFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.bnk";
 			if (File.Exists(outputBnkFilePath) &&
@@ -300,8 +309,9 @@ namespace SoundbankEditor
 			}
 
 			soundBank.WriteToBnkFile(outputBnkFilePath);
+			File.WriteAllLines(GetCustomNamesFilePath(openFileDialog.FileName), customNames);
+
 			MessageBox.Show($"File successfully saved: '{outputBnkFilePath}'");
-			// TODO: Write custom names file
 		}
 
 		private void BtnAbout_Click(object sender, RoutedEventArgs e)
