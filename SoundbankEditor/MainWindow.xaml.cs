@@ -291,7 +291,7 @@ namespace SoundbankEditor
 		{
 			MessageBox.Show($"" +
 				$"Soundbank Editor v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}\n" +
-				$"Created by: Tollski",
+				$"Created by Tollski for Total War: Attila.",
 				"About");
 		}
 

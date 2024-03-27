@@ -45,6 +45,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public ActiveActionParams? ActiveActionParams { get; set; }
 		public PlayActionParams? PlayActionParams { get; set; }
 		public SeekActionParams? SeekActionParams { get; set; }
+		public StateActionParams? StateActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
 
 		public CAkAction()
@@ -81,6 +82,14 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			{
 				SeekActionParams = new SeekActionParams(binaryReader);
 			}
+			else if (UlActionType == CAkActionType.SetState)
+			{
+				StateActionParams = new StateActionParams(binaryReader);
+			}
+			else
+			{
+				throw new Exception($"CAkAction '{UlID}' is an unsupported action type.");
+			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject != sectionSize)
@@ -95,6 +104,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			if (ActiveActionParams != null) size += ActiveActionParams.ComputeTotalSize();
 			if (PlayActionParams != null) size += PlayActionParams.ComputeTotalSize();
 			if (SeekActionParams != null) size += SeekActionParams.ComputeTotalSize();
+			if (StateActionParams != null) size += StateActionParams.ComputeTotalSize();
 			if (ValueActionParams != null) size += ValueActionParams.ComputeTotalSize();
 			return size;
 		}
@@ -135,6 +145,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			ActiveActionParams?.WriteToBinary(binaryWriter);
 			PlayActionParams?.WriteToBinary(binaryWriter);
 			SeekActionParams?.WriteToBinary(binaryWriter);
+			StateActionParams?.WriteToBinary(binaryWriter);
 			ValueActionParams?.WriteToBinary(binaryWriter);
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
@@ -153,6 +164,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		Play = 1027,
 		Mute = 1539,
 		Unmute = 1795,
+		SetState = 4612,
 		Seek = 7683,
 	}
 
@@ -324,6 +336,33 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			binaryWriter.Write(SeekValue);
 			binaryWriter.Write(SeekValueMin);
 			binaryWriter.Write(SeekValueMax);
+		}
+	}
+
+	public class StateActionParams : WwiseObject
+	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint StateGroup { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
+		public uint TargetStateId { get; set; }
+
+		public StateActionParams() { }
+
+		public StateActionParams(BinaryReader binaryReader)
+		{
+			StateGroup = binaryReader.ReadUInt32();
+			TargetStateId = binaryReader.ReadUInt32();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 8;
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(StateGroup);
+			binaryWriter.Write(TargetStateId);
 		}
 	}
 
