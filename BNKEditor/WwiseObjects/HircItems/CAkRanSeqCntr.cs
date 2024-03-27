@@ -67,8 +67,16 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ChildCount != ChildIds.Count)
+			{
+				throw new Exception($"Expected CAkRanSeqCntr '{UlID}' to have {ChildCount} children but it has {ChildIds.Count}.");
+			}
+
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			NodeBaseParams.WriteToBinary(binaryWriter);
 			binaryWriter.Write(LoopCount);
@@ -88,6 +96,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 				binaryWriter.Write(ChildIds[i]);
 			}
 			CAkPlayList.WriteToBinary(binaryWriter);
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkRanSeqCntr '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+			}
 		}
 	}
 
@@ -109,6 +123,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (PlayListItemCount != PlaylistItems.Count)
+			{
+				throw new Exception($"Expected CAkPlayList to have {PlayListItemCount} items but it has {PlaylistItems.Count}.");
+			}
+
 			binaryWriter.Write(PlayListItemCount);
 			for (int i = 0; i < PlaylistItems.Count; i++)
 			{

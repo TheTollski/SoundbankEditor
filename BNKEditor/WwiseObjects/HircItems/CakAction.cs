@@ -70,6 +70,9 @@ namespace BNKEditor.WwiseObjects.HircItems
 		{
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			binaryWriter.Write((short)UlActionType);
 			binaryWriter.Write(IdExt);
@@ -82,6 +85,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 			if (ExtraData != null)
 			{
 				binaryWriter.Write(ExtraData);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkAction '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -119,7 +128,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 	{
 		public byte ByBitVector { get; set; }
 		public uint ExceptionCount { get; set; }
-		public List<object>? Exceptions { get; set; }
+		public List<object> Exceptions { get; set; } = new List<object>();
 
 		public ValueActionParams() { }
 
@@ -137,6 +146,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ExceptionCount != Exceptions.Count)
+			{
+				throw new Exception($"Expected ValueActionParams to have {ExceptionCount} children but it has {Exceptions.Count}.");
+			}
+
 			binaryWriter.Write(ByBitVector);
 			binaryWriter.Write(ExceptionCount);
 

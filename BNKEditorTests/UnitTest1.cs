@@ -5,11 +5,12 @@ namespace BNKEditorTests
 {
 	public class UnitTest1
 	{
-		[Fact]
-		public void DeserializeThenSerialize()
+		[Theory]
+		[InlineData("Resources\\TW Attila\\battle_vo_orders.bnk")]
+		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian.bnk")]
+		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian_inf1.bnk")]
+		public void DeserializeThenSerialize(string path)
 		{
-			string path = "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders.bnk";
-
 			using FileStream fileStream = File.OpenRead(path);
 			using BinaryReader binaryReader = new BinaryReader(fileStream);
 
@@ -33,8 +34,6 @@ namespace BNKEditorTests
 			byte[] serializedBytes = memoryStream.ToArray();
 
 			Assert.True(fileBytes.SequenceEqual(serializedBytes));
-
-			//File.WriteAllBytes("C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders__test.bnk", serializedBytes);
 		}
 	}
 }

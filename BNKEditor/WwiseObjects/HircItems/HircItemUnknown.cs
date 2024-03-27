@@ -35,10 +35,19 @@ namespace BNKEditor.WwiseObjects.HircItems
 		{
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			if (Data != null)
 			{
 				binaryWriter.Write(Data);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected Unknown HIRC item '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

@@ -70,13 +70,17 @@ namespace BNKEditor.WwiseObjects
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject < Header.DwChunkSize)
 			{
-				// throw?
-				binaryReader.ReadBytes((int)Header.DwChunkSize - bytesReadFromThisObject);
+				throw new Exception($"{Header.DwChunkSize - bytesReadFromThisObject} extra bytes found at the end of HIRC chunk.");
 			}
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (NumReleasableHircItem != HircItems.Count)
+			{
+				throw new Exception($"Expected HIRC chunk to have {NumReleasableHircItem} items but it has {HircItems.Count}.");
+			}
+
 			Header.WriteToBinary(binaryWriter);
 
 			long position = binaryWriter.BaseStream.Position;
@@ -90,7 +94,7 @@ namespace BNKEditor.WwiseObjects
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
 			if (bytesWrittenFromThisObject != Header.DwChunkSize)
 			{
-				throw new Exception($"For HircChunk, expected chunk size to be {Header.DwChunkSize} but it was actually {bytesWrittenFromThisObject}.");
+				throw new Exception($"Expected HIRC chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

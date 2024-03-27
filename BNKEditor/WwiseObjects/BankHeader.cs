@@ -48,6 +48,8 @@ namespace BNKEditor.WwiseObjects
 		{
 			Header.WriteToBinary(binaryWriter);
 
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(DwBankGeneratorVersion);
 			binaryWriter.Write(DwSoundBankID);
 			binaryWriter.Write(DwLanguageID);
@@ -56,6 +58,12 @@ namespace BNKEditor.WwiseObjects
 			if (Padding != null)
 			{
 				binaryWriter.Write(Padding);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			{
+				throw new Exception($"Expected BKHD chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

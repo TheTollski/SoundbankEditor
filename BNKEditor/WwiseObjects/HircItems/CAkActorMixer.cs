@@ -43,14 +43,28 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ChildCount != ChildIds.Count)
+			{
+				throw new Exception($"Expected CAkActorMixer '{UlID}' to have {ChildCount} children but it has {ChildIds.Count}.");
+			}
+
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			NodeBaseParams.WriteToBinary(binaryWriter);
 			binaryWriter.Write(ChildCount);
 			for (int i = 0; i < ChildIds.Count; i++)
 			{
 				binaryWriter.Write(ChildIds[i]);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkActorMixer '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

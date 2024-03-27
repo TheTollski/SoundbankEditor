@@ -38,11 +38,20 @@ namespace BNKEditor.WwiseObjects
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			Header.WriteToBinary(binaryWriter);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UiType);
 			binaryWriter.Write(UiSize);
 			for (int i = 0; i < BankIDToFileName.Count; i++)
 			{
 				BankIDToFileName[i].WriteToBinary(binaryWriter);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != Header.DwChunkSize)
+			{
+				throw new Exception($"Expected STID chunk size to be {Header.DwChunkSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -64,6 +73,11 @@ namespace BNKEditor.WwiseObjects
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (StringSize != FileName.Length)
+			{
+				throw new Exception($"Expected AKBKHashHeader to have a FileName of length {StringSize} children but it's FileName's length is {FileName.Length}.");
+			}
+
 			binaryWriter.Write(BankId);
 			binaryWriter.Write(StringSize);
 			for (int i = 0; i < StringSize; i++)

@@ -28,6 +28,11 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (PropCount != Props.Count)
+			{
+				throw new Exception($"Expected AkPropBundle to have {PropCount} props but it has {Props.Count}.");
+			}
+
 			binaryWriter.Write(PropCount);
 			for (int i = 0; i < Props.Count; i++)
 			{

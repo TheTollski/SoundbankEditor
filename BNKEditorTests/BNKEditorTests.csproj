@@ -26,4 +26,16 @@
     <ProjectReference Include="..\BNKEditor\BNKEditor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\TW Attila\battle_vo_orders.bnk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TW Attila\battle_vo_orders_barbarian.bnk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\TW Attila\battle_vo_orders_barbarian_inf1.bnk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

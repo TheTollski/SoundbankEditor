@@ -11,6 +11,10 @@
     "BnkToJson": {
       "commandName": "Project",
       "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\battle_vo_orders.bnk"
+    },
+    "ShortId": {
+      "commandName": "Project",
+      "commandLineArgs": "aa_selected_test"
     }
   }
 }

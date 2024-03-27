@@ -65,8 +65,24 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ChildCount != ChildIds.Count)
+			{
+				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {ChildCount} children but it has {ChildIds.Count}.");
+			}
+			if (SwitchPackageCount != SwitchPackages.Count)
+			{
+				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {SwitchPackageCount} SwitchPackages but it has {SwitchPackages.Count}.");
+			}
+			if (SwitchParamsCount != SwitchParams.Count)
+			{
+				throw new Exception($"Expected CAkSwitchCntr '{UlID}' to have {SwitchParamsCount} SwitchParams but it has {SwitchParams.Count}.");
+			}
+
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			NodeBaseParams.WriteToBinary(binaryWriter);
 			binaryWriter.Write(GroupType);
@@ -87,6 +103,12 @@ namespace BNKEditor.WwiseObjects.HircItems
 			for (int i = 0; i < SwitchParams.Count; i++)
 			{
 				SwitchParams[i].WriteToBinary(binaryWriter);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkSwitchCntr '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
@@ -111,6 +133,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (NodeCount != NodeIds.Count)
+			{
+				throw new Exception($"Expected CAkSwitchPackage to have {NodeCount} nodes but it has {NodeIds.Count}.");
+			}
+
 			binaryWriter.Write(SwitchId);
 			binaryWriter.Write(NodeCount);
 			for (int i = 0; i < NodeIds.Count; i++)

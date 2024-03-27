@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -79,14 +80,17 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (FxCount != FxChunks.Count)
+			{
+				throw new Exception($"Expected NodeInitialFxParams to have {FxCount} children but it has {FxChunks.Count}.");
+			}
+
 			binaryWriter.Write(IsOverrideParentFX);
 			binaryWriter.Write(FxCount);
-
 			if (BitsFxBypass != null)
 			{
 				binaryWriter.Write(BitsFxBypass.Value);
 			}
-
 			for (int i = 0; i < FxChunks.Count; i++)
 			{
 				FxChunks[i].WriteToBinary(binaryWriter);
@@ -172,12 +176,10 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByVector);
-
 			if (Bits3d != null)
 			{
 				binaryWriter.Write(Bits3d.Value);
 			}
-
 			if (AttenuationId != null)
 			{
 				binaryWriter.Write(AttenuationId.Value);
@@ -234,13 +236,13 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 	public class StateChunk : WwiseObject
 	{
 		public uint NumStateGroups { get; set; }
+		public List<object> StateGroups { get; set; } = new List<object>();
 
 		public StateChunk() { }
 
 		public StateChunk(BinaryReader binaryReader)
 		{
 			NumStateGroups = binaryReader.ReadUInt32();
-
 			if (NumStateGroups > 0)
 			{
 				throw new Exception("StateChunk.StateGroups is not supported.");
@@ -249,8 +251,12 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(NumStateGroups);
+			if (NumStateGroups != StateGroups.Count)
+			{
+				throw new Exception($"Expected StateChunk to have {NumStateGroups} groups but it has {StateGroups.Count}.");
+			}
 
+			binaryWriter.Write(NumStateGroups);
 			if (NumStateGroups > 0)
 			{
 				throw new Exception("StateChunk.StateGroups is not supported.");
@@ -268,7 +274,6 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 		public InitialRtpc(BinaryReader binaryReader)
 		{
 			RtpcCount = binaryReader.ReadUInt16();
-
 			for (int i = 0; i < RtpcCount; i++)
 			{
 				RtpcList.Add(new Rtpc(binaryReader));
@@ -277,8 +282,12 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(RtpcCount);
+			if (RtpcCount != RtpcList.Count)
+			{
+				throw new Exception($"Expected InitialRtpc to have {RtpcCount} Rtpcs but it has {RtpcList.Count}.");
+			}
 
+			binaryWriter.Write(RtpcCount);
 			for (int i = 0; i < RtpcList.Count; i++)
 			{
 				RtpcList[i].WriteToBinary(binaryWriter);
@@ -317,6 +326,11 @@ namespace BNKEditor.WwiseObjects.HircItems.Common
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ListCount != GraphPoints.Count)
+			{
+				throw new Exception($"Expected Rtpc to have {ListCount} graph points but it has {GraphPoints.Count}.");
+			}
+
 			binaryWriter.Write(RtpcId);
 			binaryWriter.Write(RtpcType);
 			binaryWriter.Write(RtpcAccum);

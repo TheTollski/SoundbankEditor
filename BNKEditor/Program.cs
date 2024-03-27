@@ -19,10 +19,22 @@ if (args.Length > 1)
 	return;
 }
 
-string fileExtension = args[0].Substring(args[0].LastIndexOf(".") + 1);
+int lastDotIndex = args[0].LastIndexOf(".");
+if (lastDotIndex == -1)
+{
+	Console.WriteLine($"Converting name to Wwise ShortId...");
+	Console.WriteLine($"ShortId of '{args[0]}': {WwiseShortIdUtility.ConvertToShortId(args[0])}");
+	Console.WriteLine($"ShortId30Bit of '{args[0]}': {WwiseShortIdUtility.ConvertToShortId30Bit(args[0])}");
+
+	return;
+}
+
+string fileExtension = args[0].Substring(lastDotIndex + 1);
 
 if (fileExtension == "bnk")
 {
+	Console.WriteLine($"Converting BNK to JSON...");
+
 	using FileStream fileStream = File.OpenRead(args[0]);
 	using BinaryReader binaryReader = new BinaryReader(fileStream);
 
@@ -52,6 +64,8 @@ if (fileExtension == "bnk")
 
 if (fileExtension == "json")
 {
+	Console.WriteLine($"Converting JSON to BNK...");
+
 	string fileText = File.ReadAllText(args[0]);
 
 	List<WwiseRootObject>? wwiseRootObjects = JsonSerializer.Deserialize<List<WwiseRootObject>>(fileText);

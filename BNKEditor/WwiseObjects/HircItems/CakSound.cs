@@ -41,9 +41,18 @@ namespace BNKEditor.WwiseObjects.HircItems
 		{
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			AkBankSourceData.WriteToBinary(binaryWriter);
 			NodeBaseParams.WriteToBinary(binaryWriter);
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkSound '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+			}
 		}
 	}
 

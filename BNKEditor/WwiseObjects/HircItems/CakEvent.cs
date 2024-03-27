@@ -40,13 +40,27 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
+			if (ActionCount != ActionIds.Count)
+			{
+				throw new Exception($"Expected CAkEvent '{UlID}' to have {ActionCount} actions but it has {ActionIds.Count}.");
+			}
+
 			binaryWriter.Write((byte)EHircType);
 			binaryWriter.Write(DwSectionSize);
+
+			long position = binaryWriter.BaseStream.Position;
+
 			binaryWriter.Write(UlID);
 			binaryWriter.Write(ActionCount);
 			for (int i = 0; i<ActionIds.Count; i++)
 			{
 				binaryWriter.Write(ActionIds[i]);
+			}
+
+			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
+			if (bytesWrittenFromThisObject != DwSectionSize)
+			{
+				throw new Exception($"Expected CAkEvent '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}
