@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects.HircItems
+namespace SoundbankEditor.Core.WwiseObjects.HircItems
 {
 	[JsonDerivedType(typeof(CAkAction), "Action")]
 	[JsonDerivedType(typeof(CAkActorMixer), "Actor Mixer")]

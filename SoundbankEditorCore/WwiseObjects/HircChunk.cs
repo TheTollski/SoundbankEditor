@@ -1,4 +1,4 @@
-﻿using BNKEditor.WwiseObjects.HircItems;
+﻿using SoundbankEditor.Core.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects
+namespace SoundbankEditor.Core.WwiseObjects
 {
 	public class HircChunk : WwiseRootObject
 	{

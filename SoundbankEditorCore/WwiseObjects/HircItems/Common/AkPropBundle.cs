@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects.HircItems.Common
+namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 {
 	public class AkPropBundle : WwiseObject
 	{

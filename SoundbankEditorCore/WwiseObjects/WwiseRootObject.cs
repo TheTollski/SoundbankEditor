@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects
+namespace SoundbankEditor.Core.WwiseObjects
 {
 	[JsonDerivedType(typeof(BankHeader), "BKHD")]
 	[JsonDerivedType(typeof(HircChunk), "HIRC")]

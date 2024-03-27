@@ -1,5 +1,5 @@
-﻿using BNKEditor.Utility;
-using BNKEditor.WwiseObjects.HircItems.Common;
+﻿using SoundbankEditor.Core.Utility;
+using SoundbankEditor.Core.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects.HircItems
+namespace SoundbankEditor.Core.WwiseObjects.HircItems
 {
 	public class CAkSwitchCntr : HircItem
 	{

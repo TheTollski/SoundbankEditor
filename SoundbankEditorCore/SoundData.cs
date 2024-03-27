@@ -1,5 +1,5 @@
-﻿using BNKEditor.Utility;
-using BNKEditor.WwiseObjects;
+﻿using SoundbankEditor.Core.Utility;
+using SoundbankEditor.Core.WwiseObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor
+namespace SoundbankEditor.Core
 {
 	public class SoundData
 	{

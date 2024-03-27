@@ -1,5 +1,5 @@
-using BNKEditor;
-using BNKEditor.WwiseObjects;
+using SoundbankEditor.Core;
+using SoundbankEditor.Core.WwiseObjects;
 using System.IO;
 using System.IO.Pipes;
 

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BNKEditor.Utility
+namespace SoundbankEditor.Core.Utility
 {
 	// Taken from https://github.com/dotnet/runtime/issues/54189#issuecomment-861628532
 

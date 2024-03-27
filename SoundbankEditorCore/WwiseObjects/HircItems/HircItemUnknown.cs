@@ -1,4 +1,4 @@
-﻿using BNKEditor.Utility;
+﻿using SoundbankEditor.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.WwiseObjects.HircItems
+namespace SoundbankEditor.Core.WwiseObjects.HircItems
 {
 	public class HircItemUnknown : HircItem
 	{

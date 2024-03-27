@@ -1,4 +1,4 @@
-﻿using BNKEditor.WwiseObjects;
+﻿using SoundbankEditor.Core.WwiseObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BNKEditor
+namespace SoundbankEditor.Core
 {
 	public class SoundBank
 	{

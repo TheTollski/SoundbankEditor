@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using BNKEditor;
-using BNKEditor.WwiseObjects;
+using SoundbankEditor.Core;
+using SoundbankEditor.Core.WwiseObjects;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;

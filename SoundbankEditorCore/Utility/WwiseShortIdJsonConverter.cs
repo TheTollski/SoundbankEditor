@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace BNKEditor.Utility
+namespace SoundbankEditor.Core.Utility
 {
 	public class WwiseShortIdJsonConverter :  JsonConverter<uint>
 	{
