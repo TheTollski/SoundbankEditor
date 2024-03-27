@@ -53,7 +53,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject < DwSectionSize)
 			{
-				//throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CAkAttenuation '{UlID}'.");
+				throw new Exception($"{DwSectionSize - bytesReadFromThisObject} extra bytes found at the end of CAkAttenuation '{UlID}'.");
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
 			if (bytesWrittenFromThisObject != DwSectionSize)
 			{
-				throw new Exception($"Expected CAkAction '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
+				throw new Exception($"Expected CAkAttenuation '{UlID}' section size to be {DwSectionSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

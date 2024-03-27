@@ -137,7 +137,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 			ByBitVector = binaryReader.ReadByte();
 			// Wwiser shows an extra field "eFadeCurve" that isn't in the data, it must be extrapolated from "byBitVector".
 			ExceptionCount = binaryReader.ReadUInt32();
-
 			if (ExceptionCount > 0)
 			{
 				throw new Exception("ValueActionParams.Exceptions is not supported.");
@@ -153,7 +152,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 			binaryWriter.Write(ByBitVector);
 			binaryWriter.Write(ExceptionCount);
-
 			if (ExceptionCount > 0)
 			{
 				throw new Exception("ValueActionParams.Exceptions is not supported.");

@@ -65,6 +65,10 @@ namespace BNKEditor.WwiseObjects
 				{
 					HircItems.Add(new CAkAttenuation(binaryReader));
 				}
+				else if (hircType == HircType.FxShareSet) // 18
+				{
+					HircItems.Add(new CAkFxShareSet(binaryReader));
+				}
 				else
 				{
 					HircItems.Add(new HircItemUnknown(binaryReader));
