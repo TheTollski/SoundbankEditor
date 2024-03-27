@@ -39,15 +39,19 @@ namespace BNKEditor.WwiseObjects
 
 				if (hircType == HircType.Sound) // 2
 				{
-					HircItems.Add(new CakSound(binaryReader));
+					HircItems.Add(new CAkSound(binaryReader));
 				}
 				else if (hircType == HircType.Action) // 3
 				{
-					HircItems.Add(new CakAction(binaryReader));
+					HircItems.Add(new CAkAction(binaryReader));
 				}
 				else if (hircType == HircType.Event) // 4
 				{
 					HircItems.Add(new CAkEvent(binaryReader));
+				}
+				else if (hircType == HircType.RandomSequenceContainer) // 5
+				{
+					HircItems.Add(new CAkRanSeqCntr(binaryReader));
 				}
 				else if (hircType == HircType.SwitchContainer) // 6
 				{

@@ -34,10 +34,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 			long position = binaryReader.BaseStream.Position;
 
 			UlID = binaryReader.ReadUInt32();
-			if (UlID == 678417983 )
-			{
-
-			}
 
 			NodeBaseParams = new NodeBaseParams(binaryReader);
 			GroupType = binaryReader.ReadByte();
