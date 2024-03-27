@@ -624,7 +624,14 @@ namespace SoundbankEditor
 			}
 
 			_openSoundbank.WriteToBnkFile(_openSoundbankFilePath);
-			File.WriteAllLines(GetCustomNamesFilePath(), WwiseShortIdUtility.GetAllNames(true));
+
+			string soundbankJson = _openSoundbank.ToJson();
+			List<string> customNames = WwiseShortIdUtility
+				.GetAllNames(true)
+				.Where(n => soundbankJson.Contains(WwiseShortIdUtility.ConvertToShortId(n).ToString()))
+				.ToList();
+			File.WriteAllLines(GetCustomNamesFilePath(), customNames);
+
 			_areChangesPending = false;
 			UpdateTitle();
 		}

@@ -77,7 +77,11 @@ namespace SoundbankEditor
 
 			if (Regex.Match(tbIdOrName.Text, "^\\w*[A-z]\\w*$").Success)
 			{
-				WwiseShortIdUtility.AddNames(new List<string> { tbIdOrName.Text }, true);
+				if (!WwiseShortIdUtility.GetAllNames(false).Contains(tbIdOrName.Text))
+				{
+					WwiseShortIdUtility.AddNames(new List<string> { tbIdOrName.Text }, true);
+				}
+				
 				Id = WwiseShortIdUtility.ConvertToShortId(tbIdOrName.Text);
 
 				DialogResult = true;
