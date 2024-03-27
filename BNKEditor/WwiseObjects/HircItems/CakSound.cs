@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,12 +14,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public uint UlID { get; set; }
 		public AkBankSourceData AkBankSourceData { get; set; } = new AkBankSourceData();
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
-		public PositioningParams PositioningParams { get; set; } = new PositioningParams();
-		public AuxParams AuxParams { get; set; } = new AuxParams();
-		public AdvSettingsParams AdvSettingsParams { get; set; } = new AdvSettingsParams();
-		public StateChunk StateChunk { get; set; } = new StateChunk();
-		public InitialRTPC InitialRTPC { get; set; } = new InitialRTPC();
-		public byte[]? ExtraData { get; set; }
 
 		public CakSound() { }
 
@@ -33,11 +28,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 			AkBankSourceData = new AkBankSourceData(binaryReader);
 			NodeBaseParams = new NodeBaseParams(binaryReader);
-			PositioningParams = new PositioningParams(binaryReader);
-			AuxParams = new AuxParams(binaryReader);
-			AdvSettingsParams = new AdvSettingsParams(binaryReader);
-			StateChunk = new StateChunk(binaryReader);
-			InitialRTPC = new InitialRTPC(binaryReader);
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject < DwSectionSize)
@@ -53,16 +43,6 @@ namespace BNKEditor.WwiseObjects.HircItems
 			binaryWriter.Write(UlID);
 			AkBankSourceData.WriteToBinary(binaryWriter);
 			NodeBaseParams.WriteToBinary(binaryWriter);
-			PositioningParams.WriteToBinary(binaryWriter);
-			AuxParams.WriteToBinary(binaryWriter);
-			AdvSettingsParams.WriteToBinary(binaryWriter);
-			StateChunk.WriteToBinary(binaryWriter);
-			InitialRTPC.WriteToBinary(binaryWriter);
-
-			if (ExtraData != null)
-			{
-				binaryWriter.Write(ExtraData);
-			}
 		}
 	}
 
@@ -123,6 +103,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public uint DirectParentID { get; set; }
 		public byte ByBitVector { get; set; }
 		public NodeInitialParams NodeInitialParams { get; set; } = new NodeInitialParams();
+		public PositioningParams PositioningParams { get; set; } = new PositioningParams();
+		public AuxParams AuxParams { get; set; } = new AuxParams();
+		public AdvSettingsParams AdvSettingsParams { get; set; } = new AdvSettingsParams();
+		public StateChunk StateChunk { get; set; } = new StateChunk();
+		public InitialRtpc InitialRtpc { get; set; } = new InitialRtpc();
 
 		public NodeBaseParams() { }
 
@@ -134,6 +119,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 			DirectParentID = binaryReader.ReadUInt32();
 			ByBitVector = binaryReader.ReadByte();
 			NodeInitialParams = new NodeInitialParams(binaryReader);
+			PositioningParams = new PositioningParams(binaryReader);
+			AuxParams = new AuxParams(binaryReader);
+			AdvSettingsParams = new AdvSettingsParams(binaryReader);
+			StateChunk = new StateChunk(binaryReader);
+			InitialRtpc = new InitialRtpc(binaryReader);
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
@@ -144,6 +134,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 			binaryWriter.Write(DirectParentID);
 			binaryWriter.Write(ByBitVector);
 			NodeInitialParams.WriteToBinary(binaryWriter);
+			PositioningParams.WriteToBinary(binaryWriter);
+			AuxParams.WriteToBinary(binaryWriter);
+			AdvSettingsParams.WriteToBinary(binaryWriter);
+			StateChunk.WriteToBinary(binaryWriter);
+			InitialRtpc.WriteToBinary(binaryWriter);
 		}
 	}
 
@@ -151,6 +146,8 @@ namespace BNKEditor.WwiseObjects.HircItems
 	{
 		public byte IsOverrideParentFX { get; set; }
 		public byte FxCount { get; set; }
+		public byte? BitsFxBypass { get; set; }
+		public List<FxChunk> FxChunks { get; set; } = new List<FxChunk>();
 
 		public NodeInitialFxParams() { }
 
@@ -161,7 +158,11 @@ namespace BNKEditor.WwiseObjects.HircItems
 
 			if (FxCount > 0)
 			{
-				throw new Exception("NodeInitialFxParams.FxList is not supported.");
+				BitsFxBypass = binaryReader.ReadByte();
+				for (int i = 0; i < FxCount; i++)
+				{
+					FxChunks.Add(new FxChunk(binaryReader));
+				}
 			}
 		}
 
@@ -170,10 +171,41 @@ namespace BNKEditor.WwiseObjects.HircItems
 			binaryWriter.Write(IsOverrideParentFX);
 			binaryWriter.Write(FxCount);
 
-			if (FxCount > 0)
+			if (BitsFxBypass != null)
 			{
-				throw new Exception("NodeInitialFxParams.FxList is not supported.");
+				binaryWriter.Write(BitsFxBypass.Value);
 			}
+
+			for (int i = 0; i < FxChunks.Count; i++)
+			{
+				FxChunks[i].WriteToBinary(binaryWriter);
+			}
+		}
+	}
+
+	public class FxChunk : WwiseObject
+	{
+		public byte FxIndex { get; set; }
+		public uint FxId { get; set; }
+		public byte IsShareSet { get; set; }
+		public byte IsRendered { get; set; }
+
+		public FxChunk() { }
+
+		public FxChunk(BinaryReader binaryReader)
+		{
+			FxIndex = binaryReader.ReadByte();
+			FxId = binaryReader.ReadUInt32();
+			IsShareSet = binaryReader.ReadByte();
+			IsRendered = binaryReader.ReadByte();
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(FxIndex);
+			binaryWriter.Write(FxId);
+			binaryWriter.Write(IsShareSet);
+			binaryWriter.Write(IsRendered);
 		}
 	}
 
@@ -200,17 +232,40 @@ namespace BNKEditor.WwiseObjects.HircItems
 	public class PositioningParams : WwiseObject
 	{
 		public byte ByVector { get; set; }
+		public byte? Bits3d { get; set; }
+		public uint? AttenuationId { get; set; }
 
 		public PositioningParams() { }
 
 		public PositioningParams(BinaryReader binaryReader)
 		{
 			ByVector = binaryReader.ReadByte();
+
+			// I'm not sure about some of the value in the bit vector, so this logic will probably need to change.
+
+			bool _positioningInfoOverrideParent = (ByVector >> 0 & 1) == 1;
+			bool _hasListenerRelativeRouting = (ByVector >> 1 & 1) == 1;
+
+			if (_positioningInfoOverrideParent && _hasListenerRelativeRouting)
+			{
+				Bits3d = binaryReader.ReadByte();
+				AttenuationId = binaryReader.ReadUInt32();
+			}
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(ByVector);
+
+			if (Bits3d != null)
+			{
+				binaryWriter.Write(Bits3d.Value);
+			}
+
+			if (AttenuationId != null)
+			{
+				binaryWriter.Write(AttenuationId.Value);
+			}
 		}
 	}
 
@@ -287,30 +342,100 @@ namespace BNKEditor.WwiseObjects.HircItems
 		}
 	}
 
-	public class InitialRTPC : WwiseObject
+	public class InitialRtpc : WwiseObject
 	{
-		public ushort NumRTPC { get; set; }
+		public ushort RtpcCount { get; set; }
+		public List<Rtpc> RtpcList { get; set; } = new List<Rtpc>();
 
-		public InitialRTPC() { }
+		public InitialRtpc() { }
 
-		public InitialRTPC(BinaryReader binaryReader)
+		public InitialRtpc(BinaryReader binaryReader)
 		{
-			NumRTPC = binaryReader.ReadUInt16();
+			RtpcCount = binaryReader.ReadUInt16();
 
-			if (NumRTPC > 0)
+			for (int i = 0; i < RtpcCount; i++)
 			{
-				throw new Exception("InitialRTPC.RTPCs is not supported.");
+				RtpcList.Add(new Rtpc(binaryReader));
 			}
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
-			binaryWriter.Write(NumRTPC);
+			binaryWriter.Write(RtpcCount);
 
-			if (NumRTPC > 0)
+			for (int i = 0; i < RtpcList.Count; i++)
 			{
-				throw new Exception("InitialRTPC.RTPCs is not supported.");
+				RtpcList[i].WriteToBinary(binaryWriter);
 			}
+		}
+	}
+
+	public class Rtpc : WwiseObject
+	{
+		public uint RtpcId { get; set; }
+		public byte RtpcType { get; set; }
+		public byte RtpcAccum { get; set; }
+		public byte ParamId { get; set; }
+		public uint RtpcCurveId { get; set; }
+		public byte Scaling { get; set; }
+		public ushort ListCount { get; set; }
+		public List<AkRTPCGraphPoint> GraphPoints { get; set; } = new List<AkRTPCGraphPoint>();
+
+		public Rtpc() { }
+
+		public Rtpc(BinaryReader binaryReader)
+		{
+			RtpcId = binaryReader.ReadUInt32();
+			RtpcType = binaryReader.ReadByte();
+			RtpcAccum = binaryReader.ReadByte();
+			ParamId = binaryReader.ReadByte();
+			RtpcCurveId = binaryReader.ReadUInt32();
+			Scaling = binaryReader.ReadByte();
+			ListCount = binaryReader.ReadUInt16();
+
+			for (int i = 0; i < ListCount; i++)
+			{
+				GraphPoints.Add(new AkRTPCGraphPoint(binaryReader));
+			}
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(RtpcId);
+			binaryWriter.Write(RtpcType);
+			binaryWriter.Write(RtpcAccum);
+			binaryWriter.Write(ParamId);
+			binaryWriter.Write(RtpcCurveId);
+			binaryWriter.Write(Scaling);
+			binaryWriter.Write(ListCount);
+
+			for (int i = 0; i < GraphPoints.Count; i++)
+			{
+				GraphPoints[i].WriteToBinary(binaryWriter);
+			}
+		}
+	}
+
+	public class AkRTPCGraphPoint : WwiseObject
+	{
+		public float From { get; set; }
+		public float To { get; set; }
+		public uint Interp { get; set; }
+
+		public AkRTPCGraphPoint() { }
+
+		public AkRTPCGraphPoint(BinaryReader binaryReader)
+		{
+			From = binaryReader.ReadSingle();
+			To = binaryReader.ReadSingle();
+			Interp = binaryReader.ReadUInt32();
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(From);
+			binaryWriter.Write(To);
+			binaryWriter.Write(Interp);
 		}
 	}
 }

@@ -10,6 +10,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 	[JsonDerivedType(typeof(CakAction), "Action")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CakSound), "Sound")]
+	[JsonDerivedType(typeof(CAkSwitchCntr), "SwitchCntr")]
 	[JsonDerivedType(typeof(HircItemUnknown), "Unknown")]
 	public interface HircItem : WwiseObject
 	{
@@ -25,7 +26,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		Action = 3,
 		Event = 4,
 		//SequenceContainer = 5,
-		//SwitchContainer = 6,
+		SwitchContainer = 6,
 		//ActorMixer = 7,
 		//Audio_Bus = 8,
 		//LayerContainer = 9,

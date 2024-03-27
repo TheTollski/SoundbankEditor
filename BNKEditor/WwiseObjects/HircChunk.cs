@@ -49,6 +49,10 @@ namespace BNKEditor.WwiseObjects
 				{
 					HircItems.Add(new CAkEvent(binaryReader));
 				}
+				else if (hircType == HircType.SwitchContainer) // 6
+				{
+					HircItems.Add(new CAkSwitchCntr(binaryReader));
+				}
 				else
 				{
 					HircItems.Add(new HircItemUnknown(binaryReader));

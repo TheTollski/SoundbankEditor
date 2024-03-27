@@ -103,10 +103,13 @@ namespace BNKEditor.WwiseObjects.HircItems
 		public AkPropBundle(BinaryReader binaryReader)
 		{
 			PropCount = binaryReader.ReadByte();
-
 			for (int i = 0; i < PropCount; i++)
 			{
-				Props.Add(new AkProp(binaryReader));
+				Props.Add(new AkProp { Id = binaryReader.ReadByte() });
+			}
+			for (int i = 0; i < PropCount; i++)
+			{
+				Props[i].Value = binaryReader.ReadSingle();
 			}
 		}
 
@@ -115,29 +118,23 @@ namespace BNKEditor.WwiseObjects.HircItems
 			binaryWriter.Write(PropCount);
 			for (int i = 0; i < Props.Count; i++)
 			{
-				Props[i].WriteToBinary(binaryWriter);
+				binaryWriter.Write(Props[i].Id);
+			}
+			for (int i = 0; i < Props.Count; i++)
+			{
+				binaryWriter.Write(Props[i].Value);
 			}
 		}
 	}
 
-	public class AkProp : WwiseObject
+	public class AkProp
 	{
 		public byte Id { get; set; }
-		public uint Value { get; set; }
+		public float Value { get; set; }
 
 		public AkProp() { }
 
-		public AkProp(BinaryReader binaryReader)
-		{
-			Id = binaryReader.ReadByte();
-			Value = binaryReader.ReadUInt32();
-		}
-
-		public void WriteToBinary(BinaryWriter binaryWriter)
-		{
-			binaryWriter.Write(Id);
-			binaryWriter.Write(Value);
-		}
+		// Note: An AkProp is not stored as a whole in the binary. For a list, all the AkProp IDs are stored and then all the values are stored.
 	}
 
 	public class PlayActionParams : WwiseObject
