@@ -65,7 +65,7 @@
 			<TextBox
 				x:Name="tbHircItemJson"
 				Text="{Binding SelectedHircItemJson, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-				TextChanged="TbHircItemJson_TextChanged" IsEnabled="False" />
+				TextChanged="TbHircItemJson_TextChanged" IsEnabled="False" AcceptsReturn="True" />
 		</ScrollViewer>
 		
 		<Button

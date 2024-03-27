@@ -11,6 +11,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -212,7 +213,7 @@ namespace SoundbankEditor
 			}
 
 			if (SelectedHircItemJsonErrorMessage != null && _selectedHircItemIndex != dgHircItems.SelectedIndex &&
-					MessageBox.Show($"There are unpersisted changes in your working HIRC item. Are you sure you want to select a different HIRC item?", "Confirm HIRC Item Selection", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+					MessageBox.Show($" If you select a different HIRC item, you will lose unpersisted changes in your working HIRC item.", "Confirm HIRC Item Selection", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
 			{
 				dgHircItems.SelectionChanged -= DgHircItems_SelectionChanged;
 				dgHircItems.SelectedIndex = _selectedHircItemIndex;
@@ -236,6 +237,7 @@ namespace SoundbankEditor
 			tbHircItemJson.IsEnabled = true;
 		}
 
+		private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 		private void TbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			if (HircItems == null || SelectedHircItemJson == null || dgHircItems.SelectedIndex < 0)
@@ -252,39 +254,53 @@ namespace SoundbankEditor
 				}
 			}
 
-			try
+			// Debounce logic.
+			_cancellationTokenSource.Cancel();
+			_cancellationTokenSource = new CancellationTokenSource();
+			var cancellationToken = _cancellationTokenSource.Token;
+
+			Dispatcher.Invoke(async () => // Run task in current thread.
 			{
-				HircItem existingHircItem = HircItems[dgHircItems.SelectedIndex];
-				HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(SelectedHircItemJson);
-				if (newHircItem == null)
+				await Task.Delay(100);
+				if (cancellationToken.IsCancellationRequested)
 				{
-					throw new JsonException();
+					return;
 				}
 
-				if (existingHircItem.GetType() != newHircItem.GetType())
+				try
 				{
-					throw new JsonException($"You cannot change the '$type'.");
+					HircItem existingHircItem = HircItems[dgHircItems.SelectedIndex];
+					HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(SelectedHircItemJson);
+					if (newHircItem == null)
+					{
+						throw new JsonException();
+					}
+
+					if (existingHircItem.GetType() != newHircItem.GetType())
+					{
+						throw new JsonException($"You cannot change the '$type'.");
+					}
+
+					using MemoryStream memoryStream = new MemoryStream();
+					using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
+					newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
+
+					bool hasIdChanged = newHircItem.UlID != existingHircItem.UlID;
+
+					newHircItem.CopyTo(existingHircItem);
+
+					if (!_isProgrammaticallyChangingSelectedHircItemJson && hasIdChanged)
+					{
+						dgHircItems.Items.Refresh();
+					}
+
+					SelectedHircItemJsonErrorMessage = null;
 				}
-
-				using MemoryStream memoryStream = new MemoryStream();
-				using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
-				newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
-
-				bool hasIdChanged = newHircItem.UlID != existingHircItem.UlID;
-
-				newHircItem.CopyTo(existingHircItem);
-
-				if (!_isProgrammaticallyChangingSelectedHircItemJson && hasIdChanged)
+				catch (Exception ex)
 				{
-					dgHircItems.Items.Refresh();
+					SelectedHircItemJsonErrorMessage = ex.Message;
 				}
-
-				SelectedHircItemJsonErrorMessage = null;
-			}
-			catch (Exception ex)
-			{
-				SelectedHircItemJsonErrorMessage = ex.Message;
-			}
+			}, System.Windows.Threading.DispatcherPriority.Normal , cancellationToken);
 		}
 
 		private void Window_KeyDown(object sender, KeyEventArgs e)
