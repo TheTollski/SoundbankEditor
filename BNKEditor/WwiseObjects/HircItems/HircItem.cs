@@ -9,6 +9,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 {
 	[JsonDerivedType(typeof(CAkAction), "Action")]
 	[JsonDerivedType(typeof(CAkActorMixer), "Actor Mixer")]
+	[JsonDerivedType(typeof(CAkAttenuation), "Attenuation")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CAkRanSeqCntr), "Random/Sequence Container")]
 	[JsonDerivedType(typeof(CAkSound), "Sound")]
@@ -38,7 +39,7 @@ namespace BNKEditor.WwiseObjects.HircItems
 		//Music_Switch = 12,
 		//Music_Random_Sequence = 13,
 
-		//Attenuation = 14,
+		Attenuation = 14,
 		//Dialogue_Event = 15,
 		//FxShareSet = 16,
 		//FxCustom = 17,
