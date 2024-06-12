@@ -10,6 +10,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	[JsonDerivedType(typeof(CAkAction), "Action")]
 	[JsonDerivedType(typeof(CAkActorMixer), "Actor Mixer")]
 	[JsonDerivedType(typeof(CAkAttenuation), "Attenuation")]
+	[JsonDerivedType(typeof(CakDialogueEvent), "Dialogue Event")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CAkFxShareSet), "FxShareSet")]
 	[JsonDerivedType(typeof(CAkRanSeqCntr), "Random/Sequence Container")]
@@ -42,7 +43,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		//Music_Random_Sequence = 13,
 
 		Attenuation = 14,
-		//Dialogue_Event = 15,
+		Dialogue_Event = 15,
 		FxShareSet = 18,
 		//FxCustom = 17,
 		//AuxiliaryBus = 18,

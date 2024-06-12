@@ -40,6 +40,10 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			{
 				return binaryReader != null ? new CAkAttenuation(binaryReader) : new CAkAttenuation();
 			}
+			if (hircType == HircType.Dialogue_Event) // 15
+			{
+				return binaryReader != null ? new CakDialogueEvent(binaryReader) : new CakDialogueEvent();
+			}
 			if (hircType == HircType.FxShareSet) // 18
 			{
 				return binaryReader != null ? new CAkFxShareSet(binaryReader) : new CAkFxShareSet();
