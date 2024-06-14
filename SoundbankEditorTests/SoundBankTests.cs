@@ -33,9 +33,8 @@ namespace SoundbankEditorTests
 			string outputBnkFilePath = $"Temp\\{fileNameWithoutExtension}_temp.bnk";
 			soundBank2.WriteToBnkFile(outputBnkFilePath);
 
-
 			using FileStream bnk1FileStream = File.OpenRead(inputBnkFilePath);
-			using FileStream bnk2FileStream = File.OpenRead(inputBnkFilePath);
+			using FileStream bnk2FileStream = File.OpenRead(outputBnkFilePath);
 
 			Assert.Equal(bnk1FileStream.Length, bnk2FileStream.Length);
 

@@ -120,15 +120,17 @@ namespace SoundbankEditor
 			string soundBankJson = soundBank.ToJson();
 			SoundBank copiedSoundBank = SoundBank.CreateFromJson(soundBankJson);
 
-			using var memoryStream1 = new MemoryStream();
-			using var memoryStream2 = new MemoryStream();
-			using var binaryWriter1 = new BinaryWriter(memoryStream1);
-			using var binaryWriter2 = new BinaryWriter(memoryStream2);
-			soundBank.WriteToBinary(binaryWriter1);
-			copiedSoundBank.WriteToBinary(binaryWriter2);
-			memoryStream1.Position = 0;
-			memoryStream2.Position = 0;
-			if (!memoryStream1.ToArray().SequenceEqual(memoryStream2.ToArray()))
+			using FileStream inputBnkFileStream = File.OpenRead(openFileDialog.FileName);
+			byte[] inputBnkBytes = new byte[inputBnkFileStream.Length];
+			inputBnkFileStream.Position = 0;
+			inputBnkFileStream.Read(inputBnkBytes, 0, inputBnkBytes.Length);
+
+			using var outputBnkMemoryStream = new MemoryStream();
+			using var outputBnkBinaryWriter = new BinaryWriter(outputBnkMemoryStream);
+			copiedSoundBank.WriteToBinary(outputBnkBinaryWriter);
+			outputBnkMemoryStream.Position = 0;
+
+			if (!inputBnkBytes.SequenceEqual(outputBnkMemoryStream.ToArray()))
 			{
 				MessageBox.Show("Failed to open Soundbank. Unable to fully parse the soundbank.");
 				return;

@@ -179,7 +179,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		{
 			long position = binaryReader.BaseStream.Position;
 
-			List<Node> nodes = new List<Node>();
+		  var nodes = new List<Node>();
 			while (position + treeDataSize > binaryReader.BaseStream.Position)
 			{
 				nodes.Add(new Node(binaryReader));
@@ -239,19 +239,37 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 
 		private List<T> TraverseTree<T>(Func<Node, T> nodeFunc)
 		{
-			List<T> results = new List<T>();
+			// Nodes are located near their siblings but these groups of sibling nodes can seemingly be stored randomly throughout the section.
 
-			Queue<Node> nodeQueue = new Queue<Node>();
-			nodeQueue.Enqueue(RootNode);
-			while (nodeQueue.Count > 0)
+			SortedDictionary<int, Node> nodePositionDict = new SortedDictionary<int, Node>
 			{
-				Node currentNode = nodeQueue.Dequeue();
-				foreach (Node childNode in currentNode.Children)
+				[0] = RootNode
+			};
+			Queue<Node> bfsNodeQueue = new Queue<Node>();
+			bfsNodeQueue.Enqueue(RootNode);
+			while (bfsNodeQueue.Count > 0)
+			{
+				Node currentNode = bfsNodeQueue.Dequeue();
+				for (int i = 0; i < currentNode.Children.Count; i++)
 				{
-					nodeQueue.Enqueue(childNode);
+					Node childNode = currentNode.Children[i];
+
+					bfsNodeQueue.Enqueue(childNode);
+					nodePositionDict.Add(currentNode.ChildrenIdx + i, childNode);
+				}
+			}
+
+			List<T> results = new List<T>();
+			int expectedIndex = 0;
+			foreach (var kvp  in nodePositionDict)
+			{
+				if (kvp.Key != expectedIndex)
+				{
+					throw new Exception($"Expected index for node is {expectedIndex} but it's actual index is {kvp.Key}");
 				}
 
-				results.Add(nodeFunc(currentNode));
+				results.Add(nodeFunc(kvp.Value));
+				expectedIndex++;
 			}
 
 			return results;
@@ -291,8 +309,15 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write(Key);
-			binaryWriter.Write(ChildrenIdx);
-			binaryWriter.Write(ChildrenCount);
+			if (AudioNodeId != 0)
+			{
+				binaryWriter.Write(AudioNodeId);
+			}
+			else
+			{
+				binaryWriter.Write(ChildrenIdx);
+				binaryWriter.Write(ChildrenCount);
+			}
 			binaryWriter.Write(Weight);
 			binaryWriter.Write(Probability);
 		}
