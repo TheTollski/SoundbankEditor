@@ -1,0 +1,19 @@
+﻿<Window x:Class="SoundbankEditor.TextInputWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SoundbankEditor"
+        mc:Ignorable="d"
+        Title="Set Value" Height="135" Width="400">
+    <Grid>
+		<StackPanel>
+			<Label HorizontalAlignment="Center">New Value</Label>
+			<TextBox x:Name="tbValue" Width="300" />
+			<DockPanel Width="300" LastChildFill="false">
+				<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 10, 0, 10" Content="Confirm" Click="BtnConfirm_Click" />
+				<Button DockPanel.Dock="Right" Width="100" Height="20" Margin="0, 10, 10, 10" Content="Cancel" Click="BtnCancel_Click" />
+			</DockPanel>
+		</StackPanel>
+	</Grid>
+</Window>

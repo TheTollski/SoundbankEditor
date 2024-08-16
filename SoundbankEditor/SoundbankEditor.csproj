@@ -13,4 +13,16 @@
     <ProjectReference Include="..\SoundbankEditorCore\SoundbankEditorCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="TextInputWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="SpecificHircItemEditorViews\DialogueEventHircItemEditorView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

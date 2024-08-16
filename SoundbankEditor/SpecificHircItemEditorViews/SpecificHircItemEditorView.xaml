@@ -39,6 +39,9 @@
 
 	<ContentPresenter Content="{Binding HircItem}">
 		<ContentPresenter.Resources>
+			<DataTemplate DataType="{x:Type hircItems:CakDialogueEvent}">
+				<local:DialogueEventHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
+			</DataTemplate>
 			<DataTemplate DataType="{x:Type hircItems:CAkRanSeqCntr}">
 				<local:RandomSequenceContainerHircItemEditorView HircItemUpdated="OnHircItemUpdated" />
 			</DataTemplate>
