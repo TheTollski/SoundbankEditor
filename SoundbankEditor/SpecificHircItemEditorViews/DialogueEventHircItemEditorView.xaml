@@ -9,6 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="600"
 						 DataContextChanged="OnDataContextChanged">
 	<UserControl.Resources>
+		<main:DecisionTreeNodeAudioNodeIdValueConverter x:Key="decisionTreeNodeAudioNodeIdValueConverter"/>
 		<main:WwiseShortIdsListValueConverter x:Key="wwiseShortIdsListValueConverter"/>
 		<main:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
 	</UserControl.Resources>
@@ -21,6 +22,9 @@
 			<RowDefinition Height="30" />
 			<RowDefinition Height="120" />
 			<RowDefinition Height="55" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="1*" />
+			<RowDefinition Height="80" />
 		</Grid.RowDefinitions>
 
 		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Dialogue Event Item Edit Options</Label>
@@ -49,6 +53,29 @@
 		<StackPanel Grid.Row="5">
 			<main:IndividualFieldEditorView x:Name="ifevGroup" Margin="0,5,0,0" Title="Group" IsValueAShortId="True" OnEditClicked="IfevEditGroup_Click" IsEnabled="False" />
 			<main:IndividualFieldEditorView x:Name="ifevGroupType" Margin="0,5,0,0" Title="Group Type" IsValueAShortId="False" OnEditClicked="IfevEditGroupType_Click" IsEnabled="False" />
+		</StackPanel>
+
+		<Label Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14">Decision Tree</Label>
+
+		<TreeView Grid.Row="7" x:Name="tvDecisionTree" SelectedItemChanged="tvDecisionTree_SelectedItemChanged">
+			<TreeView.ItemTemplate>
+				<HierarchicalDataTemplate ItemsSource="{Binding Path=Children}">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding Key, Converter={StaticResource wwiseShortIdValueConverter}}"/>
+						<!--<TextBlock Text=" - W: "/>
+						<TextBlock Text="{Binding Weight}"/>
+						<TextBlock Text=" - P: "/>
+						<TextBlock Text="{Binding Probability}"/>-->
+						<TextBlock Text="{Binding AudioNodeId, Converter={StaticResource decisionTreeNodeAudioNodeIdValueConverter}}"/>
+					</StackPanel>
+				</HierarchicalDataTemplate>
+			</TreeView.ItemTemplate>
+		</TreeView>
+
+		<StackPanel Grid.Row="8">
+			<main:IndividualFieldEditorView x:Name="ifevNodeWeight" Margin="0,5,0,0" Title="Weight" IsValueAShortId="True" OnEditClicked="IfevEditNodeWeight_Click" IsEnabled="False" />
+			<main:IndividualFieldEditorView x:Name="ifevNodeProbability" Margin="0,5,0,0" Title="Probability" IsValueAShortId="True" OnEditClicked="IfevEditNodeProbability_Click" IsEnabled="False" />
+			<main:IndividualFieldEditorView x:Name="ifevNodeAudioNodeId" Margin="0,5,0,0" Title="Audio Node ID" IsValueAShortId="True" OnEditClicked="IfevEditNodeAudioNodeId_Click" IsEnabled="False" />
 		</StackPanel>
 	</Grid>
 </UserControl>

@@ -179,24 +179,126 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
-		////
-		//// Helpers
-		////
-
-		private void UpdateAllFields()
-		{
-			UpdateProbabilityTextBlock();
-			UpdateGameSyncsDataGrid();
-		}
-
-		private void UpdateProbabilityTextBlock()
+		private void IfevEditNodeAudioNodeId_Click(object sender, EventArgs e)
 		{
 			if (_cakDialogueEvent == null)
 			{
 				return;
 			}
 
-			ifevProbability.Value = _cakDialogueEvent.Probability.ToString(); ;
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Node AudioNodeId", selectedNode.AudioNodeId);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			selectedNode.AudioNodeId = hircItemIdConverterWindow.Id.Value;
+			UpdateDecisionTreeTreeView();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditNodeProbability_Click(object sender, EventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			var textInputWindow = new TextInputWindow("Set Node Probability", typeof(ushort), selectedNode.Probability.ToString());
+			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
+			{
+				return;
+			}
+
+			selectedNode.Probability = ushort.Parse(textInputWindow.Value);
+			UpdateDecisionTreeTreeView();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void IfevEditNodeWeight_Click(object sender, EventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			var textInputWindow = new TextInputWindow("Set Node Weight", typeof(ushort), selectedNode.Weight.ToString());
+			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
+			{
+				return;
+			}
+
+			selectedNode.Weight = ushort.Parse(textInputWindow.Value);
+			UpdateDecisionTreeTreeView();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void tvDecisionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			bool isANodeSelected = tvDecisionTree.SelectedItem != null;
+			ifevNodeAudioNodeId.IsEnabled = isANodeSelected && (tvDecisionTree.SelectedItem as Node)!.Children.Count == 0;
+			ifevNodeProbability.IsEnabled = isANodeSelected;
+			ifevNodeWeight.IsEnabled = isANodeSelected;
+
+			UpdateNodeAudioNodeIdTextBlock();
+			UpdateNodeProbabilityTextBlock();
+			UpdateNodeWeightTextBlock();
+		}
+
+		////
+		//// Helpers
+		////
+
+		private void UpdateAllFields()
+		{
+			UpdateDecisionTreeTreeView();
+			UpdateGameSyncsDataGrid();
+			UpdateProbabilityTextBlock();
+		}
+
+		private void UpdateDecisionTreeTreeView()
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			tvDecisionTree.ItemsSource = _cakDialogueEvent.AkDecisionTree.RootNode.Children;
+		}
+
+		private void UpdateGameSyncsDataGrid()
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			AkGameSync? selectedGameSync = dgGameSyncs.SelectedItem as AkGameSync;
+			dgGameSyncs.ItemsSource = _cakDialogueEvent.Arguments.GameSyncs;
+			dgGameSyncs.Items.Refresh();
+
+			if (selectedGameSync != null)
+			{
+				dgGameSyncs.SelectedIndex = _cakDialogueEvent.Arguments.GameSyncs.FindIndex(p => p.Group == selectedGameSync.Group);
+			}
 		}
 
 		private void UpdateGroupTextBlock()
@@ -225,21 +327,53 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				: "";
 		}
 
-		private void UpdateGameSyncsDataGrid()
+		private void UpdateNodeAudioNodeIdTextBlock()
 		{
 			if (_cakDialogueEvent == null)
 			{
 				return;
 			}
 
-			AkGameSync? selectedGameSync = dgGameSyncs.SelectedItem as AkGameSync;
-			dgGameSyncs.ItemsSource = _cakDialogueEvent.Arguments.GameSyncs;
-			dgGameSyncs.Items.Refresh();
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			ifevNodeAudioNodeId.Value = selectedNode != null && selectedNode.Children.Count == 0
+				? selectedNode.AudioNodeId.ToString()
+				: "";
+		}
 
-			if (selectedGameSync != null)
+		private void UpdateNodeProbabilityTextBlock()
+		{
+			if (_cakDialogueEvent == null)
 			{
-				dgGameSyncs.SelectedIndex = _cakDialogueEvent.Arguments.GameSyncs.FindIndex(p => p.Group == selectedGameSync.Group);
+				return;
 			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			ifevNodeProbability.Value = selectedNode != null
+				? selectedNode.Probability.ToString()
+				: "";
+		}
+
+		private void UpdateNodeWeightTextBlock()
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			ifevNodeWeight.Value = selectedNode != null
+				? selectedNode.Weight.ToString()
+				: "";
+		}
+
+		private void UpdateProbabilityTextBlock()
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			ifevProbability.Value = _cakDialogueEvent.Probability.ToString(); ;
 		}
 	}
 }
