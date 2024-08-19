@@ -33,7 +33,6 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			_cakDialogueEvent = (CakDialogueEvent)DataContext;
-			tvDecisionTree.ItemsSource = _cakDialogueEvent.AkDecisionTree.RootNode.Children;
 
 			UpdateAllFields();
 		}
@@ -127,6 +126,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			_cakDialogueEvent.Probability = byte.Parse(textInputWindow.Value);
+
 			UpdateProbabilityTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
@@ -151,6 +151,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			selectedGameSync.Group = hircItemIdConverterWindow.Id.Value;
+
 			UpdateGameSyncsDataGrid();
 			UpdateGroupTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
@@ -176,6 +177,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			selectedGameSync.GroupType = byte.Parse(textInputWindow.Value);
+
 			UpdateGameSyncsDataGrid();
 			UpdateGroupTypeTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
@@ -201,7 +203,8 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			selectedNode.AudioNodeId = hircItemIdConverterWindow.Id.Value;
-			UpdateDecisionTreeTreeView();
+
+			UpdateDecisionTreeTreeView(false);
 			UpdateNodeAudioNodeIdTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
@@ -226,7 +229,8 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			selectedNode.Probability = ushort.Parse(textInputWindow.Value);
-			UpdateDecisionTreeTreeView();
+
+			UpdateDecisionTreeTreeView(false);
 			UpdateNodeProbabilityTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
@@ -251,7 +255,8 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			selectedNode.Weight = ushort.Parse(textInputWindow.Value);
-			UpdateDecisionTreeTreeView();
+
+			UpdateDecisionTreeTreeView(false);
 			UpdateNodeWeightTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
@@ -274,15 +279,21 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 		private void UpdateAllFields()
 		{
-			UpdateDecisionTreeTreeView();
+			UpdateDecisionTreeTreeView(true);
 			UpdateGameSyncsDataGrid();
 			UpdateProbabilityTextBlock();
 		}
 
-		private void UpdateDecisionTreeTreeView()
+		private void UpdateDecisionTreeTreeView(bool updateItemSource)
 		{
 			if (_cakDialogueEvent == null)
 			{
+				return;
+			}
+
+			if (updateItemSource)
+			{
+				tvDecisionTree.ItemsSource = _cakDialogueEvent.AkDecisionTree.RootNode.Children;
 				return;
 			}
 
@@ -375,13 +386,13 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			AkGameSync? selectedGameSync = dgGameSyncs.SelectedItem as AkGameSync;
+			int selectedIndex = dgGameSyncs.SelectedIndex;
 			dgGameSyncs.ItemsSource = _cakDialogueEvent.Arguments.GameSyncs;
 			dgGameSyncs.Items.Refresh();
 
-			if (selectedGameSync != null)
+			if (selectedIndex >= 0)
 			{
-				dgGameSyncs.SelectedIndex = _cakDialogueEvent.Arguments.GameSyncs.FindIndex(p => p.Group == selectedGameSync.Group);
+				dgGameSyncs.SelectedIndex = selectedIndex;
 			}
 		}
 

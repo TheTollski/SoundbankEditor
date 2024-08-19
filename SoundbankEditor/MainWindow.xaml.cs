@@ -577,28 +577,32 @@ namespace SoundbankEditor
 		private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 		private void TbHircItemJson_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			_cancellationTokenSource.Cancel();
+
 			if (HircItems == null || SelectedHircItemJson == null || dgHircItems.SelectedIndex < 0)
 			{
 				return;
 			}
 
-			if (!_isProgrammaticallyChangingSelectedHircItemJson)
+			if (_isProgrammaticallyChangingSelectedHircItemJson)
 			{
-				if (!_areChangesPending)
-				{
-					_areChangesPending = true;
-					UpdateTitle();
-				}
+				_isProgrammaticallyChangingSelectedHircItemJson = false;
+				return;
+			}
+
+			if (!_areChangesPending)
+			{
+				_areChangesPending = true;
+				UpdateTitle();
 			}
 
 			// Debounce logic.
-			_cancellationTokenSource.Cancel();
 			_cancellationTokenSource = new CancellationTokenSource();
 			var cancellationToken = _cancellationTokenSource.Token;
 
 			Dispatcher.Invoke(async () => // Run task in current thread.
-			{
-				await Task.Delay(500);
+			{ 
+				await Task.Delay(250);
 				if (cancellationToken.IsCancellationRequested)
 				{
 					return;
@@ -622,7 +626,7 @@ namespace SoundbankEditor
 					using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
 					newHircItem.WriteToBinary(binaryWriter); // Test to make sure it doesn't fail.
 
-					if (!_isProgrammaticallyChangingSelectedHircItemJson && newHircItem.UlID != existingHircItem.UlID)
+					if (newHircItem.UlID != existingHircItem.UlID)
 					{
 						throw new JsonException($"You cannot change the item's ID in the JSON editor.");
 					}
@@ -631,11 +635,8 @@ namespace SoundbankEditor
 
 					SelectedHircItemJsonErrorMessage = null;
 
-					if (!_isProgrammaticallyChangingSelectedHircItemJson)
-					{
-						OnHircItemUpdated?.Invoke();
-						UpdateKnownValidationErrorsCount();
-					}
+					OnHircItemUpdated?.Invoke();
+					UpdateKnownValidationErrorsCount();
 				}
 				catch (Exception ex)
 				{
@@ -785,7 +786,6 @@ namespace SoundbankEditor
 
 			_isProgrammaticallyChangingSelectedHircItemJson = true;
 			SelectedHircItemJson = text;
-			_isProgrammaticallyChangingSelectedHircItemJson = false;
 		}
 
 		private void UpdateTitle()
