@@ -1,5 +1,5 @@
 ﻿## Overview
-This guide will walk you though the steps of how to convert a custom audio file to a format that can be used ingame and how to replace the game's default battle advisor voicelines with your custom audio. Specifically, we will be making the game play a custom voiceline whenever an enemy general is killed in battle.
+This guide will walk you though the steps of how to convert a custom audio file to a format that can be used ingame and how to replace the game's default campaign voicelines with your custom audio. Specifically, we will be making the game play a custom voiceline whenever you select a general on the campaign map.
 
 Click the image below to hear an example of this guide's final result:  
 [![Example video with custom Campaign VO audio.](Campaign_VO_Resources/example.png)](Campaign_VO_Resources/example.mp4)
@@ -38,9 +38,9 @@ In this step we will set up a packfile for your mod and add the converted audio 
 ![RPFM_AudioFile](Campaign_VO_Resources/RPFM_AudioFile.png)
 
 ## Step 3: Edit the `campaign_vo` soundbank.
-Total War Attila uses soundbanks (i.e. `.bnk` files) to determine what audio to play when events are triggered. The `campaign_vo` soundbank is set up so that the `campaign_selected` Dialogue Event takes variables for culture, subculture, and character type and has a decision tree which references RandomSequenceContainers which reference lists of Sounds. In other words, when the game triggers the "campaign selected" campaign VO dialogue event it will use the selected character's culture, subculture, and character type in order to pick a list of random voice lines and it will play one of those random voice lines.
+Total War Attila uses soundbanks (i.e. `.bnk` files) to determine what audio to play when events are triggered. The `campaign_vo` soundbank is set up so that the `campaign_selected` Dialogue Event takes variables for culture, subculture, and character type and has a decision tree which references RandomSequenceContainers which reference lists of Sounds. In other words, when the game triggers the "campaign selected" campaign VO dialogue event it will use the selected character's culture, subculture, and character type in order to pick a list of random voicelines and it will play one of those random voicelines.
 
-In this step we will edit the `campaign_vo` soundbank to so that when the game triggers the "campaign selected" campaign VO dialogue event for `barbarian_pagan` generals it will play our custom voice line.
+In this step we will edit the `campaign_vo` soundbank to so that when the game triggers the "campaign selected" campaign VO dialogue event for `barbarian_pagan` generals it will play our custom voiceline.
 
 1. In RPFM, look in the `Dependencies` panel, expand `Game Files`, expand the `audio` folder, and extract `campaign_vo.bnk`.  
 ![RPFM_ExtractBnk](Campaign_VO_Resources/RPFM_ExtractBnk.png)
@@ -48,7 +48,7 @@ In this step we will edit the `campaign_vo` soundbank to so that when the game t
 3. Open the extracted `campaign_vo.bnk`.
 4. Go to the Dialogue Event `3949423457` (`campaign_selected`) and expand its decision tree to get the AudioNodeId for `barbarian.barbarian_pagan.Gen1Land`.  
 ![SoundbankEditor_DialogueEvent_Initial](Campaign_VO_Resources/SoundbankEditor_DialogueEvent_Initial.png)
-5. Go to the RandomSequenceContainer `861145184` and duplicate it. Set the duplicated RandomSequenceContainer's Item ID to `CampaignSelected_BarbarianPagan_Test` (which gets converted to short ID `961765999`). Look at ID its playlist items IDs and get the first ID in the list.  
+5. Go to the RandomSequenceContainer `861145184` and duplicate it. Set the duplicated RandomSequenceContainer's Item ID to `CampaignSelected_BarbarianPagan_Test` (which gets converted to short ID `961765999`). Look at its playlist items IDs and get the first ID in the list.  
 ![SoundbankEditor_RandomSequenceContainer1_Duplicated](Campaign_VO_Resources/SoundbankEditor_RandomSequenceContainer1_Duplicated.png)
 6. Go to the Sound `998568852` and duplicate it. Set the duplicated Sound's Item ID to `CampaignSelected_BarbarianPagan_Test_1` (which gets converted to short ID `2751102967`), set its Parent ID to `961765999`, set its `SourceId` and `FileId` to the short ID used for your audio file, and move it to be just above the duplicated RandomSequenceContainer in the HIRC Item list.  
 ![SoundbankEditor_Sound](Campaign_VO_Resources/SoundbankEditor_Sound.png)
@@ -61,7 +61,7 @@ In this step we will edit the `campaign_vo` soundbank to so that when the game t
 10. Save the soundbank.
 
 ## Step 4: Add the edited soundbank to the mod's packfile, configure an additional faction to use your custom audio, and install the mod into Total War Attila.
-In this step we will add the edited soundbank to your mod, we will configure the Western Roman Empire to use your modified `barbarian_pagan` campaign VO subculture, and then we will install your mod to be used by Total War Attila.
+In this step we will add the edited soundbank to your mod, we will configure the Western Roman Empire to use your modified `barbarian_pagan` campaign voiceover culture, and then we will install your mod to be used by Total War Attila.
 
 1. Open RPFM.
 2. Add your edited `campaign_vo.bnk` and SoundbankEditor's autogenerated `campaign_vo_custom_names.txt` into the mod's `audio` folder. Note: The custom names file is not required for the audio to play ingame but it is used by SoundbankEditor to show any custom text IDs that you have added into the soundbank.  
@@ -89,7 +89,7 @@ Now it is time to hear our custom audio ingame.
 
 1. In the Total War Launcher, ensure your mod is enabled and at the top of the load order.  
 ![TWLauncher](Campaign_VO_Resources/TWLauncher.png)
-2. Launch Total War Attila, start a new Grand Campaign with the Western Roman Empire, and ensure that your custom audio plays when you select the general in Augusta Vindelicorum. Note: Some of your generals will still use their default selection voice lines unless you also set the AudioNodeId for `barbarian.barbarian_pagan.Gen2Land` in the soundbank. Also, since we overrode the `barbarian_pagan` Voiceover Culture you will hear your custom audio when playing the Franks and Saxons. While we also overrode the `att_sub_cult_eastern_sassanid` subculture, we only overrode it for the `att_rel_chr_catholic` religion so you won't hear your custom audio when playing the Sassanids because they don't have the Latin Christianity religion.
+2. Launch Total War Attila, start a new Grand Campaign with the Western Roman Empire, and ensure that your custom audio plays when you select the general in Augusta Vindelicorum. Note: Some of your generals will still use their default selection voicelines unless you also set the AudioNodeId for `barbarian.barbarian_pagan.Gen2Land` in the soundbank. Also, since we overrode the `barbarian_pagan` Voiceover Culture you will hear your custom audio when playing the Franks and Saxons. While we also overrode the `att_sub_cult_eastern_sassanid` subculture, we only overrode it for the `att_rel_chr_catholic` religion so you won't hear your custom audio when playing the Sassanids because they don't have the Latin Christianity religion.
 
 ## Example Packfile
 
