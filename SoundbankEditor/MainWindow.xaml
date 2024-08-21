@@ -37,6 +37,9 @@
 			</MenuItem>
 			<MenuItem Header="Help">
 				<MenuItem x:Name="btnAbout" Header="About" Click="BtnAbout_Click"></MenuItem>
+				<Separator />
+				<MenuItem x:Name="btnGuideBattleAdvice" Header="Guide: Battle Advice" Click="BtnGuideBattleAdvice_Click"></MenuItem>
+				<MenuItem x:Name="btnGuideCampaignVo" Header="Guide: Campaign VO" Click="BtnGuideCampaignVo_Click"></MenuItem>
 			</MenuItem>
 		</Menu>
 

@@ -12,4 +12,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Guides\Campaign_VO_Resources\" />
+  </ItemGroup>
+
 </Project>

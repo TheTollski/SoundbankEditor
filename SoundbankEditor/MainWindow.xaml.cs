@@ -430,6 +430,16 @@ namespace SoundbankEditor
 			dgHircItems.ScrollIntoView(HircItems[index]);
 		}
 
+		private void BtnGuideBattleAdvice_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("cmd", "/C start https://github.com/TheTollski/SoundbankEditor/blob/master/SoundbankEditorCore/Guides/Battle_Advice.md");
+		}
+
+		private void BtnGuideCampaignVo_Click(object sender, RoutedEventArgs e)
+		{
+			System.Diagnostics.Process.Start("cmd", "/C start https://github.com/TheTollski/SoundbankEditor/blob/master/SoundbankEditorCore/Guides/Campaign_VO.md");
+		}
+
 		private void BtnImportHircItem_Click(object sender, RoutedEventArgs e)
 		{
 			if (_openSoundbank == null || HircItems == null)
