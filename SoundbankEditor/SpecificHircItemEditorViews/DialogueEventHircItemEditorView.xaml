@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
 						 xmlns:main="clr-namespace:SoundbankEditor"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="600"
+             d:DesignHeight="600" d:DesignWidth="600"
 						 DataContextChanged="OnDataContextChanged">
 	<UserControl.Resources>
 		<main:DecisionTreeNodeAudioNodeIdValueConverter x:Key="decisionTreeNodeAudioNodeIdValueConverter"/>
@@ -23,8 +23,9 @@
 			<RowDefinition Height="120" />
 			<RowDefinition Height="55" />
 			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
 			<RowDefinition Height="1*" />
-			<RowDefinition Height="80" />
+			<RowDefinition Height="105" />
 		</Grid.RowDefinitions>
 
 		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Dialogue Event Item Edit Options</Label>
@@ -57,7 +58,12 @@
 
 		<Label Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14">Decision Tree</Label>
 
-		<TreeView Grid.Row="7" x:Name="tvDecisionTree" SelectedItemChanged="tvDecisionTree_SelectedItemChanged">
+		<StackPanel Grid.Row = "7" Orientation="Horizontal" HorizontalAlignment="Center">
+			<Button x:Name="btnAddNode" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Add Node" Click="BtnAddNode_Click"/>
+			<Button x:Name="btnDeleteNode" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Delete Node" Click="BtnDeleteNode_Click" IsEnabled="False" />
+		</StackPanel>
+
+		<TreeView Grid.Row="8" x:Name="tvDecisionTree" SelectedItemChanged="tvDecisionTree_SelectedItemChanged">
 			<TreeView.ItemTemplate>
 				<HierarchicalDataTemplate ItemsSource="{Binding Path=Children}">
 					<StackPanel Orientation="Horizontal">
@@ -72,7 +78,8 @@
 			</TreeView.ItemTemplate>
 		</TreeView>
 
-		<StackPanel Grid.Row="8">
+		<StackPanel Grid.Row="9">
+			<main:IndividualFieldEditorView x:Name="ifevNodeKey" Margin="0,5,0,0" Title="Key" IsValueAShortId="True" OnEditClicked="IfevEditNodeKey_Click" IsEnabled="False" />
 			<main:IndividualFieldEditorView x:Name="ifevNodeWeight" Margin="0,5,0,0" Title="Weight" IsValueAShortId="True" OnEditClicked="IfevEditNodeWeight_Click" IsEnabled="False" />
 			<main:IndividualFieldEditorView x:Name="ifevNodeProbability" Margin="0,5,0,0" Title="Probability" IsValueAShortId="True" OnEditClicked="IfevEditNodeProbability_Click" IsEnabled="False" />
 			<main:IndividualFieldEditorView x:Name="ifevNodeAudioNodeId" Margin="0,5,0,0" Title="Audio Node ID" IsValueAShortId="True" OnEditClicked="IfevEditNodeAudioNodeId_Click" IsEnabled="False" />

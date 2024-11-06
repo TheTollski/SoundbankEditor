@@ -50,6 +50,51 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
+		private void BtnAddNode_Click(object sender, RoutedEventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				selectedNode = _cakDialogueEvent.AkDecisionTree.RootNode;
+			}
+
+			if (selectedNode.AudioNodeId != 0)
+			{
+				throw new Exception($"Cannot add children to a node with AudioNodeId set.");
+			}
+
+			Node newNode = new Node();
+			newNode.Weight = 50;
+			newNode.Probability = 100;
+
+			selectedNode.Children.Add(newNode);
+
+			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
+			if (selectedNode.Children.Count == 1)
+			{
+				selectedNode.ChildrenIdx = (ushort)(nodes.Count - 1);
+			}
+			else
+			{
+				foreach (Node node in nodes)
+				{
+					if (node.ChildrenIdx > selectedNode.ChildrenIdx)
+					{
+						node.ChildrenIdx++;
+					}
+				}
+			}
+
+			UpdateDecisionTreeTreeView(false);
+			UpdateNodeProbabilityTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
 		private void BtnDeleteGameSync_Click(object sender, RoutedEventArgs e)
 		{
 			if (_cakDialogueEvent == null)
@@ -57,7 +102,12 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			AkGameSync selectedGameSync = (AkGameSync)dgGameSyncs.SelectedItem;
+			AkGameSync? selectedGameSync = dgGameSyncs.SelectedItem as AkGameSync;
+			if (selectedGameSync == null)
+			{
+				return;
+			}
+
 			if (MessageBox.Show($"Are you sure you want to delete GameSync '{selectedGameSync.Group}'?", "Confirm GameSync Deletion", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
 			{
 				return;
@@ -66,6 +116,57 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			_cakDialogueEvent.Arguments.GameSyncs.RemoveAt(dgGameSyncs.SelectedIndex);
 
 			UpdateGameSyncsDataGrid();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void BtnDeleteNode_Click(object sender, RoutedEventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			if (MessageBox.Show($"Are you sure you want to delete Node '{selectedNode.Key}'?", "Confirm Node Deletion", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+			{
+				return;
+			}
+
+			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
+
+			Node? parentNode = null;
+			foreach (Node node in nodes)
+			{
+				if (node.Children.Contains(selectedNode))
+				{
+					parentNode = node;
+					break;
+					
+				}
+			}
+
+			if (parentNode == null)
+			{
+				throw new Exception($"Cannot find parent node.");
+			}
+
+			parentNode.Children.Remove(selectedNode);
+
+			foreach (Node node in nodes)
+			{
+				if (node.ChildrenIdx > parentNode.ChildrenIdx)
+				{
+					node.ChildrenIdx--;
+				}
+			}
+
+			UpdateDecisionTreeTreeView(false);
+			UpdateNodeProbabilityTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -209,6 +310,32 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
+		private void IfevEditNodeKey_Click(object sender, EventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			var hircItemIdConverterWindow = new HircItemIdConverterWindow("Set Node Key", selectedNode.Key);
+			if (hircItemIdConverterWindow.ShowDialog() != true || hircItemIdConverterWindow.Id == null)
+			{
+				return;
+			}
+
+			selectedNode.Key = hircItemIdConverterWindow.Id.Value;
+
+			UpdateDecisionTreeTreeView(false);
+			UpdateNodeKeyTextBlock();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
 		private void IfevEditNodeProbability_Click(object sender, EventArgs e)
 		{
 			if (_cakDialogueEvent == null)
@@ -264,11 +391,15 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		private void tvDecisionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			bool isANodeSelected = tvDecisionTree.SelectedItem != null;
+			btnAddNode.IsEnabled = !isANodeSelected ? true : (tvDecisionTree.SelectedItem as Node)!.AudioNodeId == 0;
+			btnDeleteNode.IsEnabled = isANodeSelected;
 			ifevNodeAudioNodeId.IsEnabled = isANodeSelected && (tvDecisionTree.SelectedItem as Node)!.Children.Count == 0;
+			ifevNodeKey.IsEnabled = isANodeSelected;
 			ifevNodeProbability.IsEnabled = isANodeSelected;
 			ifevNodeWeight.IsEnabled = isANodeSelected;
 
 			UpdateNodeAudioNodeIdTextBlock();
+			UpdateNodeKeyTextBlock();
 			UpdateNodeProbabilityTextBlock();
 			UpdateNodeWeightTextBlock();
 		}
@@ -432,6 +563,19 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
 			ifevNodeAudioNodeId.Value = selectedNode != null && selectedNode.Children.Count == 0
 				? selectedNode.AudioNodeId.ToString()
+				: "";
+		}
+
+		private void UpdateNodeKeyTextBlock()
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			ifevNodeKey.Value = selectedNode != null
+				? selectedNode.Key.ToString()
 				: "";
 		}
 

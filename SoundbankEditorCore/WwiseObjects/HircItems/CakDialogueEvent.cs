@@ -37,7 +37,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public byte Probability { get; set; }
 		public uint TreeDepth { get; set; }
 		public DialogueEventArgumentList Arguments { get; set; } = new DialogueEventArgumentList();
-		public uint TreeDataSize { get; set; }
 		public byte Mode { get; set; }
 		public AkDecisionTree AkDecisionTree { get; set; }
 
@@ -56,9 +55,9 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			Probability = binaryReader.ReadByte();
 			TreeDepth = binaryReader.ReadUInt32();
 			Arguments = new DialogueEventArgumentList(binaryReader, TreeDepth);
-			TreeDataSize = binaryReader.ReadUInt32();
+			uint treeDataSize = binaryReader.ReadUInt32();
 			Mode = binaryReader.ReadByte();
-			AkDecisionTree = new AkDecisionTree(binaryReader, TreeDepth, TreeDataSize);
+			AkDecisionTree = new AkDecisionTree(binaryReader, TreeDepth, treeDataSize);
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject != sectionSize)
@@ -110,7 +109,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			binaryWriter.Write(Probability);
 			binaryWriter.Write(TreeDepth);
 			Arguments.WriteToBinary(binaryWriter);
-			binaryWriter.Write(TreeDataSize);
+			binaryWriter.Write(AkDecisionTree.ComputeTotalSize());
 			binaryWriter.Write(Mode);
 			AkDecisionTree.WriteToBinary(binaryWriter);
 
@@ -197,7 +196,6 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 				if (currentDepth == treeDepth)
 				{
 					// This is an audio node.
-					currentNode.ChildrenCount = 0;
 					currentNode.ChildrenIdx = 0;
 
 					continue;
@@ -206,7 +204,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 				// This is a parent node.
 				currentNode.AudioNodeId = 0;
 
-				for (int j = 0; j < currentNode.ChildrenCount; j++)
+				for (int j = 0; j < currentNode.ChildrenCount_ReadFromBinary; j++)
 				{
 					Node childNode = nodes[currentNode.ChildrenIdx + j];
 					currentNode.Children.Add(childNode);
@@ -226,6 +224,28 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return (uint)nodeSizes.Sum(x => x);
 		}
 
+		public List<Node> FlattenTree()
+		{
+			List<Node> nodes = new List<Node>();
+			nodes.Add(RootNode);
+
+			Queue<Node> bfsNodeQueue = new Queue<Node>();
+			bfsNodeQueue.Enqueue(RootNode);
+			while (bfsNodeQueue.Count > 0)
+			{
+				Node currentNode = bfsNodeQueue.Dequeue();
+				for (int i = 0; i < currentNode.Children.Count; i++)
+				{
+					Node childNode = currentNode.Children[i];
+
+					bfsNodeQueue.Enqueue(childNode);
+					nodes.Add(childNode);
+				}
+			}
+
+			return nodes;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			Func<Node, bool> func = (node) =>
@@ -240,6 +260,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		private List<T> TraverseTree<T>(Func<Node, T> nodeFunc)
 		{
 			// Nodes are located near their siblings but these groups of sibling nodes can seemingly be stored randomly throughout the section.
+			// This function expects that all Nodes in the tree have their ChildrenIdx set correctly.
 
 			SortedDictionary<int, Node> nodePositionDict = new SortedDictionary<int, Node>
 			{
@@ -283,7 +304,8 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint AudioNodeId { get; set; }
 		public ushort ChildrenIdx { get; set; }
-		public ushort ChildrenCount { get; set; }
+		[JsonIgnore]
+		public ushort ChildrenCount_ReadFromBinary { get; set; }
 		public ushort Weight { get; set; }
 		public ushort Probability { get; set; }
 		public List<Node> Children { get; set; } = new List<Node>();
@@ -296,7 +318,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			AudioNodeId = binaryReader.ReadUInt32();
 			binaryReader.BaseStream.Position -= 4; // The AudioNodeId is stored at the same position as the ChildrenIdx and ChildrenCount, depending on the node type.
 			ChildrenIdx = binaryReader.ReadUInt16();
-			ChildrenCount = binaryReader.ReadUInt16();
+			ChildrenCount_ReadFromBinary = binaryReader.ReadUInt16();
 			Weight = binaryReader.ReadUInt16();
 			Probability = binaryReader.ReadUInt16();
 		}
@@ -316,7 +338,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			else
 			{
 				binaryWriter.Write(ChildrenIdx);
-				binaryWriter.Write(ChildrenCount);
+				binaryWriter.Write((ushort)Children.Count);
 			}
 			binaryWriter.Write(Weight);
 			binaryWriter.Write(Probability);
