@@ -768,6 +768,9 @@ namespace SoundbankEditor
 				.ToList();
 			File.WriteAllLines(GetCustomNamesFilePath(), customNames);
 
+			string outputJsonFilePath = $"{Path.GetDirectoryName(_openSoundbankFilePath)}\\{Path.GetFileNameWithoutExtension(_openSoundbankFilePath)}.json";
+			_openSoundbank.WriteToJsonFile(outputJsonFilePath);
+
 			_areChangesPending = false;
 			UpdateTitle();
 		}

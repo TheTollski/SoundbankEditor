@@ -52,11 +52,11 @@ In this step we will edit the `campaign_vo` soundbank to so that when the game t
 ![SoundbankEditor_RandomSequenceContainer1_Duplicated](Campaign_VO_Resources/SoundbankEditor_RandomSequenceContainer1_Duplicated.png)
 6. Go to the Sound `998568852` and duplicate it. Set the duplicated Sound's Item ID to `CampaignSelected_BarbarianPagan_Test_1` (which gets converted to short ID `2751102967`), set its Parent ID to `961765999`, set its `SourceId` and `FileId` to the short ID used for your audio file, and move it to be just above the duplicated RandomSequenceContainer in the HIRC Item list.  
 ![SoundbankEditor_Sound](Campaign_VO_Resources/SoundbankEditor_Sound.png)
-7. Go to the RandomSequenceContainer `961765999` and delete all the IDs from its Playlist Items then add the ID `2751102967`.
+7. Go to the RandomSequenceContainer `961765999` and delete all the IDs from its Playlist Items then add the ID `2751102967`.  
 ![SoundbankEditor_RandomSequenceContainer1_Final](Campaign_VO_Resources/SoundbankEditor_RandomSequenceContainer1_Final.png)
-8. Go to the RandomSequenceContainer `417980034` and add the ID `961765999` to its Playlist Items. Note: I don't know if this RandomSequenceContainer is actually used in any events, but it inherits audio settings that are necessary for playing campaign VO audio and we need our new RandomSequenceContainer and Sound to also inherit those audio settings.
+8. Go to the RandomSequenceContainer `417980034` and add the ID `961765999` to its Playlist Items. Note: I don't know if this RandomSequenceContainer is actually used in any events, but it inherits audio settings that are necessary for playing campaign VO audio and we need our new RandomSequenceContainer and Sound to also inherit those audio settings.  
 ![SoundbankEditor_RandomSequenceContainer2](Campaign_VO_Resources/SoundbankEditor_RandomSequenceContainer2.png)
-9. Go to the Dialogue Event `3949423457` (`campaign_selected`) and expand its decision tree and set the AudioNodeId for `barbarian.barbarian_pagan.Gen1Land` to `961765999`. Note: This will only modify audio for half of the `barbarian_pagan` generals, if you want to modify the audio for all their generals you can also set the AudioNodeId for `barbarian.barbarian_pagan.Gen2Land`.
+9. Go to the Dialogue Event `3949423457` (`campaign_selected`) and expand its decision tree and set the AudioNodeId for `barbarian.barbarian_pagan.Gen1Land` to `961765999`. Note: This will only modify audio for half of the `barbarian_pagan` generals, if you want to modify the audio for all their generals you can also set the AudioNodeId for `barbarian.barbarian_pagan.Gen2Land`.  
 ![SoundbankEditor_DialogueEvent_Final](Campaign_VO_Resources/SoundbankEditor_DialogueEvent_Final.png)
 10. Save the soundbank.
 
@@ -74,7 +74,7 @@ In this step we will add the edited soundbank to your mod, we will configure the
 4. Select `PackFile` and click `Install`.
 
 ## Viewing your changes in AssetEditor.
-If you want to view the audio configuration when all soundbanks are loaded you can use AssetEditor's Audio Explorer. This can be helpful for debugging issues when sound is not playing ingame as expected. In this section, we will take a look at the `Play_adc_attila_enemy_general_killed` event's configuration to verify our changes.
+If you want to view the audio configuration when all soundbanks are loaded you can use AssetEditor's Audio Explorer. This can be helpful for debugging issues when sound is not playing ingame as expected. In this section, we will take a look at the `campaign_selected` dialogue event's configuration to verify our changes.
 
 1. Open AssetEditor.
 2. Select `Options` and click `Settings`. Set `Current Game` to `Attila` and click `Save`.
