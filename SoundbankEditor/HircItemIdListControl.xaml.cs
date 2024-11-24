@@ -107,6 +107,8 @@ namespace SoundbankEditor
 			Ids[dgIds.SelectedIndex + 1] = Ids[dgIds.SelectedIndex];
 			Ids[dgIds.SelectedIndex] = temp;
 
+			dgIds.SelectedIndex += 1;
+
 			UpdateIdsDataGrid();
 			IdsUpdated?.Invoke(this, EventArgs.Empty);
 		}
@@ -121,6 +123,8 @@ namespace SoundbankEditor
 			var temp = Ids[dgIds.SelectedIndex - 1];
 			Ids[dgIds.SelectedIndex - 1] = Ids[dgIds.SelectedIndex];
 			Ids[dgIds.SelectedIndex] = temp;
+
+			dgIds.SelectedIndex -= 1;
 
 			UpdateIdsDataGrid();
 			IdsUpdated?.Invoke(this, EventArgs.Empty);

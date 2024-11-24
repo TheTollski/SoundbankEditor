@@ -91,7 +91,6 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			UpdateDecisionTreeTreeView(false);
-			UpdateNodeProbabilityTextBlock();
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -137,19 +136,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
-
-			Node? parentNode = null;
-			foreach (Node node in nodes)
-			{
-				if (node.Children.Contains(selectedNode))
-				{
-					parentNode = node;
-					break;
-					
-				}
-			}
-
+			Node? parentNode = _cakDialogueEvent.AkDecisionTree.GetParentNode(selectedNode);
 			if (parentNode == null)
 			{
 				throw new Exception($"Cannot find parent node.");
@@ -157,6 +144,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 			parentNode.Children.Remove(selectedNode);
 
+			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
 			foreach (Node node in nodes)
 			{
 				if (node.ChildrenIdx > parentNode.ChildrenIdx)
@@ -164,6 +152,25 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 					node.ChildrenIdx--;
 				}
 			}
+
+			UpdateDecisionTreeTreeView(false);
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void BtnDuplicateNode_Click(object sender, RoutedEventArgs e)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			
 
 			UpdateDecisionTreeTreeView(false);
 			UpdateNodeProbabilityTextBlock();
@@ -197,6 +204,62 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			_cakDialogueEvent.Arguments.GameSyncs[dgGameSyncs.SelectedIndex] = temp;
 
 			UpdateGameSyncsDataGrid();
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void BtnMoveNodeDown_Click(object sender, RoutedEventArgs e)
+		{
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			Node? parentNode = _cakDialogueEvent?.AkDecisionTree.GetParentNode(selectedNode);
+			if (_cakDialogueEvent == null || parentNode == null)
+			{
+				return;
+			}
+
+			int selectedNodeIndex = parentNode.Children.IndexOf(selectedNode);
+			if (selectedNodeIndex > parentNode.Children.Count - 2)
+			{
+				return;
+			}
+
+			var temp = parentNode.Children[selectedNodeIndex + 1];
+			parentNode.Children[selectedNodeIndex + 1] = parentNode.Children[selectedNodeIndex];
+			parentNode.Children[selectedNodeIndex] = temp;
+
+			UpdateDecisionTreeTreeView(false);
+			HircItemUpdated?.Invoke(this, EventArgs.Empty);
+		}
+
+		private void BtnMoveNodeUp_Click(object sender, RoutedEventArgs e)
+		{
+			Node? selectedNode = tvDecisionTree.SelectedItem as Node;
+			if (selectedNode == null)
+			{
+				return;
+			}
+
+			Node? parentNode = _cakDialogueEvent?.AkDecisionTree.GetParentNode(selectedNode);
+			if (_cakDialogueEvent == null || parentNode == null)
+			{
+				return;
+			}
+
+			int selectedNodeIndex = parentNode.Children.IndexOf(selectedNode);
+			if (selectedNodeIndex < 1)
+			{
+				return;
+			}
+
+			var temp = parentNode.Children[selectedNodeIndex - 1];
+			parentNode.Children[selectedNodeIndex - 1] = parentNode.Children[selectedNodeIndex];
+			parentNode.Children[selectedNodeIndex] = temp;
+
+			UpdateDecisionTreeTreeView(false);
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -392,7 +455,10 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 		{
 			bool isANodeSelected = tvDecisionTree.SelectedItem != null;
 			btnAddNode.IsEnabled = !isANodeSelected ? true : (tvDecisionTree.SelectedItem as Node)!.AudioNodeId == 0;
+			//btnDuplicateNode.IsEnabled = isANodeSelected;
 			btnDeleteNode.IsEnabled = isANodeSelected;
+			btnMoveNodeDown.IsEnabled = isANodeSelected;
+			btnMoveNodeUp.IsEnabled = isANodeSelected;
 			ifevNodeAudioNodeId.IsEnabled = isANodeSelected && (tvDecisionTree.SelectedItem as Node)!.Children.Count == 0;
 			ifevNodeKey.IsEnabled = isANodeSelected;
 			ifevNodeProbability.IsEnabled = isANodeSelected;

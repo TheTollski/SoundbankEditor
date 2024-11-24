@@ -246,6 +246,21 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			return nodes;
 		}
 
+		public Node? GetParentNode(Node childNode)
+		{
+			List<Node> nodes = FlattenTree();
+
+			foreach (Node node in nodes)
+			{
+				if (node.Children.Contains(childNode))
+				{
+					return node;
+				}
+			}
+
+			return null;
+		}
+
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			Func<Node, bool> func = (node) =>

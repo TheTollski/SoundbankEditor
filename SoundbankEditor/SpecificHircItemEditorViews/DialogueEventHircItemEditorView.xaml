@@ -60,7 +60,10 @@
 
 		<StackPanel Grid.Row = "7" Orientation="Horizontal" HorizontalAlignment="Center">
 			<Button x:Name="btnAddNode" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Add Node" Click="BtnAddNode_Click"/>
+			<Button x:Name="btnDuplicateNode" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Duplicate Node" Click="BtnDuplicateNode_Click"/>
 			<Button x:Name="btnDeleteNode" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Delete Node" Click="BtnDeleteNode_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveNodeUp" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Up" Click="BtnMoveNodeUp_Click" IsEnabled="False" />
+			<Button x:Name="btnMoveNodeDown" Width="100" Height="20" Margin="5, 0, 5, 0" Content="Move Down" Click="BtnMoveNodeDown_Click" IsEnabled="False" />
 		</StackPanel>
 
 		<TreeView Grid.Row="8" x:Name="tvDecisionTree" SelectedItemChanged="tvDecisionTree_SelectedItemChanged">
