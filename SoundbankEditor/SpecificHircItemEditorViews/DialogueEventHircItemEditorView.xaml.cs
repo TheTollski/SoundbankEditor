@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -72,23 +73,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			newNode.Weight = 50;
 			newNode.Probability = 100;
 
-			selectedNode.Children.Add(newNode);
-
-			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
-			if (selectedNode.Children.Count == 1)
-			{
-				selectedNode.ChildrenIdx = (ushort)(nodes.Count - 1);
-			}
-			else
-			{
-				foreach (Node node in nodes)
-				{
-					if (node.ChildrenIdx > selectedNode.ChildrenIdx)
-					{
-						node.ChildrenIdx++;
-					}
-				}
-			}
+			AddChildNode(selectedNode, newNode);
 
 			UpdateDecisionTreeTreeView(false);
 			HircItemUpdated?.Invoke(this, EventArgs.Empty);
@@ -170,7 +155,19 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			
+			Node? parentNode = _cakDialogueEvent.AkDecisionTree.GetParentNode(selectedNode);
+			if (parentNode == null)
+			{
+				throw new Exception($"Cannot find parent node.");
+			}
+
+			Node? newNode = JsonSerializer.Deserialize<Node>(JsonSerializer.Serialize(selectedNode));
+			if (newNode == null)
+			{
+				throw new Exception($"Cannot duplicate node.");
+			}
+
+			AddChildNode(parentNode, newNode, parentNode.Children.IndexOf(selectedNode) + 1);
 
 			UpdateDecisionTreeTreeView(false);
 			UpdateNodeProbabilityTextBlock();
@@ -679,6 +676,64 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 			}
 
 			ifevProbability.Value = _cakDialogueEvent.Probability.ToString(); ;
+		}
+
+		private void AddChildNode(Node parentNode, Node childNode, int? indexToInsert = null)
+		{
+			if (_cakDialogueEvent == null)
+			{
+				return;
+			}
+
+			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
+			if (parentNode.Children.Count == 0)
+			{
+				parentNode.ChildrenIdx = (ushort)(nodes.Count);
+			}
+			else
+			{
+				foreach (Node node in nodes)
+				{
+					if (node.ChildrenIdx > parentNode.ChildrenIdx)
+					{
+						node.ChildrenIdx++;
+					}
+				}
+			}
+
+			if (indexToInsert == null)
+			{
+				parentNode.Children.Add(childNode);
+			}
+			else
+			{
+				parentNode.Children.Insert(indexToInsert.Value, childNode);
+			}
+
+			if (childNode.Children.Count == 0)
+			{
+				return;
+			}
+
+			int nextChildIdx = nodes.Count + 1;
+
+			Queue<Node> bfsNodeQueue = new Queue<Node>();
+			bfsNodeQueue.Enqueue(childNode);
+			while (bfsNodeQueue.Count > 0)
+			{
+				Node currentNode = bfsNodeQueue.Dequeue();
+
+				if (currentNode.Children.Count > 0)
+				{
+					currentNode.ChildrenIdx = (ushort)nextChildIdx;
+					nextChildIdx += currentNode.Children.Count;
+
+					for (int i = 0; i < currentNode.Children.Count; i++)
+					{
+						bfsNodeQueue.Enqueue(currentNode.Children[i]);
+					}
+				}
+			}
 		}
 	}
 }
