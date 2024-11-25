@@ -60,12 +60,12 @@
 				<Button x:Name="btnAddHircItem"
 								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0"
 								Click="BtnAddHircItem_Click" IsEnabled="False">Add Item</Button>
-				<Button x:Name="btnDuplicateHircItem"
+				<Button x:Name="btnDuplicateHircItems"
 								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Left" Margin="5, 0, 0, 0"
-								Click="BtnDuplicateHircItem_Click" IsEnabled="False">Duplicate Item</Button>
-				<Button x:Name="btnDeleteHircItem"
+								Click="BtnDuplicateHircItems_Click" IsEnabled="False">Duplicate Items</Button>
+				<Button x:Name="btnDeleteHircItems"
 								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 0, 0"
-								Click="BtnDeleteHircItem_Click" IsEnabled="False">Delete Item</Button>
+								Click="BtnDeleteHircItems_Click" IsEnabled="False">Delete Items</Button>
 				<Button x:Name="btnMoveHircItemUp"
 								Grid.Row="1" Grid.Column="0" Width="90" Height="20" HorizontalAlignment="Right" Margin="5, 0, 0, 0"
 								Click="BtnMoveHircItemUp_Click" IsEnabled="False">Move Up</Button>
@@ -82,7 +82,7 @@
 
 			<DataGrid
 				x:Name="dgHircItems" Grid.Row="3" Grid.Column="0" 
-				AutoGenerateColumns="False" SelectionMode="Single" SelectionChanged="DgHircItems_SelectionChanged" CanUserSortColumns="False"
+				AutoGenerateColumns="False" SelectionMode="Extended" SelectionChanged="DgHircItems_SelectionChanged" CanUserSortColumns="False"
 				ItemsSource="{Binding HircItems}" MouseRightButtonUp="DgHircItems_MouseRightButtonUp">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Type" Binding="{Binding Path=EHircType}" IsReadOnly="True" Width="175" />
