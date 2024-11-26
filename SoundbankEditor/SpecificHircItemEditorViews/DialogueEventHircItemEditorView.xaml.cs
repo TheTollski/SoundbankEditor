@@ -129,13 +129,37 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 
 			parentNode.Children.Remove(selectedNode);
 
+			var childrenIdxAndCounts = new Dictionary<ushort, int> { [parentNode.ChildrenIdx] = 1 };
+			Queue<Node> bfsNodeQueue = new Queue<Node>();
+			bfsNodeQueue.Enqueue(selectedNode);
+			while (bfsNodeQueue.Count > 0)
+			{
+				Node currentNode = bfsNodeQueue.Dequeue();
+
+				if (currentNode.Children.Count > 0)
+				{
+					childrenIdxAndCounts.Add(currentNode.ChildrenIdx, currentNode.Children.Count);
+
+					for (int i = 0; i < currentNode.Children.Count; i++)
+					{
+						bfsNodeQueue.Enqueue(currentNode.Children[i]);
+					}
+				}
+			}
+
 			List<Node> nodes = _cakDialogueEvent.AkDecisionTree.FlattenTree();
 			foreach (Node node in nodes)
 			{
-				if (node.ChildrenIdx > parentNode.ChildrenIdx)
+				ushort newChildrenIdx = node.ChildrenIdx;
+				foreach (var kvp in childrenIdxAndCounts)
 				{
-					node.ChildrenIdx--;
+					if (node.ChildrenIdx > kvp.Key)
+					{
+						newChildrenIdx -= (ushort)kvp.Value;
+					}
 				}
+				
+				node.ChildrenIdx = newChildrenIdx;
 			}
 
 			UpdateDecisionTreeTreeView(false);
