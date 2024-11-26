@@ -280,7 +280,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var textInputWindow = new TextInputWindow("Set Probability", typeof(byte), _cakDialogueEvent.Probability.ToString());
+			var textInputWindow = new TextInputWindow("Set Probability", "Probability", typeof(byte), _cakDialogueEvent.Probability.ToString());
 			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
 			{
 				return;
@@ -331,7 +331,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var textInputWindow = new TextInputWindow("Set Group Type", typeof(byte), selectedGameSync.GroupType.ToString());
+			var textInputWindow = new TextInputWindow("Set Group Type", "Group Type", typeof(byte), selectedGameSync.GroupType.ToString());
 			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
 			{
 				return;
@@ -409,7 +409,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var textInputWindow = new TextInputWindow("Set Node Probability", typeof(ushort), selectedNode.Probability.ToString());
+			var textInputWindow = new TextInputWindow("Set Node Probability", "Node Probability", typeof(ushort), selectedNode.Probability.ToString());
 			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
 			{
 				return;
@@ -435,7 +435,7 @@ namespace SoundbankEditor.SpecificHircItemEditorViews
 				return;
 			}
 
-			var textInputWindow = new TextInputWindow("Set Node Weight", typeof(ushort), selectedNode.Weight.ToString());
+			var textInputWindow = new TextInputWindow("Set Node Weight", "Node Weight", typeof(ushort), selectedNode.Weight.ToString());
 			if (textInputWindow.ShowDialog() != true || textInputWindow.Value == null)
 			{
 				return;

@@ -25,10 +25,11 @@ namespace SoundbankEditor
 	{
 		Type _valueType;
 
-		public TextInputWindow(string title, Type valueType, string? originalValue = null)
+		public TextInputWindow(string title, string description, Type valueType, string? originalValue = null)
 		{
 			InitializeComponent();
 			Title = title;
+			lblDescription.Content = description;
 			_valueType = valueType;
 			
 			if (originalValue != null)

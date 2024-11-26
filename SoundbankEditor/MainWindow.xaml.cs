@@ -400,16 +400,81 @@ namespace SoundbankEditor
 				selectedHircItems.Add((HircItem)selectedItem);
 			}
 
-			if (selectedHircItems.Count > 1 &&
-					MessageBox.Show($"Are you sure you want to duplicate {selectedHircItems.Count} HIRC items?", "Confirm HIRC Item Duplication", MessageBoxButton.YesNo) != MessageBoxResult.Yes)
+			var patternTextInputWindow = new TextInputWindow(
+				$"Duplicating {selectedHircItems.Count} items - REGEX Pattern",
+				$"Input optional REGEX pattern to replace in ID names.\nLeave blank to keep same IDs in duplicated items.\nNote: This only affects Random Sequence Container and Sound items.",
+				typeof(string),
+				"");
+			if (patternTextInputWindow.ShowDialog() != true || patternTextInputWindow.Value == null)
 			{
 				return;
+			}
+
+			string pattern = patternTextInputWindow.Value;
+			string replacement = "";
+			if (pattern != "")
+			{
+				var replacementTextInputWindow = new TextInputWindow(
+					$"Duplicating {selectedHircItems.Count} items - Replacement Text",
+					$"Input text to use to replace matches.",
+					typeof(string),
+					"");
+				if (replacementTextInputWindow.ShowDialog() != true || replacementTextInputWindow.Value == null)
+				{
+					return;
+				}
+
+				replacement = replacementTextInputWindow.Value;
 			}
 
 			for (int i = selectedHircItems.Count - 1; i >= 0; i--)
 			{
 				HircItem? newHircItem = JsonSerializer.Deserialize<HircItem>(JsonSerializer.Serialize(selectedHircItems[i]));
 				HircItems.Insert(dgHircItems.SelectedIndex, newHircItem);
+
+				if (pattern == "")
+				{
+					continue;
+				}
+
+				Func<uint, uint> getReplacedId = (uint oldId) =>
+				{
+					string? oldIdName = WwiseShortIdUtility.GetNameFromShortId(oldId);
+					if (oldIdName == null)
+					{
+						return oldId;
+					}
+
+					string newIdName = Regex.Replace(oldIdName, pattern, replacement);
+					if (oldIdName != newIdName)
+					{
+						WwiseShortIdUtility.AddNames(new List<string> { newIdName }, true);
+						return WwiseShortIdUtility.ConvertToShortId(newIdName);
+					}
+
+					return oldId;
+				};
+
+				newHircItem.UlID = getReplacedId(newHircItem.UlID);
+				if (newHircItem is CAkRanSeqCntr)
+				{
+					CAkRanSeqCntr? ranSeqCntrItem = (CAkRanSeqCntr)newHircItem;
+					ranSeqCntrItem.NodeBaseParams.DirectParentID = getReplacedId(ranSeqCntrItem.NodeBaseParams.DirectParentID);
+					for (int j = 0; j < ranSeqCntrItem.ChildIds.Count; j++)
+					{
+						ranSeqCntrItem.ChildIds[j] = getReplacedId(ranSeqCntrItem.ChildIds[j]);
+					}
+					foreach (AkPlaylistItem playlistItem in ranSeqCntrItem.CAkPlayList.PlaylistItems)
+					{
+						playlistItem.PlayId = getReplacedId(playlistItem.PlayId);
+					}
+				}
+				else if (newHircItem is CAkSound)
+				{
+					CAkSound? soundItem = (CAkSound)newHircItem;
+					soundItem.AkBankSourceData.AkMediaInformation.FileId = getReplacedId(soundItem.AkBankSourceData.AkMediaInformation.FileId);
+					soundItem.NodeBaseParams.DirectParentID = getReplacedId(soundItem.NodeBaseParams.DirectParentID);
+				} 
 			}
 
 			dgHircItems.Items.Refresh();

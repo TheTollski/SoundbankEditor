@@ -5,15 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SoundbankEditor"
         mc:Ignorable="d"
-        Title="Set Value" Height="135" Width="400">
-    <Grid>
-		<StackPanel>
-			<Label HorizontalAlignment="Center">New Value</Label>
-			<TextBox x:Name="tbValue" Width="300" />
-			<DockPanel Width="300" LastChildFill="false">
-				<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 10, 0, 10" Content="Confirm" Click="BtnConfirm_Click" />
-				<Button DockPanel.Dock="Right" Width="100" Height="20" Margin="0, 10, 10, 10" Content="Cancel" Click="BtnCancel_Click" />
-			</DockPanel>
-		</StackPanel>
+        Title="Title" Height="160" Width="400">
+  <Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+		</Grid.RowDefinitions>
+		
+		<Label x:Name="lblDescription" Grid.Row="0"  HorizontalAlignment="Center">Description</Label>
+		<TextBox x:Name="tbValue" Grid.Row="1" Width="300" />
+		<DockPanel Width="300" Grid.Row="2" LastChildFill="false">
+			<Button DockPanel.Dock="Left" Width="100" Height="20" Margin="10, 0, 0, 0" Content="Confirm" Click="BtnConfirm_Click" />
+			<Button DockPanel.Dock="Right" Width="100" Height="20" Margin="0, 0, 10, 0" Content="Cancel" Click="BtnCancel_Click" />
+		</DockPanel>
 	</Grid>
 </Window>
