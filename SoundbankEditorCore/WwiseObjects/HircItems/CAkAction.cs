@@ -47,6 +47,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		public SeekActionParams? SeekActionParams { get; set; }
 		public StateActionParams? StateActionParams { get; set; }
 		public ValueActionParams? ValueActionParams { get; set; }
+		public byte[]? Data { get; set; }
 
 		public CAkAction()
 		{
@@ -99,9 +100,24 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			{
 				StateActionParams = new StateActionParams(binaryReader);
 			}
+			//else if (
+			//	UlActionType == CAkActionType.ResetLPF_O ||
+			//	UlActionType == CAkActionType.Resume_E ||
+			//	UlActionType == CAkActionType.Seek_E ||
+			//	UlActionType == CAkActionType.SetLPF_O)
+			//{
+				
+			//}
 			else
 			{
-				throw new Exception($"CAkAction '{UlID}' has an unsupported action type '{UlActionType}'.");
+				// throw new Exception($"CAkAction '{UlID}' has an unsupported action type '{UlActionType}'.");
+				long pos = binaryReader.BaseStream.Position;
+
+				int bytesRead = (int)(binaryReader.BaseStream.Position - position);
+				if (bytesRead < sectionSize)
+				{
+					Data = binaryReader.ReadBytes((int)sectionSize - bytesRead);
+				}
 			}
 
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
@@ -119,6 +135,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			if (SeekActionParams != null) size += SeekActionParams.ComputeTotalSize();
 			if (StateActionParams != null) size += StateActionParams.ComputeTotalSize();
 			if (ValueActionParams != null) size += ValueActionParams.ComputeTotalSize();
+			if (Data != null) size += (uint)Data.Length;
 			return size;
 		}
 
@@ -160,6 +177,10 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			SeekActionParams?.WriteToBinary(binaryWriter);
 			StateActionParams?.WriteToBinary(binaryWriter);
 			ValueActionParams?.WriteToBinary(binaryWriter);
+			if (Data != null)
+			{
+				binaryWriter.Write(Data);
+			}
 
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
 			if (bytesWrittenFromThisObject != expectedSize)
@@ -174,6 +195,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		Stop_E = 258,
 		Stop_E_O = 259,
 		Pause = 515,
+		Resume_E = 770,
 		Resume = 771,
 		Play = 1027,
 		Mute = 1539,
@@ -181,9 +203,13 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		SetVolume_O = 2563,
 		SetBusVolume_M = 3074,
 		SetLPF_M = 3586,
+		SetLPF_O = 3587,
 		ResetLPF_M = 3842,
+		ResetLPF_O = 3843,
+		UseState_E = 4098,
 		SetState = 4612,
 		SetGameParameter_O = 4867,
+		Seek_E = 7682,
 		Seek = 7683,
 	}
 

@@ -75,7 +75,10 @@ namespace SoundbankEditor.Core.WwiseObjects
 		{
 			BankId = binaryReader.ReadUInt32();
 			byte stringSize = binaryReader.ReadByte();
-			FileName = Encoding.UTF8.GetString(binaryReader.ReadBytes(stringSize));
+
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+			byte[] fileNameBytes = binaryReader.ReadBytes(stringSize);
+			FileName = Encoding.GetEncoding(1252).GetString(fileNameBytes);
 		}
 
 		public uint ComputeTotalSize()
@@ -87,10 +90,10 @@ namespace SoundbankEditor.Core.WwiseObjects
 		{
 			binaryWriter.Write(BankId);
 			binaryWriter.Write((byte)FileName.Length);
-			for (int i = 0; i < FileName.Length; i++)
-			{
-				binaryWriter.Write(FileName[i]);
-			}
+
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+			byte[] fileNameBytes = Encoding.GetEncoding(1252).GetBytes(FileName);
+			binaryWriter.Write(fileNameBytes);
 		}
 	}
 }
