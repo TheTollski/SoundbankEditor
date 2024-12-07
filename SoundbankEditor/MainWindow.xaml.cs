@@ -129,8 +129,9 @@ namespace SoundbankEditor
 			using var outputBnkBinaryWriter = new BinaryWriter(outputBnkMemoryStream);
 			copiedSoundBank.WriteToBinary(outputBnkBinaryWriter);
 			outputBnkMemoryStream.Position = 0;
+			byte[] outputBnkBytes = outputBnkMemoryStream.ToArray();
 
-			if (!inputBnkBytes.SequenceEqual(outputBnkMemoryStream.ToArray()))
+			if (!inputBnkBytes.SequenceEqual(outputBnkBytes))
 			{
 				MessageBox.Show("Failed to open Soundbank. Unable to fully parse the soundbank.");
 				return;

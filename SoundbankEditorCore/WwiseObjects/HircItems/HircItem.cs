@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SoundbankEditorCore.WwiseObjects.HircItems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	[JsonDerivedType(typeof(CakDialogueEvent), "Dialogue Event")]
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CAkFxShareSet), "FxShareSet")]
+	[JsonDerivedType(typeof(CAkMusicSegment), "Music Segment")]
 	[JsonDerivedType(typeof(CAkRanSeqCntr), "Random/Sequence Container")]
 	[JsonDerivedType(typeof(CAkSound), "Sound")]
 	[JsonDerivedType(typeof(CAkSwitchCntr), "Switch Container")]
@@ -37,7 +39,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		//Audio_Bus = 8,
 		//LayerContainer = 9,
 
-		//Music_Segment = 10,
+		Music_Segment = 10,
 		//Music_Track = 11,
 		//Music_Switch = 12,
 		//Music_Random_Sequence = 13,
