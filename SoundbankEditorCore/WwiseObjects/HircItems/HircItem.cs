@@ -15,6 +15,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 	[JsonDerivedType(typeof(CAkEvent), "Event")]
 	[JsonDerivedType(typeof(CAkFxShareSet), "FxShareSet")]
 	[JsonDerivedType(typeof(CAkMusicSegment), "Music Segment")]
+	[JsonDerivedType(typeof(CAkMusicTrack), "Music Track")]
 	[JsonDerivedType(typeof(CAkRanSeqCntr), "Random/Sequence Container")]
 	[JsonDerivedType(typeof(CAkSound), "Sound")]
 	[JsonDerivedType(typeof(CAkSwitchCntr), "Switch Container")]
@@ -40,7 +41,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 		//LayerContainer = 9,
 
 		Music_Segment = 10,
-		//Music_Track = 11,
+		Music_Track = 11,
 		//Music_Switch = 12,
 		//Music_Random_Sequence = 13,
 

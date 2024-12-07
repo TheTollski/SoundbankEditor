@@ -84,7 +84,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 				knownValidationErrors.Add($"CAkMusicSegment '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
 			}
 
-			// Validate NodeBaseParams
+			// Validate MusicNodeParams
 			knownValidationErrors.AddRange(MusicNodeParams.GetKnownValidationErrors(soundbank).Select(s => $"CAkMusicSegment's '{UlID}' {s}"));
 
 			return knownValidationErrors;

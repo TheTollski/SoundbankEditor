@@ -1,5 +1,6 @@
 ﻿using SoundbankEditor.Core.WwiseObjects.HircItems;
 using SoundbankEditor.Core.WwiseObjects.HircItems.Common;
+using SoundbankEditorCore.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,10 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			if (hircType == HircType.Music_Segment) // 10
 			{
 				return binaryReader != null ? new CAkMusicSegment(binaryReader) : new CAkMusicSegment();
+			}
+			if (hircType == HircType.Music_Track) // 11
+			{
+				return binaryReader != null ? new CAkMusicTrack(binaryReader) : new CAkMusicTrack();
 			}
 			if (hircType == HircType.Attenuation) // 14
 			{
