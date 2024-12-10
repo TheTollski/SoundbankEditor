@@ -45,6 +45,10 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			{
 				return binaryReader != null ? new CAkMusicTrack(binaryReader) : new CAkMusicTrack();
 			}
+			if (hircType == HircType.MusicRandomSequenceContainer) // 13
+			{
+				return binaryReader != null ? new CAkMusicRanSeqCntr(binaryReader) : new CAkMusicRanSeqCntr();
+			}
 			if (hircType == HircType.Attenuation) // 14
 			{
 				return binaryReader != null ? new CAkAttenuation(binaryReader) : new CAkAttenuation();
