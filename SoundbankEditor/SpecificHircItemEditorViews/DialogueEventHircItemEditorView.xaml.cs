@@ -1,5 +1,6 @@
 ﻿using SoundbankEditor.Core;
 using SoundbankEditor.Core.WwiseObjects.HircItems;
+using SoundbankEditorCore.WwiseObjects.HircItems.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

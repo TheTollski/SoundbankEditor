@@ -1,6 +1,7 @@
 ﻿using SoundbankEditor.Core.Utility;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -313,31 +314,92 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems.Common
 
 	public class StateChunk : WwiseObject
 	{
-		public List<object> StateGroups { get; set; } = new List<object>();
+		public List<AkStateGroupChunk> StateGroups { get; set; } = new List<AkStateGroupChunk>();
 
 		public StateChunk() { }
 
 		public StateChunk(BinaryReader binaryReader)
 		{
-			uint numStateGroups = binaryReader.ReadUInt32();
-			if (numStateGroups > 0)
+			uint stateGroupCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < stateGroupCount; i++)
 			{
-				throw new Exception("StateChunk.StateGroups is not supported.");
+				StateGroups.Add(new AkStateGroupChunk(binaryReader));
 			}
 		}
 
 		public uint ComputeTotalSize()
 		{
-			return 4;
+			return 4 + (uint)StateGroups.Sum(sg => sg.ComputeTotalSize());
 		}
 
 		public void WriteToBinary(BinaryWriter binaryWriter)
 		{
 			binaryWriter.Write((uint)StateGroups.Count);
-			if (StateGroups.Count > 0)
+			for (int i = 0; i < StateGroups.Count; i++)
 			{
-				throw new Exception("StateChunk.StateGroups is not supported.");
+				StateGroups[i].WriteToBinary(binaryWriter);
 			}
+		}
+	}
+
+	public class AkStateGroupChunk : WwiseObject
+	{
+		public uint StateGroupId { get; set; }
+		public byte StateSyncType { get; set; }
+		public List<AkState> States { get; set; } = new List<AkState>();
+
+		public AkStateGroupChunk() { }
+
+		public AkStateGroupChunk(BinaryReader binaryReader)
+		{
+			StateGroupId = binaryReader.ReadUInt32();
+			StateSyncType = binaryReader.ReadByte();
+			ushort stateCount = binaryReader.ReadUInt16();
+			for (int i = 0; i < stateCount; i++)
+			{
+				States.Add(new AkState(binaryReader));
+			}
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 7 + (uint)States.Sum(s => s.ComputeTotalSize());
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(StateGroupId);
+			binaryWriter.Write(StateSyncType);
+			binaryWriter.Write((ushort)States.Count);
+			for (int i = 0; i < States.Count; i++)
+			{
+				States[i].WriteToBinary(binaryWriter);
+			}
+		}
+	}
+
+	public class AkState : WwiseObject
+	{
+		public uint StateId { get; set; }
+		public uint StateInstanceId { get; set; }
+
+		public AkState() { }
+
+		public AkState(BinaryReader binaryReader)
+		{
+			StateId = binaryReader.ReadUInt32();
+			StateInstanceId = binaryReader.ReadUInt32();
+		}
+
+		public uint ComputeTotalSize()
+		{
+			return 8;
+		}
+
+		public void WriteToBinary(BinaryWriter binaryWriter)
+		{
+			binaryWriter.Write(StateId);
+			binaryWriter.Write(StateInstanceId);
 		}
 	}
 

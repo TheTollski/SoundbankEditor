@@ -37,13 +37,17 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 			{
 				return binaryReader != null ? new CAkActorMixer(binaryReader) : new CAkActorMixer();
 			}
-			if (hircType == HircType.Music_Segment) // 10
+			if (hircType == HircType.MusicSegment) // 10
 			{
 				return binaryReader != null ? new CAkMusicSegment(binaryReader) : new CAkMusicSegment();
 			}
-			if (hircType == HircType.Music_Track) // 11
+			if (hircType == HircType.MusicTrack) // 11
 			{
 				return binaryReader != null ? new CAkMusicTrack(binaryReader) : new CAkMusicTrack();
+			}
+			if (hircType == HircType.MusicSwitchContainer) // 12
+			{
+				return binaryReader != null ? new CAkMusicSwitchCntr(binaryReader) : new CAkMusicSwitchCntr();
 			}
 			if (hircType == HircType.MusicRandomSequenceContainer) // 13
 			{
@@ -103,7 +107,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					},
 					StateChunk = new StateChunk
 					{
-						StateGroups = new List<object>(),
+						StateGroups = new List<AkStateGroupChunk>(),
 					},
 					InitialRtpc = new InitialRtpc
 					{
@@ -189,7 +193,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					},
 					StateChunk = new StateChunk
 					{
-						StateGroups = new List<object>(), 
+						StateGroups = new List<AkStateGroupChunk>(), 
 					},
 					InitialRtpc = new InitialRtpc
 					{
@@ -237,7 +241,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 					},
 					StateChunk = new StateChunk
 					{
-						StateGroups = new List<object>(),
+						StateGroups = new List<AkStateGroupChunk>(),
 					},
 					InitialRtpc = new InitialRtpc
 					{

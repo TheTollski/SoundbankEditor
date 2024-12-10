@@ -1,6 +1,6 @@
 ﻿using SoundbankEditor.Core.Utility;
-using SoundbankEditor.Core.WwiseObjects.HircItems.Common;
-using SoundbankEditorCore.WwiseObjects.HircItems.Common;
+using SoundbankEditor.Core;
+using SoundbankEditor.Core.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +8,15 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using SoundbankEditor.Core.WwiseObjects;
+using SoundbankEditorCore.WwiseObjects.HircItems.Common;
+using System.Data;
 
-namespace SoundbankEditor.Core.WwiseObjects.HircItems
+namespace SoundbankEditorCore.WwiseObjects.HircItems
 {
-	public class CakDialogueEvent : HircItem
+	public class CAkMusicSwitchCntr : HircItem
 	{
-		private const HircType EXPECTED_HIRC_TYPE = HircType.Dialogue_Event;
+		private const HircType EXPECTED_HIRC_TYPE = HircType.MusicSwitchContainer;
 
 		private HircType _hircType;
 		public HircType EHircType
@@ -35,25 +38,33 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 
 		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint UlID { get; set; }
-		public byte Probability { get; set; }
+		public MusicNodeParams MusicNodeParams { get; set; } = new MusicNodeParams();
+		public List<AkMusicTransitionRule> Rules { get; set; } = new List<AkMusicTransitionRule>();
+		public byte IsContinuePlayback { get; set; }
 		public uint TreeDepth { get; set; }
 		public ArgumentList Arguments { get; set; } = new ArgumentList();
 		public byte Mode { get; set; }
-		public AkDecisionTree AkDecisionTree { get; set; }
+		public AkDecisionTree AkDecisionTree { get; set; } = new AkDecisionTree();
 
-		public CakDialogueEvent()
+		public CAkMusicSwitchCntr()
 		{
 			EHircType = EXPECTED_HIRC_TYPE;
 		}
 
-		public CakDialogueEvent(BinaryReader binaryReader)
+		public CAkMusicSwitchCntr(BinaryReader binaryReader)
 		{
 			EHircType = (HircType)binaryReader.ReadByte();
 			uint sectionSize = binaryReader.ReadUInt32();
 			long position = binaryReader.BaseStream.Position;
 			UlID = binaryReader.ReadUInt32();
 
-			Probability = binaryReader.ReadByte();
+			MusicNodeParams = new MusicNodeParams(binaryReader);
+			uint ruleCount = binaryReader.ReadUInt32();
+			for (int i = 0; i < ruleCount; i++)
+			{
+				Rules.Add(new AkMusicTransitionRule(binaryReader));
+			}
+			IsContinuePlayback = binaryReader.ReadByte();
 			TreeDepth = binaryReader.ReadUInt32();
 			Arguments = new ArgumentList(binaryReader, TreeDepth);
 			uint treeDataSize = binaryReader.ReadUInt32();
@@ -63,13 +74,17 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			int bytesReadFromThisObject = (int)(binaryReader.BaseStream.Position - position);
 			if (bytesReadFromThisObject != sectionSize)
 			{
-				throw new Exception($"Expected to read {sectionSize} bytes from CakDialogueEvent '{UlID}' but {bytesReadFromThisObject} bytes were read.");
+				throw new Exception($"Expected to read {sectionSize} bytes from CAkMusicSwitchCntr '{UlID}' but {bytesReadFromThisObject} bytes were read.");
 			}
 		}
 
 		public uint ComputeTotalSize()
 		{
-			return 19 + Arguments.ComputeTotalSize() + AkDecisionTree.ComputeTotalSize();
+			return 23 +
+				MusicNodeParams.ComputeTotalSize() +
+				(uint)Rules.Sum(mm => mm.ComputeTotalSize()) +
+				Arguments.ComputeTotalSize() +
+				AkDecisionTree.ComputeTotalSize();
 		}
 
 		public List<string> GetKnownValidationErrors(SoundBank soundbank)
@@ -80,21 +95,11 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			int hircItemsWithMatchingIdCount = soundbank.HircItems.Count(hi => hi.UlID == UlID);
 			if (hircItemsWithMatchingIdCount != 1)
 			{
-				knownValidationErrors.Add($"CakDialogueEvent '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
+				knownValidationErrors.Add($"CAkMusicSwitchCntr '{UlID}' has the same ID as {hircItemsWithMatchingIdCount - 1} other HIRC item{(hircItemsWithMatchingIdCount == 1 ? "" : "s")}.");
 			}
 
-			// Validate 
-			//if (ActionIds.Count == 0)
-			//{
-			//	knownValidationErrors.Add($"CAkEvent '{UlID}' has no action IDs.");
-			//}
-			//ActionIds.ForEach(actionId =>
-			//{
-			//	if (!soundbank.HircItems.Any(hi => hi.UlID == actionId))
-			//	{
-			//		knownValidationErrors.Add($"CAkEvent '{UlID}' has an ActionId that is '{actionId}', but no HIRC item in the soundbank has that ID.");
-			//	}
-			//});
+			// Validate MusicNodeParams
+			knownValidationErrors.AddRange(MusicNodeParams.GetKnownValidationErrors(soundbank).Select(s => $"CAkMusicSwitchCntr's '{UlID}' {s}"));
 
 			return knownValidationErrors;
 		}
@@ -107,7 +112,13 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			long position = binaryWriter.BaseStream.Position;
 			binaryWriter.Write(UlID);
 
-			binaryWriter.Write(Probability);
+			MusicNodeParams.WriteToBinary(binaryWriter);
+			binaryWriter.Write((uint)Rules.Count);
+			for (int i = 0; i < Rules.Count; i++)
+			{
+				Rules[i].WriteToBinary(binaryWriter);
+			}
+			binaryWriter.Write(IsContinuePlayback);
 			binaryWriter.Write(TreeDepth);
 			Arguments.WriteToBinary(binaryWriter);
 			binaryWriter.Write(AkDecisionTree.ComputeTotalSize());
@@ -117,7 +128,7 @@ namespace SoundbankEditor.Core.WwiseObjects.HircItems
 			int bytesWrittenFromThisObject = (int)(binaryWriter.BaseStream.Position - position);
 			if (bytesWrittenFromThisObject != expectedSize)
 			{
-				throw new SerializationException($"Expected CakDialogueEvent '{UlID}' section size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
+				throw new SerializationException($"Expected CAkMusicSwitchCntr '{UlID}' section size to be {expectedSize} but it was {bytesWrittenFromThisObject}.");
 			}
 		}
 	}

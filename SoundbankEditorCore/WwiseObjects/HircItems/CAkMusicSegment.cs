@@ -16,7 +16,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 {
 	public class CAkMusicSegment : HircItem
 	{
-		private const HircType EXPECTED_HIRC_TYPE = HircType.Music_Segment;
+		private const HircType EXPECTED_HIRC_TYPE = HircType.MusicSegment;
 
 		private HircType _hircType;
 		public HircType EHircType
