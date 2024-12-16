@@ -126,6 +126,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 
 	public class AkMusicRanSeqPlaylistItem : WwiseObject
 	{
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint SegmentId { get; set; }
 		public int PlaylistItemId { get; set; }
 		public uint RsType { get; set; }

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SoundbankEditor.Core.Utility;
+using System.Text.Json.Serialization;
 
 namespace SoundbankEditorCore.WwiseObjects.HircItems.Common
 {
@@ -13,6 +15,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems.Common
 	{
 		public byte Flags { get; set; }
 		public NodeBaseParams NodeBaseParams { get; set; } = new NodeBaseParams();
+		[JsonConverter(typeof(JsonCollectionItemConverter<uint, WwiseShortIdJsonConverter>))]
 		public List<uint> ChildIds { get; set; } = new List<uint>();
 		public AkMeterInfo AkMeterInfo { get; set; } = new AkMeterInfo();
 		public byte MeterInfoFlag { get; set; }

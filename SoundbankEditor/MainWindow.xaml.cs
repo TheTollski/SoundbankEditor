@@ -474,6 +474,7 @@ namespace SoundbankEditor
 				{
 					CAkSound? soundItem = (CAkSound)newHircItem;
 					soundItem.AkBankSourceData.AkMediaInformation.FileId = getReplacedId(soundItem.AkBankSourceData.AkMediaInformation.FileId);
+					soundItem.AkBankSourceData.AkMediaInformation.SourceId = getReplacedId(soundItem.AkBankSourceData.AkMediaInformation.SourceId);
 					soundItem.NodeBaseParams.DirectParentID = getReplacedId(soundItem.NodeBaseParams.DirectParentID);
 				} 
 			}

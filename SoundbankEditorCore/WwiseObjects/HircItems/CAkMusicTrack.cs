@@ -153,6 +153,7 @@ namespace SoundbankEditorCore.WwiseObjects.HircItems
 	public class AkTrackSrcInfo : WwiseObject
 	{
 		public uint TrackId { get; set; }
+		[JsonConverter(typeof(WwiseShortIdJsonConverter))]
 		public uint SourceId { get; set; }
 		public double PlayAt { get; set; }
 		public double BeginTrimOffset { get; set; }
