@@ -14,6 +14,7 @@ namespace SoundbankEditorTests
 		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian.bnk")]
 		[InlineData("Resources\\TW Attila\\battle_vo_orders_barbarian_inf1.bnk")]
 		[InlineData("Resources\\TW Attila\\campaign_vo.bnk")]
+		[InlineData("Resources\\TW Attila\\global_music_det.bnk")]
 		public void BnkToJsonToBnk(string inputBnkFilePath)
 		{
 			if (!Directory.Exists("Temp"))
