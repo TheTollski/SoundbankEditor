@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="SoundbankEditor.SpecificHircItemEditorViews.MusicRandomSequenceContainerHircItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SoundbankEditor.SpecificHircItemEditorViews"
+						 xmlns:main="clr-namespace:SoundbankEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="600"
+						 DataContextChanged="OnDataContextChanged">
+	<UserControl.Resources>
+		<main:WwiseShortIdsListValueConverter x:Key="wwiseShortIdsListValueConverter"/>
+		<main:WwiseShortIdValueConverter x:Key="wwiseShortIdValueConverter"/>
+	</UserControl.Resources>
+
+	<Grid Width="600">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="35" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="1*" />
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16">Music Random Sequence Container Item Edit Options</Label>
+
+		<Label Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14">PlaylistItems</Label>
+
+		<TreeView Grid.Row="2" x:Name="tvPlaylistItems" SelectedItemChanged="tvPlaylistItems_SelectedItemChanged">
+			<TreeView.ItemTemplate>
+				<HierarchicalDataTemplate ItemsSource="{Binding Path=PlaylistItems}">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Text="{Binding SegmentId, Converter={StaticResource wwiseShortIdValueConverter}}"/>
+						<TextBlock Text=" - PIId: "/>
+						<TextBlock Text="{Binding PlaylistItemId}"/>
+						<TextBlock Text=" - RsType: "/>
+						<TextBlock Text="{Binding RsType}"/>
+					</StackPanel>
+				</HierarchicalDataTemplate>
+			</TreeView.ItemTemplate>
+		</TreeView>
+	</Grid>
+</UserControl>

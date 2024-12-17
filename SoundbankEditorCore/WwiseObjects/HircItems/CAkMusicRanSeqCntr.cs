@@ -12,7 +12,7 @@ using SoundbankEditor.Core.WwiseObjects;
 using SoundbankEditorCore.WwiseObjects.HircItems.Common;
 using System.Data;
 
-namespace SoundbankEditorCore.WwiseObjects.HircItems
+namespace SoundbankEditor.Core.WwiseObjects.HircItems
 {
 	public class CAkMusicRanSeqCntr : HircItem
 	{
