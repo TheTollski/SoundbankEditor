@@ -6,10 +6,9 @@ using SoundbankEditorCore.WwiseObjects.HircItems;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -17,12 +16,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace SoundbankEditor
 {
@@ -855,16 +850,67 @@ namespace SoundbankEditor
 				return;
 			}
 
-			_openSoundbank.WriteToBnkFile(_openSoundbankFilePath);
+			string outputBnkFilePath = _openSoundbankFilePath;
+			string outputJsonFilePath = $"{Path.GetDirectoryName(_openSoundbankFilePath)}\\{Path.GetFileNameWithoutExtension(_openSoundbankFilePath)}.json";
+			string outputTxtFilePath = GetCustomNamesFilePath();
+
+			// Backup files.
+			string backupDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SoundbankEditor", "Backups");
+			if (!Directory.Exists(backupDirectory))
+			{
+				Directory.CreateDirectory(backupDirectory);
+			}
+
+			Action<string> backupFile = (filePath) =>
+			{
+				const string DATETIME_FORMAT = "yyyy_MM_dd_HHmmss";
+
+				if (File.Exists(filePath))
+				{
+					string backupFileName = $"{Path.GetFileName(filePath)}.{DateTime.Now.ToString(DATETIME_FORMAT)}.bak";
+					string backupFilePath = Path.Combine(backupDirectory, backupFileName);
+					File.Copy(filePath, backupFilePath, true);
+				}
+
+				List<string> backedUpFilesOfSameType = Directory.GetFiles(backupDirectory).Where(path => path.Contains(Path.GetFileName(filePath))).ToList();
+				backedUpFilesOfSameType.Sort();
+				backedUpFilesOfSameType.Reverse();
+				while (backedUpFilesOfSameType.Count > 50)
+				{
+					int index = backedUpFilesOfSameType.Count - 1;
+
+					string oldestFilePath = backedUpFilesOfSameType[index];
+					Match timestampMatch = Regex.Match(oldestFilePath, "\\d\\d\\d\\d_\\d\\d_\\d\\d_\\d\\d\\d\\d\\d\\d");
+					if (!timestampMatch.Success)
+					{
+						continue;
+					}
+
+					DateTime oldestFileAge = DateTime.ParseExact(timestampMatch.Value, DATETIME_FORMAT, CultureInfo.InvariantCulture);
+					if (DateTime.Now -  oldestFileAge < TimeSpan.FromDays(7))
+					{
+						break;
+					}
+
+					backedUpFilesOfSameType.RemoveAt(index);
+					File.Delete(oldestFilePath);
+				}
+			};
+
+			backupFile(outputBnkFilePath);
+			backupFile(outputJsonFilePath);
+			backupFile(outputTxtFilePath);
+
+			// Write files.
+			_openSoundbank.WriteToBnkFile(outputBnkFilePath);
 
 			string soundbankJson = _openSoundbank.ToJson();
 			List<string> customNames = WwiseShortIdUtility
 				.GetAllNames(true)
 				.Where(n => soundbankJson.Contains(WwiseShortIdUtility.ConvertToShortId(n).ToString()))
 				.ToList();
-			File.WriteAllLines(GetCustomNamesFilePath(), customNames);
-
-			string outputJsonFilePath = $"{Path.GetDirectoryName(_openSoundbankFilePath)}\\{Path.GetFileNameWithoutExtension(_openSoundbankFilePath)}.json";
+			File.WriteAllLines(outputTxtFilePath, customNames);
+			
 			_openSoundbank.WriteToJsonFile(outputJsonFilePath);
 
 			_areChangesPending = false;
