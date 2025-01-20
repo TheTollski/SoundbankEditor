@@ -249,33 +249,37 @@ namespace SoundbankEditor
 
 			var openFileDialog = new System.Windows.Forms.OpenFileDialog();
 			openFileDialog.Filter = $"Soundbank|*.bnk";
-			openFileDialog.Title = "Select Soundbank";
-			openFileDialog.Multiselect = false;
+			openFileDialog.Title = "Select Soundbanks";
+			openFileDialog.Multiselect = true;
 
 			if (openFileDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
 			{
 				return;
 			}
 
-			SoundBank soundBank = SoundBank.CreateFromBnkFile(openFileDialog.FileName);
-
-			WwiseShortIdUtility.ClearNames();
-			WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList(), false);
-			string customNamesPath = GetCustomNamesFilePath(openFileDialog.FileName);
-			if (File.Exists(customNamesPath))
+			foreach (string fileName in openFileDialog.FileNames)
 			{
-				WwiseShortIdUtility.AddNames(File.ReadAllLines(customNamesPath).ToList(), true);
+				SoundBank soundBank = SoundBank.CreateFromBnkFile(fileName);
+
+				WwiseShortIdUtility.ClearNames();
+				WwiseShortIdUtility.AddNames(File.ReadAllLines("TWA_Names.txt").ToList(), false);
+				string customNamesPath = GetCustomNamesFilePath(fileName);
+				if (File.Exists(customNamesPath))
+				{
+					WwiseShortIdUtility.AddNames(File.ReadAllLines(customNamesPath).ToList(), true);
+				}
+
+				string outputJsonFilePath = $"{Path.GetDirectoryName(fileName)}\\{Path.GetFileNameWithoutExtension(fileName)}.json";
+				if (File.Exists(outputJsonFilePath) &&
+						MessageBox.Show($"A file exists at '{outputJsonFilePath}'. If you proceed, you will overwrite this file.", "Confirm File Overwite", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+				{
+					return;
+				}
+
+				soundBank.WriteToJsonFile(outputJsonFilePath);
 			}
 
-			string outputJsonFilePath = $"{Path.GetDirectoryName(openFileDialog.FileName)}\\{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}.json";
-			if (File.Exists(outputJsonFilePath) &&
-					MessageBox.Show($"A file exists at '{outputJsonFilePath}'. If you proceed, you will overwrite this file.", "Confirm File Overwite", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
-			{
-				return;
-			}
-
-			soundBank.WriteToJsonFile(outputJsonFilePath);
-			MessageBox.Show($"File successfully saved: '{outputJsonFilePath}'");
+			MessageBox.Show($"{openFileDialog.FileNames.Length} JSON file{(openFileDialog.FileNames.Length == 1 ? "" : "s")} successfully saved.");
 		}
 
 		private void BtnConvertJsonToBnk_Click(object sender, RoutedEventArgs e)
