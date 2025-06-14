@@ -2,7 +2,7 @@
 This guide will walk you though the steps of how to convert custom audio files to a format that can be used ingame and how to use your custom audio files in campaign advisor flyover intros.
 
 Click the image below to hear an example of this guide's final result:  
-[![Example video with custom Campaign Flyover Intro audio.](Campaign_Intro_Flyby_Resources/example.png)](Campaign_Flyover_Intros_Resources/example.mp4)
+[![Example video with custom Campaign Flyover Intro audio.](Campaign_Intro_Flyby_Resources/example.png)](Campaign_Intro_Flyby_Resources/example.mp4)
 
 
 ## Prerequisites
