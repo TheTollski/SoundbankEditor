@@ -7,7 +7,7 @@ Click the image below to hear an example of this guide's final result:
 
 ## Prerequisites
 1. SoundbankEditor - This application allows you to modify Total War Attila soundbank (`.bnk`) files. Note that the current version of SoundbankEditor is pre-alpha and your feedback will help improve it. You can download SoundbankEditor at https://github.com/TheTollski/SoundbankEditor/releases
-2. Wwise - We will use this application to convert audio files to a format that can be used by Total War Attila. For this guide you must Wwise version 2014.1.3, which you can install by downloading CA's official music modding kit for Rome 2 and Attila: https://cdn.creative-assembly.com/total-war/total-war/music-toolkit/Rome_2_Music_Modding_Kit.zip
+2. Wwise - We will use this application to convert audio files to a format that can be used by Total War Attila. For this guide you must use Wwise version 2014.1.3, which you can install by downloading CA's official music modding kit for Rome 2 and Attila: https://cdn.creative-assembly.com/total-war/total-war/music-toolkit/Rome_2_Music_Modding_Kit.zip
 3. Rusted PackFile Manager (RPFM) or a similar packfile editing application - We will use this application to create and modify your mod's packfile. You can download RPFM at https://github.com/Frodo45127/rpfm/releases
 4. [Non-Dynamic Battle Music mod](https://steamcommunity.com/sharedfiles/filedetails/?id=1488345715) for Total War Attila. Attila normally uses dynamic music which is very hard to work with, this mod makes Attila use regular, full-length music tracks. This file can be downloaded directly in your browser using a website like: http://steamworkshop.download/download/view/1488345715
 
@@ -39,7 +39,7 @@ In this step we will set up a packfile for your mod and add the converted audio 
 ![RPFM_AudioFiles](Campaign_Music_Resources/RPFM_AudioFiles.png)
 
 ## Step 3: Edit the `global_music` soundbank.
-Total War Attila uses soundbanks (i.e. `.bnk` files) to determine what audio to play when events are triggered. The `global_music` soundbank is set up so that the various music events take variables for music state (e.g. prebattle, ambient) and culture has a decision tree which references RandomSequenceContainers which reference lists of Sounds. In other words, when the game triggers a campaign music eventit will use the music state and a mix of encountered cultures in order to pick a list of random music tracks and it will play one of those random music tracks.
+Total War Attila uses soundbanks (i.e. `.bnk` files) to determine what audio to play when events are triggered. The `global_music` soundbank is set up so that the various music events take variables for music state (e.g. prebattle, ambient) and culture and they have decision trees which reference RandomSequenceContainers which reference lists of Sounds. In other words, when the game triggers a campaign music event it will use the music state and a mix of the player's encountered cultures in order to pick a list of random music tracks and it will play one of those random music tracks.
 
 In this step we will edit a custom `global_music` soundbank to so that when the game triggers a campaign music event for the `barbarian` culture it will play our custom prebattle or ambient music tracks.
 
@@ -55,7 +55,7 @@ In this step we will edit a custom `global_music` soundbank to so that when the 
 10. Go to the MusicSwitchContainer `2886985` and look at its decision tree to get the AudioNodeId for `barbarian`.  
 11. Go to the MusicRandomSequenceContainer `934311252` and look at its playlist items to get the SegmentId of the only item with RsType equal to `4294967295`.
 12. Go to the MusicSegment `1047327910` and change its Duration and its 2nd AK music marker's position both from `30461.5646258503` to the length of your custom prebattle music track (in milliseconds). Look at its child IDs and get the only ID in that list.
-13. Go to the MusicTrack `268426955` and change its track source infos' SrcDuration from `30461.54195011338` to the length of your custom prebattle music track (in milliseconds). Change its source's SourceId and FileId and its track source infos' SourceId from `772483639` to the number you used to rename your ambient WEM music track.   
+13. Go to the MusicTrack `268426955` and change its track source infos' SrcDuration from `30461.54195011338` to the length of your custom prebattle music track (in milliseconds). Change its source's SourceId and FileId and its track source infos' SourceId from `772483639` to the number you used to rename your prebattle WEM music track.   
 14. Save the soundbank.
 
 ## Step 4: Add the edited soundbank to the mod's packfile and install it into Total War Attila.
