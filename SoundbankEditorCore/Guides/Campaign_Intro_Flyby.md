@@ -31,9 +31,9 @@ In this step we will set up a packfile for your mod and add the converted audio 
 2. Select `Game Selected` and click `Attila`.
 3. Create a packfile for your mod or open the packfile of a mod you want to edit.
 4. Create a folder called `audio` and in that new folder create another folder called `advisor`.
-5. Add your converted `.wem` audio files to the mod's `audio/advisor/` folder.
+5. Add your converted `.wem` audio files to the mod's `audio/advisor` folder.
 6. Rename the the audio files so the file names follow the format `att_advice_intro_flyby_{Title}_{Number}_1.wem`.
-![RPFM_AudioFile](Campaign_Intro_Flyby_Resources/RPFM_AudioFile.png)
+![RPFM_AudioFiles](Campaign_Intro_Flyby_Resources/RPFM_AudioFiles.png)
 
 # Step 3:
 In this step we will extract the Western Roman Empire's intro script and edit it to use our custom advisor lines and audio.
@@ -43,10 +43,10 @@ In this step we will extract the Western Roman Empire's intro script and edit it
 2. Open `att_fact_western_roman_empire_intro.lua` in a text editor on your computer.
 3. Edit line 23 to: `cm:show_advice("att_advice_intro_flyby_test_1", true)`
 4. Add a new line on 66: `cutscene_intro:action(function() cm:show_advice("att_advice_intro_flyby_test_2", true) end, 5);`
-![Vscode_Lua](Campaign_Intro_Flyby_Resources/RPFM_ExtractLua.png)
+![Vscode_Lua](Campaign_Intro_Flyby_Resources/Vscode_Lua.png)
 
 ## Step 4: Configure the new advisor lines, and install the mod into Total War Attila.
-In this step we will configure the the DB and localization files to support your new advisor lines, we will add the edited intro script to your mod, and then we will install your mod to be used by Total War Attila.
+In this step we will configure the DB and localization files to support your new advisor lines, we will add the edited intro script to your mod, and then we will install your mod to be used by Total War Attila.
 
 1. Open RPFM
 2. Create a DB based on the `advice_threads_tables` schema and call it `advice_threads_test`. Then, look in the `Dependencies` panel, expand `Game Files`, expand the `db` folder, expand `advice_threads_tables`, open `advice_threads`, select line 569 (the row with `att_advice_intro_flyby_roman_west`), copy it, open `advice_threads_test` (which you just created), right click in the empty window and select `Paste as New Row`, and set the new row's Thread to `att_advice_intro_flyby_test_1`. Create as many new rows as you have audio files.
@@ -65,7 +65,7 @@ In this step we will configure the the DB and localization files to support your
 Now it is time to hear our custom audio ingame.
 
 1. In the Total War Launcher, ensure your mod is enabled and at the top of the load order.  
-![TWLauncher](Campaign_VO_Resources/TWLauncher.png)
+![TWLauncher](Campaign_Intro_Flyby_Resources/TWLauncher.png)
 2. Launch Total War Attila, start a new Grand Campaign with the Western Roman Empire, and ensure that your custom audio and text plays during the intro flyby.
 
 ## Example Packfile
