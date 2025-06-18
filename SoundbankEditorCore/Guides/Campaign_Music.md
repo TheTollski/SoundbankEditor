@@ -21,7 +21,7 @@ Total War Attila can only read audio files that have the  `.wem` extension. In t
     1. Select the parent element of that audio file (the `Music Segment` for that file), go to the `Source Settings` tab, click the box with `>>` to the left of `Default Conversion Setting`, and select `Music`. The conversion settings should now be set to `Music`.
     ![Wwiwse_ConversionSettingsMusic](Campaign_Music_Resources/Wwiwse_ConversionSettingsMusic.png)
     2. Select the child element of that audio file (the `Music Track` for that file), go to the `General Settings` tab, and check the `Stream` box.
-    ![Wwiwse_ConversionSettingsMusic](Campaign_Music_Resources/Wwiwse_Stream.png)
+    ![Wwiwse_Stream](Campaign_Music_Resources/Wwiwse_Stream.png)
 5. Select `Project` and click `Convert All Audio Files...`. In the new window ensure `Windows` is checked and click `Ok`. There should now be converted `.wem` audio files in your Wwise project's `.cache\Windows\SFX` folder (e.g. `C:\Downloads\Rome_2_Music_Modding_Kit\Rome_2_Music_Modding_Kit\Wwise Project\.cache\Windows\SFX`).
 
 [123456789.wem](Campaign_Music_Resources/123456789.wem)
