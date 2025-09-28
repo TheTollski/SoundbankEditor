@@ -15,6 +15,8 @@ Click the image below to hear an example of this guide's final result:
 ## Step 1: Convert your audio file.
 Total War Attila can only read audio files that have the  `.wem` extension. In this step we will convert a `.wav` audio file to `.wem`. If you wish to skip this step, you can use the attached `112233445.wem` audio file.
 
+NOTE: The conversion settings seem to cause the game to crash, when I identify correct conversion settings for battle advice audio I will update this section.
+
 1. Open Wwise.
 2. Create a project.
 3. Select `Project` and click `Project Settings...`. In the new window click Source Settings and set `Default Conversion Settings` to `Vorbis Quality High` and click `OK`.  

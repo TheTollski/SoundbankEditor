@@ -1,0 +1,8 @@
+﻿## What database table/column does the game use to associate a faction with a culture for the purpose of selecting campaign music?
+**The culture used for campaign music for a faction is based off that factions' `Subculture` field. To work correctly, we must use vanilla cultures and subcultures. If using custom cultures or subcultures, the game seems to assign a culture for factions based on unknown factors (ie. from our point of view the game randomly assigns a culture to use for music for a faction that is not associated with vanilla subculture and culture).**
+
+To test this, I replaced all the instances of the `rom_cult_` cultures with vanilla ones (eg. `rom_cult_dwarves` -> `att_cult_eastern` and `rom_cult_evil` -> `att_cult_barbarian`) and I deleted the cultures table out of the pack and it was still playing results similar to my first test where campaign music culture was random. I then replaced instances of the `rom_sc_` subcultures with vanilla ones (eg. `rom_sc_dwarves_erebor` -> `att_sub_cult_eastern_caucasian` and `rom_sc_easterlings` -> `att_sub_cult_barbarian_germanic_east`) and now the campaign music culture is played correctly: Erebor plays `Eastern` music and Easterlings play `Barbarian` music.
+
+## How do you successfully convert audio files to campiagn music WEM files which can be played in game?
+
+**In Wwise 2014, open `rome2_music_wwise_project`, right-click `Default Work Unit` under `Interactive Music Hierarchy` and import your audio file, in the Music Segment properties of your file set it to use the `Music` conversion setting, in the Music Track properties of your file enable `Stream`, and convert your file.**
