@@ -1,5 +1,5 @@
 ﻿## Overview
-This guide will walk you though the steps of how to convert a custom audio file to a format that can be used ingame and how to replace the game's default battle VO orders with your custom audio. Specifically, we will be making the game play a voice line when selecting a unit.
+This guide will walk you though the steps of how to convert a custom audio file to a format that can be used ingame and how to replace the game's default battle VO orders with your custom audio. Specifically, we will be making the game play a voice line when moving a unit.
 
 Click the image below to hear an example of this guide's final result:  
 [![Example video with custom Battle VO Order audio.](Battle_VO_Orders_Resources/example.png)](Battle_VO_Orders_Resources/example.mp4)
