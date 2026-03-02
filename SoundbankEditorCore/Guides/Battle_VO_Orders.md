@@ -39,14 +39,14 @@ Total War Attila uses soundbanks (i.e. `.bnk` files) to determine what audio to 
 
 There are dozens of specific battle VO orders soundbanks (e.g. `battle_vo_orders_eastern_inf1.bnk)` in the original Total War Attila files; the game loads all these files to form the Battle VO Order audio logic that it uses ingame. It is complicated and tedious to make changes when so many so many files for battle VO orders are loaded, so in this tutorial we will use a custom `battle_vo_orders.bnk` file which overrides the game's default one and disables the game's specific battle VO orders soundbanks.
 
-In this step we will edit the custom `battle_vo_orders` soundbank to so that when a unit given a single click move order it will sometimes play our custom audio.
+In this step we will edit the custom `battle_vo_orders` soundbank so that when a unit given a single click move order it will sometimes play our custom audio.
 
 1. Download [battle_vo_orders.bnk](Battle_VO_Orders_Resources/battle_vo_orders.bnk) and [battle_vo_orders_custom_names.txt](Battle_VO_Orders_Resources/battle_vo_orders_custom_names.txt).  
 2. Open SoundbankEditor.  
 3. Open the downloaded `battle_vo_orders.bnk`.  
 4. Go to the Event `1391812361` (`Battle_Order_VO_Play`) and check its `ActionId`.  
 5. Go to the Action `34896051` and check its `IdExt`.  
-6. Go to the SwitchContainer `697944012` (`Bvo`) and check its switch packages. In the original `battle_vo_orders` soundbank there would be four switches, one for each "battle culture, but in this custom soundbank I configured only a single switch package to be used for all battle cultures.
+6. Go to the SwitchContainer `697944012` (`Bvo`) and check its switch packages. In the original `battle_vo_orders` soundbank there would be four switches, one for each "battle culture", but in this custom soundbank I configured only a single switch package to be used for all battle cultures.
 7. Go to the SwitchContainer `3592767466` (`Bvo_Roman`) and check its switch packages. In the original `battle_vo_orders` soundbank there would be about a dozen switches, one for each "battle actor", but in this custom soundbank I configured only a single switch package to be used for all battle actors.
 8. Go to the SwitchContainer `3699923075` (`Bvo_Roman_Inf1`) and check its switch packages. In the original `battle_vo_orders` soundbank there would be dozens of switches, one for each "battle order", but in this custom soundbank I configured only two switch packages, one default to be used for all battle orders and one specific for single-click move orders.
 9. Go to the RandomSequenceContainer `3325810246` (`Bvo_Roman_Inf1_SingleClickMoveTo`) and check its playlist items. In the original `battle_vo_orders` soundbank there would be more than one item, but in this custom soundbank I configured only a single sound to be played instead of multiple sounds to be picked at random.
