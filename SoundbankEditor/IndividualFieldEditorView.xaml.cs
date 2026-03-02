@@ -57,7 +57,7 @@ namespace SoundbankEditor
 
 		private void BtnCopy_Click(object sender, RoutedEventArgs e)
 		{
-			Clipboard.SetText(Value);
+			Clipboard.SetDataObject(Value);
 		}
 
 		private void BtnEdit_Click(object sender, RoutedEventArgs e)

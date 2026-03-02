@@ -18,11 +18,11 @@
     },
     "DatToJson": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\event_data.dat"
+      "commandLineArgs": "C:\\Users\\AVTho\\Dropbox\\Projects\\TheDawnlessDays\\audio\\tdd\\event_data.dat"
     },
     "JsonToDat": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\AVTho\\Downloads\\audio\\event_data_temp.json"
+      "commandLineArgs": "C:\\Users\\AVTho\\Dropbox\\Projects\\TheDawnlessDays\\audio\\tdd\\event_data.json"
     }
   }
 }
